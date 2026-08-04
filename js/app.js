@@ -6,6 +6,8 @@ import { NavEngine } from './navEngine.js';
 import { TourEngine } from './tourEngine.js';
 import { EnrichmentService } from './enrichment.js';
 import { RouteMap } from './map.js';
+import { OverviewMap, ROUTE_COLORS } from './overviewMap.js';
+import { WakeLockManager } from './wakeLock.js';
 import { t, applyStaticStrings } from './i18n.js';
 
 // ─────────────────────────── State ───────────────────────────
@@ -16,11 +18,13 @@ const location = new LocationService();
 const enrichment = new EnrichmentService();
 const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment });
 const navEngine = new NavEngine(speech);
+const wakeLock = new WakeLockManager();
 
 let routes = [];
 let currentRoute = null;
 let detailMap = null;
 let driveMap = null;
+let overviewMap = null;
 
 syncSpeechFromSettings();
 
@@ -44,6 +48,7 @@ syncSpeechFromSettings();
       : `${routes.length} routes, offline. Start it and drive.`;
 
   renderRouteList();
+  renderOverviewMap();
   wireGlobalControls();
   wireSettingsSheet();
   updateAudioStatus();
@@ -81,6 +86,29 @@ function renderRouteList() {
   }
 }
 
+/** All eight routes on one map, so you can see where each one actually is
+ *  before opening it — the thing a route name alone doesn't tell you. */
+function renderOverviewMap() {
+  if (routes.length === 0) return;
+  const lang = settings.language;
+
+  requestAnimationFrame(() => {
+    if (!overviewMap) overviewMap = new OverviewMap('overview-map');
+    overviewMap.invalidateSize();
+    overviewMap.show(routes, (route) => openDetail(route));
+
+    const legend = document.getElementById('overview-legend');
+    legend.innerHTML = '';
+    routes.forEach((route, index) => {
+      const btn = document.createElement('button');
+      const color = ROUTE_COLORS[index % ROUTE_COLORS.length];
+      btn.innerHTML = `<span class="dot" style="background:${color}"></span>${route.name[lang]}`;
+      btn.addEventListener('click', () => openDetail(route));
+      legend.appendChild(btn);
+    });
+  });
+}
+
 // ─────────────────────────── Route detail ───────────────────────────
 
 function openDetail(route) {
@@ -97,6 +125,7 @@ function openDetail(route) {
   document.getElementById('detail-besttime').textContent = route.bestTime[lang];
 
   renderHighlightList(route);
+  renderDining(route);
   showScreen('detail-screen');
 
   requestAnimationFrame(() => {
@@ -148,6 +177,71 @@ function iconFor(kind) {
   return map[kind] || '📍';
 }
 
+// ─────────────────────────── Dining ───────────────────────────
+//
+// A small, opinionated list per route rather than an open-ended search —
+// closer to a printed city guide than a review site. Whichever meal
+// matches the time of day (right now, or when you're about to start
+// driving) is highlighted; the other two stay visible but dimmed, so you
+// can also plan ahead for later in the day.
+
+const MEAL_ICON = { breakfast: '☕', lunch: '🍽️', dinner: '🌙' };
+const MEAL_LABEL = {
+  nl: { breakfast: 'Ontbijt', lunch: 'Lunch', dinner: 'Diner' },
+  en: { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner' }
+};
+
+/** Which meal window the current local time falls into, if any. */
+function currentMeal() {
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 11) return 'breakfast';
+  if (hour >= 12 && hour < 15) return 'lunch';
+  if (hour >= 19 && hour < 22) return 'dinner';
+  return null;
+}
+
+function renderDining(route) {
+  const section = document.getElementById('dining-section');
+  const dining = route.dining || [];
+  if (dining.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  const lang = settings.language;
+  const active = currentMeal();
+
+  document.getElementById('dining-eyebrow').textContent =
+    lang === 'nl' ? 'Eten onderweg' : 'Eating along the way';
+  document.getElementById('dining-intro').textContent = lang === 'nl'
+    ? 'Geen lijstjes met sterren — een paar adressen die als eerste genoemd worden als je het aan iemand hier vraagt.'
+    : "No star ratings — just a few addresses that come up first when you ask someone from here.";
+
+  // breakfast, lunch, dinner, in that fixed order regardless of JSON order.
+  const order = { breakfast: 0, lunch: 1, dinner: 2 };
+  const sorted = [...dining].sort((a, b) => order[a.meal] - order[b.meal]);
+
+  const list = document.getElementById('dining-list');
+  list.innerHTML = sorted.map((item) => {
+    const isCurrent = item.meal === active;
+    return `
+      <div class="dining-card ${isCurrent ? 'current' : ''}">
+        <div class="dining-meal-row">
+          <span class="meal-icon">${MEAL_ICON[item.meal]}</span>
+          <span class="meal-label">${MEAL_LABEL[lang][item.meal]}</span>
+          <span class="dining-town">${item.town[lang]}</span>
+        </div>
+        <div class="dining-name">${escapeHTML(item.name[lang])}</div>
+        <p class="dining-tip">${escapeHTML(item.tip[lang])}</p>
+        <div class="dining-footer">
+          <span class="dining-specialty">${escapeHTML(item.specialty[lang])}</span>
+          <span class="dining-price">${item.price}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
 // ─────────────────────────── Drive screen ───────────────────────────
 
 function startDrive() {
@@ -170,6 +264,7 @@ function startDrive() {
     tourEngine.start(currentRoute);
     navEngine.enabled = settings.turnByTurnEnabled;
     location.start();
+    wakeLock.enable();
     renderRibbon();
     renderNowPlaying();
   });
@@ -178,10 +273,24 @@ function startDrive() {
 function endDrive() {
   tourEngine.stop();
   location.stop();
+  wakeLock.disable();
   navEngine.currentStepIndex = 0;
   navEngine.announcedThisStep.clear();
   showScreen('detail-screen');
 }
+
+wakeLock.addEventListener('change', (e) => {
+  const el = document.getElementById('wakelock-pill');
+  if (!el) return;
+  const lang = settings.language;
+  if (e.detail.active) {
+    el.textContent = lang === 'nl' ? '☀️ Scherm blijft aan' : '☀️ Screen stays on';
+    el.classList.remove('warn');
+  } else {
+    el.textContent = lang === 'nl' ? '🔅 Houd het scherm zelf actief' : '🔅 Keep the screen on yourself';
+    el.classList.add('warn');
+  }
+});
 
 location.addEventListener('position', (e) => {
   const pos = e.detail;
@@ -344,6 +453,7 @@ function wireSettingsSheet() {
       langButtons.forEach((b) => b.classList.toggle('active', b === btn));
       applyStaticStrings(settings.language);
       renderRouteList();
+      renderOverviewMap();
       if (currentRoute) openDetail(currentRoute);
     });
   });
@@ -424,10 +534,5 @@ function registerServiceWorker() {
   }
 }
 
-// Keep the drive screen awake for as long as the browser allows.
-let wakeLock = null;
-document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState === 'visible' && document.getElementById('drive-screen').classList.contains('active')) {
-    try { wakeLock = await navigator.wakeLock?.request('screen'); } catch { /* not supported */ }
-  }
-});
+// Screen-on handling lives in wakeLock.js and is wired up above, next to
+// startDrive()/endDrive().
