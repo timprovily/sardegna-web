@@ -152,9 +152,68 @@ het in de `dining`-array van het bijbehorende routebestand met dezelfde
 velden als de bestaande entries (`meal`, `town`, `lat`/`lon`, `name`, `tip`,
 `specialty`, `price`).
 
-## Een route toevoegen
+## Licht en donker
 
-Zelfde als bij de native versie: kopieer een bestand in `data/`, hernoem het
+Onder Instellingen → Weergave staan drie standen: **Automatisch**, **Licht**
+en **Donker**.
+
+Op automatisch volgt de app de echte zon op jouw locatie: licht tussen
+zonsopkomst en zonsondergang, donker daarbuiten. Zodra de app een GPS-fix
+heeft, rekent hij zonsopkomst en -ondergang zelf uit. Heeft hij nog geen
+locatie — bijvoorbeeld als je thuis zit te plannen — dan volgt hij de
+weergave-instelling van je telefoon, en schakelt hij mee op het moment dat
+iOS dat doet.
+
+De zonsberekening negeert de tijdsvereffening, dus hij kan door het jaar heen
+tot ongeveer een kwartier afwijken. Voor het dimmen van een scherm maakt dat
+niets uit; voor sterrenkijken zou je iets nauwkeurigers willen.
+
+---
+
+## Routes toevoegen uit Komoot, Strava en andere apps
+
+Onderaan het beginscherm staat **Route toevoegen uit GPX**.
+
+**Waarom GPX en niet een Komoot-koppeling?** Omdat die niet bestaat. Komoot
+zegt zelf dat ze geen publiek toegankelijke API aanbieden en alleen koppelen
+met geselecteerde fabrikanten als Garmin, Bosch en Suunto. Er circuleren
+omwegen via hun interne frontend-API, maar die vragen om je Komoot-wachtwoord
+en breken zodra Komoot iets verandert — niets om je vakantie van af te laten
+hangen.
+
+GPX werkt daarentegen overal: Komoot, Strava, Wikiloc, RideWithGPS,
+Outdooractive en Garmin exporteren het allemaal. In Komoot: open een route →
+de drie puntjes → **Exporteer als GPX**.
+
+**Wat de app er daarna zelf bij zoekt.** Na het inlezen loopt de app in
+stappen van vier kilometer langs je track en vraagt bij elk punt aan
+Wikipedia wat daar in de buurt ligt. Alles wat binnen 2,5 kilometer van de
+route valt komt in de selectie, dubbele treffers gaan eruit, plekken die te
+dicht op elkaar zitten ook, en wat overblijft wordt op volgorde van rijden
+gezet. Van elke plek haalt hij vervolgens de samenvatting op en maakt daar
+het verhaal van dat je onderweg hoort. Maximaal veertien per route.
+
+Dat kost even: een lange route betekent veel beleefde verzoeken aan een
+gratis dienst. Een voortgangsbalk laat zien waar hij is. Doe dit thuis op
+wifi, niet bij vertrek.
+
+**Twee dingen om te weten.** Een geïmporteerde route wordt in één taal
+opgebouwd — de taal die op dat moment in de app staat — en de verhalen
+blijven in die taal, ook als je later omschakelt. Machinaal vertalen zou het
+subtiel fout doen, dus dat doen we niet. En de kwaliteit hangt af van wat
+Wikipedia over een streek weet: rond Sardijnse dorpen is dat veel, in een
+leeg stuk bergland weinig tot niets.
+
+Geïmporteerde routes staan met het label **EIGEN** in de lijst en op de
+overzichtskaart, en zijn op hun eigen detailpagina weer te verwijderen. Ze
+worden in je browser opgeslagen, dus een app-update raakt ze niet — maar
+"websitegegevens wissen" in Safari wel.
+
+---
+
+## Een route toevoegen aan de app zelf (voor ingebouwde routes)
+
+Wil je een route meeleveren in plaats van importeren: kopieer een bestand in `data/`, hernoem het
 naar `route-<iets>.json`, en zet de bestandsnaam ook in
 `data/routes-manifest.json`. Commit naar GitHub, klaar — GitHub Pages
 publiceert automatisch bij elke commit, meestal binnen een minuut.
@@ -177,7 +236,9 @@ js/
   tourEngine.js        highlights + weetjes, zelfde logica als native
   enrichment.js        Wikipedia-extra's
   map.js                Leaflet-kaart (routedetail & rijscherm)
-  overviewMap.js         alle acht routes op één kaart, beginscherm
+  overviewMap.js         alle routes op één kaart, beginscherm
+  theme.js               licht/donker + zonsopkomst-berekening
+  gpxImport.js           GPX inlezen + highlights zoeken via Wikipedia
   storage.js            instellingen + routecache in localStorage
   i18n.js                NL/EN teksten voor de interface
 data/                  dezelfde acht routes + weetjes als de native versie

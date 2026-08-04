@@ -45,6 +45,19 @@
 
     <div id="route-list"></div>
 
+    <div class="import-block">
+      <input type="file" id="gpx-input" accept=".gpx,application/gpx+xml,text/xml" hidden>
+      <button class="btn-import" id="import-gpx">
+        <span>＋</span><span id="import-label">Route toevoegen uit GPX</span>
+      </button>
+      <p class="import-hint" id="import-hint"></p>
+      <div class="import-progress" id="import-progress" style="display:none">
+        <div class="msg" id="import-msg"></div>
+        <div class="import-bar"><span id="import-bar-fill"></span></div>
+      </div>
+      <p class="import-error" id="import-error" style="display:none"></p>
+    </div>
+
     <p class="footnote" data-i18n="footer.note"></p>
   </div>
 </section>
@@ -123,6 +136,16 @@
         <button data-lang="nl">Nederlands</button>
         <button data-lang="en">English</button>
       </div>
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title" data-i18n="settings.appearance">Weergave</div>
+      <div class="segmented" id="theme-toggle">
+        <button data-theme-mode="auto" data-i18n="settings.themeAuto">Automatisch</button>
+        <button data-theme-mode="light" data-i18n="settings.themeLight">Licht</button>
+        <button data-theme-mode="dark" data-i18n="settings.themeDark">Donker</button>
+      </div>
+      <p class="import-hint" id="theme-explain"></p>
     </div>
 
     <div class="sheet-section">
