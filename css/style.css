@@ -29,9 +29,39 @@
   --corner: 16px;
   --gutter: 20px;
 
+  /* Translucent chrome (pills, drive card). Defined as a token so light
+     mode can flip it rather than each rule hardcoding a dark rgba. */
+  --glass: rgba(16, 20, 24, 0.78);
+  --card-solid: rgba(16, 20, 24, 0.94);
+  --scrim: rgba(0, 0, 0, 0.66);
+  --body-strong: rgba(239, 237, 232, 0.85);
+  --body-soft: rgba(239, 237, 232, 0.82);
+
   --font-display: -apple-system, "SF Pro Rounded", "Segoe UI Rounded", system-ui, sans-serif;
   --font-body: -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Code", monospace;
+}
+
+/* Light mode. Warm paper rather than pure white — the island's limestone
+   and sand, so it doesn't glare in bright sun. Accents darken because
+   the light teal that reads well on near-black disappears on paper. */
+[data-theme="light"] {
+  --ink: #F5F2EC;
+  --slate: #FFFFFF;
+  --seam: #DCD5C9;
+  --quartz: #1A1F24;
+  --ash: #6C7379;
+  --sea: #0E7B8D;
+  --shallow: #0B6577;
+  --porphyry: #A83E20;
+  --amber: #A8762F;
+  --amber-soft: #8A5F22;
+
+  --glass: rgba(255, 255, 255, 0.86);
+  --card-solid: rgba(255, 255, 255, 0.96);
+  --scrim: rgba(30, 26, 20, 0.42);
+  --body-strong: rgba(26, 31, 36, 0.88);
+  --body-soft: rgba(26, 31, 36, 0.78);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -101,7 +131,7 @@ button {
   margin-left: auto;
   padding: 7px 14px;
   border-radius: 999px;
-  background: rgba(27,147,168,0.18);
+  background: color-mix(in srgb, var(--sea) 18%, transparent);
   color: var(--shallow);
   font-family: var(--font-display);
   font-weight: 700;
@@ -183,7 +213,7 @@ button {
 .dining-card.current {
   opacity: 1;
   border-color: var(--amber);
-  background: linear-gradient(180deg, rgba(201,151,74,0.10), rgba(201,151,74,0.02));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--amber) 14%, transparent), color-mix(in srgb, var(--amber) 3%, transparent));
 }
 
 .dining-meal-row {
@@ -212,7 +242,7 @@ button {
 }
 .dining-tip {
   font-size: 13.5px;
-  color: rgba(239,237,232,0.82);
+  color: var(--body-soft);
   line-height: 1.5;
   margin: 0 0 9px;
 }
@@ -236,13 +266,13 @@ button {
   font-size: 28px;
   margin: 4px 0 12px;
 }
-.detail-summary { font-size: 16px; line-height: 1.5; color: rgba(239,237,232,0.85); margin-bottom: 16px; }
+.detail-summary { font-size: 16px; line-height: 1.5; color: var(--body-strong); margin-bottom: 16px; }
 
 .facts-grid { display: flex; gap: 24px; margin-bottom: 14px; }
 .metric .value { font-family: var(--font-mono); font-weight: 700; font-size: 19px; }
 hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 .labelled { margin-bottom: 10px; }
-.labelled .value { font-size: 14px; color: rgba(239,237,232,0.9); margin-top: 3px; }
+.labelled .value { font-size: 14px; color: var(--body-strong); margin-top: 3px; }
 
 .btn-primary {
   display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -262,14 +292,14 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 .highlight-row-head { display: flex; align-items: flex-start; gap: 12px; }
 .highlight-row-icon {
   width: 30px; height: 30px; border-radius: 999px;
-  background: rgba(27,147,168,0.15); display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--sea) 15%, transparent); display: flex; align-items: center; justify-content: center;
   font-size: 15px; flex-shrink: 0;
 }
 .highlight-row-title { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
 .highlight-row-meta { font-family: var(--font-mono); font-size: 10px; color: var(--ash); }
 .highlight-row-play {
   margin-left: auto; width: 34px; height: 34px; border-radius: 999px;
-  background: rgba(27,147,168,0.15); display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--sea) 15%, transparent); display: flex; align-items: center; justify-content: center;
   color: var(--shallow); font-size: 14px; flex-shrink: 0;
 }
 .highlight-row-body {
@@ -291,14 +321,14 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 .pill {
   display: flex; align-items: center; gap: 6px;
   padding: 9px 12px; border-radius: 999px;
-  background: rgba(16,20,24,0.75); backdrop-filter: blur(10px);
+  background: var(--glass); backdrop-filter: blur(10px);
   font-size: 12px; font-family: var(--font-mono); font-weight: 600;
 }
 .pill.on-car { color: var(--shallow); }
 .pill.off-car { color: var(--ash); }
 .close-btn {
   width: 38px; height: 38px; border-radius: 999px;
-  background: rgba(16,20,24,0.75); backdrop-filter: blur(10px);
+  background: var(--glass); backdrop-filter: blur(10px);
   display: flex; align-items: center; justify-content: center; font-size: 16px;
 }
 .speed-pill { margin-left: auto; font-family: var(--font-mono); font-weight: 700; font-size: 19px; }
@@ -308,10 +338,44 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 .wakelock-row .pill { font-size: 11px; font-weight: 500; color: var(--shallow); }
 .wakelock-row .pill.warn { color: var(--porphyry); }
 
+/* --- GPX import --- */
+
+.import-block { margin: 18px 0 6px; }
+.btn-import {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  width: 100%; padding: 15px;
+  background: var(--slate); border: 1px dashed var(--seam); border-radius: 14px;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px;
+  color: var(--quartz);
+}
+.btn-import:active { border-color: var(--sea); }
+.import-hint { color: var(--ash); font-size: 12px; margin-top: 8px; line-height: 1.5; }
+
+.import-progress {
+  margin-top: 12px; padding: 15px 16px;
+  background: var(--slate); border: 1px solid var(--seam); border-radius: 14px;
+}
+.import-progress .msg { font-size: 13.5px; margin-bottom: 10px; }
+.import-bar { height: 4px; border-radius: 999px; background: var(--seam); overflow: hidden; }
+.import-bar span { display: block; height: 100%; background: var(--sea); width: 0%; transition: width 0.3s; }
+.import-error { color: var(--porphyry); font-size: 13px; margin-top: 10px; line-height: 1.5; }
+
+.custom-badge {
+  display: inline-block; margin-left: 8px; padding: 2px 8px;
+  border-radius: 999px; background: color-mix(in srgb, var(--sea) 18%, transparent);
+  color: var(--shallow); font-size: 10px; font-weight: 700;
+  font-family: var(--font-display); letter-spacing: 0.5px; vertical-align: middle;
+}
+.btn-delete-route {
+  width: 100%; padding: 12px; margin-top: 10px;
+  background: none; border: 1px solid var(--seam); border-radius: 14px;
+  color: var(--porphyry); font-size: 14px; font-weight: 600;
+}
+
 .now-playing {
   position: absolute; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
-  background: rgba(16,20,24,0.94); border: 1px solid var(--seam); border-radius: 22px;
-  padding: 18px; z-index: 500; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  background: var(--card-solid); border: 1px solid var(--seam); border-radius: 22px;
+  padding: 18px; z-index: 500; box-shadow: 0 10px 30px var(--scrim);
 }
 
 .ribbon { position: relative; height: 26px; margin-bottom: 14px; }
@@ -360,13 +424,21 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 
 /* --- Settings sheet --- */
 .sheet-backdrop {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900;
+  position: fixed; inset: 0; background: var(--scrim); z-index: 900;
   display: none;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 .sheet-backdrop.open { display: block; }
 .sheet {
   position: fixed; left: 0; right: 0; bottom: 0; max-height: 88vh; overflow-y: auto;
-  background: var(--ink); border-radius: 20px 20px 0 0; z-index: 901;
+  /* Fully opaque, and its own stacking context — this panel sat
+     see-through before because the colour was inherited from a
+     translucent parent. */
+  background: var(--ink);
+  border-top: 1px solid var(--seam);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.45);
+  border-radius: 20px 20px 0 0; z-index: 901;
   padding: 18px var(--gutter) calc(24px + env(safe-area-inset-bottom));
   transform: translateY(100%); transition: transform 0.25s ease-out;
 }
