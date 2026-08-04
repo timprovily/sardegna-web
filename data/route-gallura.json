@@ -115,5 +115,46 @@
         "en": "Tempio Pausania is built entirely of granite — grey houses, grey streets, grey churches. It's also the centre of the cork industry. The cork oaks you see in the forest with bare red trunks were stripped recently; it happens every nine to twelve years and the tree survives it perfectly well. Sardinia supplies over eighty percent of all Italian cork. End of the route."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "palau-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Palau", "en": "Palau" },
+      "lat": 41.1790, "lon": 9.3830,
+      "name": { "nl": "Barcultuur bij de veerhaven", "en": "Bar culture at the ferry port" },
+      "tip": {
+        "nl": "Bij de aanlegsteiger staan een paar bars waar de bootbemanning zelf koffie drinkt — een betrouwbaar teken.",
+        "en": "A few bars sit right by the dock where the ferry crews themselves get their coffee — a reliable sign."
+      },
+      "specialty": { "nl": "Cappuccino en een sfoglia sarda", "en": "Cappuccino and a sfoglia sarda pastry" },
+      "price": "€"
+    },
+    {
+      "id": "aggius-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Aggius", "en": "Aggius" },
+      "lat": 40.9160, "lon": 9.0630,
+      "name": { "nl": "Il Muto di Gallura", "en": "Il Muto di Gallura" },
+      "tip": {
+        "nl": "Een echte stazzo — het traditionele granieten boerenhuis van de Gallura — waar al generaties lang eigen koeien, varkens en geiten worden gehouden. Alles op tafel komt van het erf.",
+        "en": "A genuine stazzo — the traditional granite farmhouse of the Gallura — where cattle, pigs and goats have been kept for generations. Everything on the table comes from the farm itself."
+      },
+      "specialty": { "nl": "Zelfgemaakte ravioli en huisgemaakte worst", "en": "Homemade ravioli and house-made sausage" },
+      "price": "€€"
+    },
+    {
+      "id": "santa-teresa-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Santa Teresa Gallura", "en": "Santa Teresa Gallura" },
+      "lat": 41.2400, "lon": 9.1900,
+      "name": { "nl": "Aan de haven van Santa Teresa", "en": "Around the harbour in Santa Teresa" },
+      "tip": {
+        "nl": "Geen specifieke aanrader hier, maar wel een goede vuistregel: kies een restaurant met uitzicht op de veerboten naar Corsica, niet op de hoofdstraat — daar zitten de betere visadressen.",
+        "en": "No single standout name here, but a reliable rule of thumb: pick a restaurant that looks out over the Corsica ferries rather than the main street — that's where the better fish places sit."
+      },
+      "specialty": { "nl": "Vis van de dag", "en": "Fish of the day" },
+      "price": "€€"
+    }
   ]
 }

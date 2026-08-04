@@ -115,5 +115,46 @@
         "en": "Su Nuraxi is the end of the route and Sardinia's most important monument: a World Heritage Site since 1997. A central tower from around 1500 BC, later surrounded by four towers and an entire village of round houses. What's remarkable is that it had vanished completely under earth — people thought it was a hill, until Giovanni Lilliu started digging in 1949. Around seven thousand nuraghi still stand on the island. Nobody knows for certain what they were for."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "oristano-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Oristano", "en": "Oristano" },
+      "lat": 39.9040, "lon": 8.5910,
+      "name": { "nl": "Barcultuur in Oristano", "en": "Bar culture in Oristano" },
+      "tip": {
+        "nl": "Rond de Piazza Eleonora zitten de bars waar de stad zelf koffie drinkt, voor je de vlakte in rijdt richting Tharros.",
+        "en": "Around Piazza Eleonora sit the bars where the town itself drinks its coffee, before you head out onto the flats toward Tharros."
+      },
+      "specialty": { "nl": "Cappuccino en een pardula, het lokale kaasgebakje", "en": "Cappuccino and a pardula, the local cheese pastry" },
+      "price": "€"
+    },
+    {
+      "id": "cabras-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Cabras", "en": "Cabras" },
+      "lat": 39.9270, "lon": 8.5290,
+      "name": { "nl": "Ristorante i Giganti", "en": "Ristorante i Giganti" },
+      "tip": {
+        "nl": "Klein, eenvoudig, en pal naast het museum met de Giganten die je net hebt gehoord. De harder op tafel is een paar honderd meter verderop gevangen, in dezelfde lagune waar de bottarga vandaan komt.",
+        "en": "Small, unpretentious, right next to the museum housing the Giants you just heard about. The grey mullet on the table was caught a few hundred metres away, in the same lagoon the bottarga comes from."
+      },
+      "specialty": { "nl": "Spaghetti met bottarga en venusschelpen, gegrilde harder", "en": "Spaghetti with bottarga and clams, grilled grey mullet" },
+      "price": "€€"
+    },
+    {
+      "id": "barumini-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Barumini", "en": "Barumini" },
+      "lat": 39.7050, "lon": 8.9910,
+      "name": { "nl": "Cavallino della Giara", "en": "Cavallino della Giara" },
+      "tip": {
+        "nl": "Sinds 1986 vlak bij Su Nuraxi, met zicht op het kasteel van Las Plassas en de vlakte van de Marmilla — de logische afsluiter na een dag in de nuraghe.",
+        "en": "Right by Su Nuraxi since 1986, looking out over the Las Plassas castle and the Marmilla plain — the natural way to close a day at the nuraghe."
+      },
+      "specialty": { "nl": "Malloreddus alla campidanese, maialetto arrosto", "en": "Malloreddus alla campidanese, roast suckling pig" },
+      "price": "€€"
+    }
   ]
 }

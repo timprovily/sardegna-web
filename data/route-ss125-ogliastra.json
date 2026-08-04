@@ -115,5 +115,46 @@
         "en": "You roll out onto the coast at Santa Maria Navarrese. The story goes that a Navarrese princess was shipwrecked here in 1052 and had the little church built in gratitude — hence the name. In front of it stand olive trees measured at over a thousand years old, so they were already there when she washed ashore. End of the route. Go and look at the beach; the dark silhouette offshore is the islet of Ogliastra."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "dorgali-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Dorgali", "en": "Dorgali" },
+      "lat": 40.2900, "lon": 9.6100,
+      "name": { "nl": "Barcultuur in Dorgali", "en": "Bar culture in Dorgali" },
+      "tip": {
+        "nl": "Voor de bergpas begint: koffie en iets zoets aan de bar op het plein. Boven is er tot Baunei geen enkele gelegenheid meer.",
+        "en": "Before the mountain pass starts: coffee and something sweet at the bar on the square. Above it there's nowhere else until Baunei."
+      },
+      "specialty": { "nl": "Copulettas — zoete Dorgalese kaastaartjes", "en": "Copulettas — Dorgali's sweet cheese-filled pastries" },
+      "price": "€"
+    },
+    {
+      "id": "cala-gonone-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Cala Gonone / Dorgali", "en": "Cala Gonone / Dorgali" },
+      "lat": 40.2810, "lon": 9.6300,
+      "name": { "nl": "Agriturismo Codula Fuili", "en": "Agriturismo Codula Fuili" },
+      "tip": {
+        "nl": "Kaas, worst, groente en olie komen van het eigen bedrijf — de keuken kookt letterlijk wat er op het erf groeit en loopt.",
+        "en": "The cheese, cured meats, vegetables and oil all come from the farm itself — the kitchen cooks whatever is growing or grazing right outside."
+      },
+      "specialty": { "nl": "Gegrild lamsvlees met wilde kruiden van de Supramonte", "en": "Grilled lamb with wild herbs from the Supramonte" },
+      "price": "€€"
+    },
+    {
+      "id": "golgo-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Altopiano del Golgo, Baunei", "en": "Golgo plateau, Baunei" },
+      "lat": 40.0900, "lon": 9.6600,
+      "name": { "nl": "Ristorante Golgo", "en": "Ristorante Golgo" },
+      "tip": {
+        "nl": "Gebouwd in de jaren zeventig in de stijl van de traditionele herdershutten van het Supramonte, middenin het plateau dat je op deze route al bezoekt bij Su Sterru. Reserveer — het is de enige gelegenheid hier boven.",
+        "en": "Built in the nineteen-seventies in the style of the traditional Supramonte shepherd huts, right on the plateau this route already visits at Su Sterru. Book ahead — it's the only place up here."
+      },
+      "specialty": { "nl": "Maialetto arrosto, geroosterd speenvarken", "en": "Maialetto arrosto, roast suckling pig" },
+      "price": "€€"
+    }
   ]
 }

@@ -115,5 +115,46 @@
         "en": "You're on the roof of Sardinia. Bruncu Spina is 1,829 metres, and the summit right beside it, Punta La Marmora, is the island's highest point at 1,834. Gennargentu probably means silver gate — after the snow that lies here in winter. It's a bare, treeless landscape with mouflon and golden eagles. From the top on a clear day you can see both coasts at once. End of the route."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "nuoro-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Nuoro", "en": "Nuoro" },
+      "lat": 40.3130, "lon": 9.3620,
+      "name": { "nl": "Barcultuur in Nuoro", "en": "Bar culture in Nuoro" },
+      "tip": {
+        "nl": "Rond de oude stad staan de bars waar het literaire Nuoro al decennia zijn koffie drinkt. Neem er wat lokaal gebak bij.",
+        "en": "Around the old town are the bars where literary Nuoro has taken its coffee for decades. Add a piece of local pastry."
+      },
+      "specialty": { "nl": "Sebadas met honing, ook prima als ontbijt", "en": "Sebadas with honey — a fine breakfast too" },
+      "price": "€"
+    },
+    {
+      "id": "mamoiada-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Mamoiada", "en": "Mamoiada" },
+      "lat": 40.2140, "lon": 9.2670,
+      "name": { "nl": "Abbamele Osteria", "en": "Abbamele Osteria" },
+      "tip": {
+        "nl": "Chef Mauro is geboren en getogen in Mamoiada en trekt zelf ieder jaar het Mamuthone-masker aan — dezelfde traditie die je zojuist hoorde. Hij vernieuwt de klassiekers zonder ze te verraden: pane frattau wordt hier ovo frattau.",
+        "en": "Chef Mauro was born and raised in Mamoiada and puts on the Mamuthone mask himself every year — the same tradition you just heard about. He updates the classics without betraying them: pane frattau becomes ovo frattau here."
+      },
+      "specialty": { "nl": "Ovo frattau, of lam op lage temperatuur gegaard", "en": "Ovo frattau, or slow-cooked lamb" },
+      "price": "€€€"
+    },
+    {
+      "id": "orgosolo-note",
+      "meal": "dinner",
+      "town": { "nl": "Orgosolo", "en": "Orgosolo" },
+      "lat": 40.2030, "lon": 9.3520,
+      "name": { "nl": "Pranzo/cena met de herders", "en": "A meal with the shepherds" },
+      "tip": {
+        "nl": "In de bergen rond Orgosolo organiseren herdersfamilies buiten maaltijden met vlees en kaas van eigen dieren — geen vast adres, maar te boeken via de lokale VVV. Wil je liever gewoon een tafel, kies dan een van de eenvoudige eethuizen in het dorp zelf, met maharrones alla orgolese en gegrild vlees op mirte.",
+        "en": "In the hills around Orgosolo, shepherd families run open-air meals with meat and cheese from their own animals — no fixed address, but bookable through the local tourist office. Want a simple table instead? Any of the plain eating houses in the village serve maharrones alla orgolese and myrtle-scented grilled meat."
+      },
+      "specialty": { "nl": "Maharrones all'orgolese, pasta met wildzwijnragù", "en": "Maharrones all'orgolese, pasta with wild boar ragù" },
+      "price": "€€"
+    }
   ]
 }

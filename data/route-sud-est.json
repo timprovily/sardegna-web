@@ -101,5 +101,46 @@
         "en": "Costa Rei closes the drive: ten kilometres of white beach in a straight line, with the red granite Scoglio di Peppino at the southern end. Behind you rises Monte dei Sette Fratelli, the mountain of the seven brothers, home to the last Sardinian deer. They were nearly extinct in 1970 — fewer than a hundred animals — and there are several thousand again now. End of the route."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "cagliari-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Cagliari", "en": "Cagliari" },
+      "lat": 39.2200, "lon": 9.1120,
+      "name": { "nl": "Mercato di San Benedetto", "en": "Mercato di San Benedetto" },
+      "tip": {
+        "nl": "De grootste overdekte markt van Italië. Ga niet voor een tafel maar voor de bar op de eerste verdieping tussen de vishandelaren — daar ontbijten de mensen die net hun kraam hebben opgezet.",
+        "en": "The largest covered market in Italy. Skip the tables and head for the counter on the upper floor among the fish stalls — that's where the people who just set up shop have their breakfast."
+      },
+      "specialty": { "nl": "Een espresso tussen de kratten vis", "en": "An espresso among the fish crates" },
+      "price": "€"
+    },
+    {
+      "id": "cagliari-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Cagliari — Marina", "en": "Cagliari — Marina quarter" },
+      "lat": 39.2200, "lon": 9.1120,
+      "name": { "nl": "Trattoria Lillicu", "en": "Trattoria Lillicu" },
+      "tip": {
+        "nl": "Al zeventig jaar open in dezelfde straat, marmeren tafels, en nog altijd vol Cagliaritanen tussen de toeristen. Een instituut, geen ontdekking.",
+        "en": "Open on the same street for seventy years, marble tables, still full of Cagliaritani between the tourists. An institution, not a discovery."
+      },
+      "specialty": { "nl": "Spaghetti met bottarga, of gemengde visgrill", "en": "Spaghetti with bottarga, or a mixed fish grill" },
+      "price": "€€"
+    },
+    {
+      "id": "villasimius-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Villasimius", "en": "Villasimius" },
+      "lat": 39.1400, "lon": 9.5170,
+      "name": { "nl": "Aan de haven van Villasimius", "en": "Around the Villasimius marina" },
+      "tip": {
+        "nl": "Geen vast adres hier, maar wel een tip: in het hoogseizoen zit het dorp vol, dus reserveer overdag een tafel als je hier wilt eten, of ga vroeg — rond acht uur, voor de drukte.",
+        "en": "No fixed name here, but a tip: the village fills up in high season, so book a table during the day if you want to eat here, or go early — around eight, before the rush."
+      },
+      "specialty": { "nl": "Vers gevangen vis van de beschermde zeegebieden", "en": "Fresh fish from the protected marine waters offshore" },
+      "price": "€€€"
+    }
   ]
 }

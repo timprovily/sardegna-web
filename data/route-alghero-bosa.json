@@ -117,5 +117,46 @@
         "en": "And there is Bosa: pastel houses climbing the hill towards the castle. It was built in 1112 by the Malaspina family from Tuscany. The little church inside the walls holds fourteenth-century frescoes that were only discovered in 1972, under a layer of plaster. The colours of the houses are no accident either — they're fixed by local law, so you can't simply paint your façade white here. End of the route. Enjoy it."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "alghero-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Alghero", "en": "Alghero" },
+      "lat": 40.5590, "lon": 8.3180,
+      "name": { "nl": "Barcultuur in de oude stad", "en": "Bar culture in the old town" },
+      "tip": {
+        "nl": "Geen gereserveerde tafel nodig: sta aan de bar zoals iedereen, bestel een cappuccino en een cornetto, en reken op één tot anderhalve euro.",
+        "en": "No table to book: stand at the counter like everyone else, order a cappuccino and a cornetto, and expect to pay around one to one-and-a-half euros."
+      },
+      "specialty": { "nl": "Cornetto alla crema, warm uit de oven rond 8 uur", "en": "Cornetto alla crema, warm from the oven around 8am" },
+      "price": "€"
+    },
+    {
+      "id": "alghero-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Alghero", "en": "Alghero" },
+      "lat": 40.5590, "lon": 8.3180,
+      "name": { "nl": "Trattoria da Mirko", "en": "Trattoria da Mirko" },
+      "tip": {
+        "nl": "Familiezaak in de oude stad, overgenomen door de jonge chef Danilo — door de Italiaanse restaurantgids Gambero Rosso uitgeroepen tot een van de beste adressen van de provincie.",
+        "en": "A family restaurant in the old town, now run by young chef Danilo — named one of the province's best addresses by the Italian food guide Gambero Rosso."
+      },
+      "specialty": { "nl": "Algherese paella met zeevruchten, of caserecce met lamsragù", "en": "Algherese seafood paella, or caserecce with lamb ragù" },
+      "price": "€€"
+    },
+    {
+      "id": "bosa-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Bosa", "en": "Bosa" },
+      "lat": 40.2965, "lon": 8.5000,
+      "name": { "nl": "Sa Pischedda", "en": "Sa Pischedda" },
+      "tip": {
+        "nl": "Aan de oever van de Temo, met zicht op het kasteel — een van de namen die in Bosa het vaakst terugkomt als het over eerlijke, traditionele keuken gaat.",
+        "en": "Right on the bank of the Temo, with the castle in view — one of the names that comes up most often in Bosa when the talk turns to honest, traditional cooking."
+      },
+      "specialty": { "nl": "Aragosta alla bosana met aardappelsalade, of een glas malvasia di Bosa toe", "en": "Aragosta alla bosana with potato salad, or a glass of malvasia di Bosa to finish" },
+      "price": "€€"
+    }
   ]
 }

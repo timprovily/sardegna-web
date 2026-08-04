@@ -115,5 +115,33 @@
         "en": "Capo Pecora closes the route. The landscape changes abruptly here: no more limestone, but granite, in enormous rounded blocks weathered by the wind into strange shapes. It's a favourite with boulderers and with people who want nothing at all. There's no bar, no parking meter and no signal. Which is exactly why people come."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "iglesias-lunch",
+      "meal": "lunch",
+      "town": { "nl": "Iglesias", "en": "Iglesias" },
+      "lat": 39.3090, "lon": 8.5320,
+      "name": { "nl": "Oasis", "en": "Oasis" },
+      "tip": {
+        "nl": "Ligt wat buiten het centrum, naast een supermarkt, en dat is precies waarom het geen toeristenval is. Cagliaritanen rijden ervoor. Reserveer in het weekend.",
+        "en": "A little out of the historic centre, next to a supermarket — which is exactly why it isn't a tourist trap. People drive out from Cagliari for it. Book ahead at weekends."
+      },
+      "specialty": { "nl": "Culurgiones met pistache en zwaardvis", "en": "Culurgiones with pistachio and swordfish" },
+      "price": "€€"
+    },
+    {
+      "id": "buggerru-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Bij Buggerru / Cala Domestica", "en": "Near Buggerru / Cala Domestica" },
+      "lat": 39.3830, "lon": 8.4020,
+      "name": { "nl": "Ristorante San Nicolò", "en": "Ristorante San Nicolò" },
+      "tip": {
+        "nl": "Ligt boven het strand van Cala Domestica, dat je op deze route al bezoekt. Ga voor zonsondergang, dan zit je op het terras met de baai eronder.",
+        "en": "Sits above the Cala Domestica beach this route already visits. Go before sunset and you'll get the terrace with the cove spread out below."
+      },
+      "specialty": { "nl": "Gemengde visgrill uit de golf van Buggerru", "en": "Mixed fish grill from the Gulf of Buggerru" },
+      "price": "€€"
+    }
   ]
 }

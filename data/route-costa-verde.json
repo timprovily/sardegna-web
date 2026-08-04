@@ -102,5 +102,46 @@
         "en": "Capo Frasca is the end of the route and immediately a closed door: the headland is a military range and usually off limits. Sardinia hosts roughly sixty percent of Italy's military training areas, on an island with under three percent of its population. It's a sensitive and much-debated subject here. The unintended side effect: the coast behind it has stayed almost entirely untouched."
       }
     }
+  ],
+  "dining": [
+    {
+      "id": "arbus-breakfast",
+      "meal": "breakfast",
+      "town": { "nl": "Arbus", "en": "Arbus" },
+      "lat": 39.5270, "lon": 8.5980,
+      "name": { "nl": "Barcultuur in Arbus", "en": "Bar culture in Arbus" },
+      "tip": {
+        "nl": "Dit is de laatste plek met een normale bar voor je de mijnstreek in rijdt. Neem iets mee voor onderweg — bij Montevecchio en Ingurtosu is niets.",
+        "en": "This is the last proper bar before you head into the mining country. Grab something to take with you — there's nothing at Montevecchio or Ingurtosu."
+      },
+      "specialty": { "nl": "Pane e pomodoro, of gewoon een cornetto", "en": "Bread with tomato, or just a cornetto" },
+      "price": "€"
+    },
+    {
+      "id": "piscinas-note",
+      "meal": "lunch",
+      "town": { "nl": "Piscinas / Costa Verde", "en": "Piscinas / Costa Verde" },
+      "lat": 39.5320, "lon": 8.4340,
+      "name": { "nl": "Eerlijk gezegd: er is hier weinig", "en": "Honestly: there isn't much out here" },
+      "tip": {
+        "nl": "Dit is de meest afgelegen route van de acht, en dat geldt ook voor eten. Er staan hier en daar hotelrestaurants bij de duinen, maar niets waarvan we met overtuiging kunnen zeggen dat het een lokale favoriet is. Eet in Arbus voor je vertrekt, of geniet van de rust.",
+        "en": "This is the most remote of the eight routes, and that goes for food too. There are a few hotel restaurants scattered near the dunes, but nothing we can confidently call a genuine local favourite. Eat in Arbus before you set off, or just enjoy the quiet."
+      },
+      "specialty": { "nl": "—", "en": "—" },
+      "price": "€€"
+    },
+    {
+      "id": "torre-dei-corsari-dinner",
+      "meal": "dinner",
+      "town": { "nl": "Torre dei Corsari", "en": "Torre dei Corsari" },
+      "lat": 39.6420, "lon": 8.4450,
+      "name": { "nl": "Ristorante Bar Maestrale", "en": "Ristorante Bar Maestrale" },
+      "tip": {
+        "nl": "Vers vis, een terras met uitzicht, en de meest serieuze keuken die je op deze afgelegen kust vindt.",
+        "en": "Fresh fish, a terrace with a view, and the most serious kitchen you'll find on this remote stretch of coast."
+      },
+      "specialty": { "nl": "Vis van de dag, gegrild", "en": "Grilled fish of the day" },
+      "price": "€€"
+    }
   ]
 }
