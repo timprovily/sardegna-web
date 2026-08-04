@@ -1,0 +1,99 @@
+export const STRINGS = {
+  nl: {
+    'header.eyebrow': 'Gesproken rijgids',
+    'footer.note': 'Routes en verhalen zitten in de app zelf en werken zonder bereik. Navigatie en Wikipedia-extra\'s hebben een verbinding nodig.',
+    'audio.test': 'Test',
+    'audio.connected': 'Verbonden met de auto',
+    'audio.notConnected': 'Speelt via de telefoon',
+    'nav.back': 'Terug',
+    'detail.distance': 'Afstand',
+    'detail.duration': 'Rijtijd',
+    'detail.stories': 'Verhalen',
+    'detail.character': 'Karakter',
+    'detail.bestTime': 'Beste moment',
+    'detail.start': 'Start de rit',
+    'detail.openMaps': 'Open in kaarten-app',
+    'detail.triggerAt': 'Start op {m} m afstand',
+    'drive.kmh': 'km/u',
+    'drive.repeat': 'Opnieuw',
+    'drive.skip': 'Overslaan',
+    'drive.fact': 'Weetje',
+    'drive.now': 'Nu',
+    'drive.nextUp': 'Volgende',
+    'drive.allTold': 'Alle verhalen verteld',
+    'drive.allToldSub': 'De gids blijft af en toe iets over het eiland vertellen.',
+    'drive.offRoute': 'Je bent {d} van de route.',
+    'drive.endConfirm': 'Rit beëindigen?',
+    'drive.end': 'Beëindigen',
+    'drive.keepDriving': 'Doorrijden',
+    'settings.title': 'Instellingen',
+    'settings.language': 'Taal',
+    'settings.voice': 'Stem',
+    'settings.rate': 'Spreeksnelheid',
+    'settings.chime': 'Toon vóór elk verhaal',
+    'settings.sample': '🔊 Beluister een voorbeeld',
+    'settings.driving': 'Onderweg',
+    'settings.turnByTurn': 'Navigatie-instructies',
+    'settings.facts': 'Weetjes tussendoor',
+    'settings.interval': 'Na hoeveel stilte',
+    'settings.online': 'Online extra\'s',
+    'settings.wikipedia': 'Extra achtergrond van Wikipedia',
+    'sample.text': 'Zo klinkt de gids. Rechts van je ligt een Spaanse wachttoren uit 1580.',
+    'test.text': 'Zo klinkt de gids in je auto. Als je dit hoort, staat alles goed.'
+  },
+  en: {
+    'header.eyebrow': 'Spoken road guide',
+    'footer.note': 'Routes and stories live in the app itself and work without a signal. Navigation and Wikipedia extras need a connection.',
+    'audio.test': 'Test',
+    'audio.connected': 'Connected to the car',
+    'audio.notConnected': 'Playing through the phone',
+    'nav.back': 'Back',
+    'detail.distance': 'Distance',
+    'detail.duration': 'Driving time',
+    'detail.stories': 'Stories',
+    'detail.character': 'Character',
+    'detail.bestTime': 'Best time',
+    'detail.start': 'Start the drive',
+    'detail.openMaps': 'Open in maps app',
+    'detail.triggerAt': 'Triggers at {m} m',
+    'drive.kmh': 'km/h',
+    'drive.repeat': 'Repeat',
+    'drive.skip': 'Skip',
+    'drive.fact': 'Fact',
+    'drive.now': 'Now',
+    'drive.nextUp': 'Next up',
+    'drive.allTold': 'Every story told',
+    'drive.allToldSub': 'The guide will still offer the odd island fact.',
+    'drive.offRoute': "You're {d} off the route.",
+    'drive.endConfirm': 'End the drive?',
+    'drive.end': 'End drive',
+    'drive.keepDriving': 'Keep driving',
+    'settings.title': 'Settings',
+    'settings.language': 'Language',
+    'settings.voice': 'Voice',
+    'settings.rate': 'Speech rate',
+    'settings.chime': 'Chime before each story',
+    'settings.sample': '🔊 Play a sample',
+    'settings.driving': 'While driving',
+    'settings.turnByTurn': 'Turn-by-turn instructions',
+    'settings.facts': 'Island facts between highlights',
+    'settings.interval': 'After this much silence',
+    'settings.online': 'Online extras',
+    'settings.wikipedia': 'Extra background from Wikipedia',
+    'sample.text': 'This is how the guide sounds. On your right stands a Spanish watchtower from 1580.',
+    'test.text': "This is how the guide will sound in your car. If you can hear this, you're set."
+  }
+};
+
+export function t(key, lang, vars = {}) {
+  let str = STRINGS[lang]?.[key] ?? STRINGS.nl[key] ?? key;
+  for (const [k, v] of Object.entries(vars)) str = str.replace(`{${k}}`, v);
+  return str;
+}
+
+export function applyStaticStrings(lang) {
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    el.textContent = t(el.dataset.i18n, lang);
+  });
+  document.documentElement.lang = lang;
+}
