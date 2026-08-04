@@ -9,6 +9,22 @@
   --sea: #1B93A8;
   --shallow: #53C4CF;
   --porphyry: #C25030;
+  /* Dining accent — bread, wine, evening light. Kept separate from
+     porphyry (speaking) and sea (navigation) so the eye reads it as its
+     own category, not a variant of an existing one. */
+  --amber: #C9974A;
+  --amber-soft: #E8C583;
+
+  /* One colour per route on the overview map, spread around the wheel so
+     eight lines stay legible together on a dark basemap. */
+  --route-1: #E8837A;
+  --route-2: #F2B25A;
+  --route-3: #E8D45A;
+  --route-4: #9BBF6B;
+  --route-5: #5FB8A8;
+  --route-6: #6FA8DC;
+  --route-7: #8C93E8;
+  --route-8: #C792EA;
 
   --corner: 16px;
   --gutter: 20px;
@@ -119,6 +135,97 @@ button {
 
 .footnote { color: var(--ash); font-size: 12px; margin-top: 8px; }
 
+/* --- Overview map (home screen) --- */
+
+.overview-wrap { margin: 16px 0; }
+#overview-map {
+  height: 260px;
+  border-radius: var(--corner);
+  overflow: hidden;
+  border: 1px solid var(--seam);
+}
+.overview-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.overview-legend button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--slate);
+  border: 1px solid var(--seam);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--quartz);
+}
+.overview-legend .dot { width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
+
+/* --- Dining section (route detail) — a small "little black book" of
+   locally-loved places, in the spirit of a Time to Momo city guide:
+   short, opinionated, no filler, one voice per card. --- */
+
+.dining-section { margin-top: 26px; }
+.dining-intro { color: var(--ash); font-size: 13px; margin: 4px 0 14px; line-height: 1.5; }
+
+.dining-card {
+  border-radius: 14px;
+  border: 1px solid var(--seam);
+  background: var(--slate);
+  padding: 15px 16px;
+  margin-bottom: 10px;
+  opacity: 0.62;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+.dining-card.current {
+  opacity: 1;
+  border-color: var(--amber);
+  background: linear-gradient(180deg, rgba(201,151,74,0.10), rgba(201,151,74,0.02));
+}
+
+.dining-meal-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+.dining-meal-row .meal-icon { font-size: 13px; }
+.dining-meal-row .meal-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 10.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--amber-soft);
+}
+.dining-card:not(.current) .meal-label { color: var(--ash); }
+.dining-town { margin-left: auto; font-size: 11px; color: var(--ash); font-family: var(--font-mono); }
+
+.dining-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  margin: 0 0 5px;
+}
+.dining-tip {
+  font-size: 13.5px;
+  color: rgba(239,237,232,0.82);
+  line-height: 1.5;
+  margin: 0 0 9px;
+}
+.dining-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--ash);
+}
+.dining-specialty { flex: 1; font-style: italic; }
+.dining-price { font-family: var(--font-mono); font-weight: 700; color: var(--amber-soft); letter-spacing: 1px; }
+
 /* --- Route detail --- */
 
 #map-preview { height: 240px; border-radius: var(--corner); overflow: hidden; margin-bottom: 16px; }
@@ -196,6 +303,10 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 }
 .speed-pill { margin-left: auto; font-family: var(--font-mono); font-weight: 700; font-size: 19px; }
 .speed-pill span { font-family: var(--font-body); font-weight: 400; font-size: 10px; color: var(--ash); margin-left: 3px; }
+
+.wakelock-row { position: absolute; top: calc(60px + env(safe-area-inset-top)); left: 12px; z-index: 500; }
+.wakelock-row .pill { font-size: 11px; font-weight: 500; color: var(--shallow); }
+.wakelock-row .pill.warn { color: var(--porphyry); }
 
 .now-playing {
   position: absolute; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
