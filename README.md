@@ -211,6 +211,43 @@ worden in je browser opgeslagen, dus een app-update raakt ze niet — maar
 
 ---
 
+## Weer, gouden uur en foto's
+
+Op elke routepagina staat nu het actuele weer op het startpunt, met
+zonsopkomst en -ondergang, via **Open-Meteo** — gratis, geen sleutel, geen
+account.
+
+Daaronder staat een vertrektijd. De redenering: het mooiste licht op deze
+wegen is het uur voor zonsondergang, en elke route eindigt ergens waar je
+dat wilt meemaken. De app rekent terug vanaf zonsondergang, zet je twintig
+minuten daarvoor op het eindpunt, en rekent anderhalf keer de kale rijtijd —
+want in de praktijk stop je voor foto's, koffie en een kudde geiten. Is dat
+moment vandaag al voorbij, dan zegt hij dat gewoon.
+
+Bij de highlights staan foto's van Wikipedia, en op het rijscherm verschijnt
+een klein plaatje van de plek waar de gids het over heeft. Beide zijn puur
+extra: geen bereik of online extra's uitgezet betekent simpelweg geen foto's,
+verder verandert er niets.
+
+---
+
+## Als er iets misgaat
+
+Onderaan het scherm verschijnt nu een rood balkje zodra er een fout optreedt,
+met de melding, het bestand en het regelnummer, plus een kopieerknop. Een
+telefoon heeft geen console, dus zonder dat is een opstartfout niets meer dan
+een leeg scherm. Loop je ergens tegenaan: tik op **Kopieer** en plak het.
+
+Krijg je vlak na een update een vreemde fout, probeer dan eerst dit — dan
+serveert de service worker waarschijnlijk oude en nieuwe bestanden door
+elkaar:
+
+1. Verwijder het app-icoon van je beginscherm
+2. Safari → Instellingen → Geschiedenis en websitegegevens wissen
+3. Open de link opnieuw en zet hem terug op je beginscherm
+
+---
+
 ## Een route toevoegen aan de app zelf (voor ingebouwde routes)
 
 Wil je een route meeleveren in plaats van importeren: kopieer een bestand in `data/`, hernoem het
@@ -239,6 +276,7 @@ js/
   overviewMap.js         alle routes op één kaart, beginscherm
   theme.js               licht/donker + zonsopkomst-berekening
   gpxImport.js           GPX inlezen + highlights zoeken via Wikipedia
+  weather.js             weer + gouden-uur vertrektijd (Open-Meteo)
   storage.js            instellingen + routecache in localStorage
   i18n.js                NL/EN teksten voor de interface
 data/                  dezelfde acht routes + weetjes als de native versie
