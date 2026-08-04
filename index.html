@@ -38,6 +38,11 @@
       <button id="test-audio" data-i18n="audio.test">Test</button>
     </div>
 
+    <div class="overview-wrap">
+      <div id="overview-map"></div>
+      <div class="overview-legend" id="overview-legend"></div>
+    </div>
+
     <div id="route-list"></div>
 
     <p class="footnote" data-i18n="footer.note"></p>
@@ -70,6 +75,12 @@
     <button class="btn-secondary" id="open-osm">🗺 <span data-i18n="detail.openMaps">Open in kaarten-app</span></button>
 
     <div class="highlight-list" id="highlight-list"></div>
+
+    <div class="dining-section" id="dining-section" style="display:none">
+      <div class="eyebrow" id="dining-eyebrow" style="color:var(--amber-soft)"></div>
+      <p class="dining-intro" id="dining-intro"></p>
+      <div id="dining-list"></div>
+    </div>
   </div>
 </section>
 
@@ -81,6 +92,9 @@
     <button class="close-btn" id="end-drive">✕</button>
     <div class="pill" id="drive-audio-pill">🚗 <span id="drive-audio-name">—</span></div>
     <div class="speed-pill"><span id="drive-speed">0</span><span data-i18n="drive.kmh">km/u</span></div>
+  </div>
+  <div class="wakelock-row">
+    <div class="pill" id="wakelock-pill"></div>
   </div>
 
   <div class="now-playing">

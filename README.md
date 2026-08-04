@@ -122,6 +122,36 @@ zonder gesproken afslagen; de highlights en weetjes blijven gewoon werken.
 
 ---
 
+## Overzichtskaart & eten onderweg
+
+Twee dingen die er sinds kort bij zitten.
+
+**Overzichtskaart.** Bovenaan het beginscherm staat nu een kaart met alle acht
+routes tegelijk, elk in een eigen kleur, met een klikbare legenda eronder. Zo
+zie je in één oogopslag waar een route ligt voor je 'm openklikt — handig als
+je aan het plannen bent welke dag welke kant van het eiland past. Tikken op
+een lijn of op de legenda opent die route direct.
+
+**Eten onderweg.** Onder de highlights van elke route staat een klein
+gecureerd lijstje met ontbijt, lunch en diner — geen sterrenlijst, maar een
+paar adressen die opduiken als je locals vraagt waar zij eten. Welke van de
+drie bij het huidige tijdstip past, springt eruit met een gouden rand; de
+andere twee blijven zichtbaar maar gedimd, zodat je ook voor later op de dag
+kunt plannen.
+
+Deze adressen zijn niet verzonnen: ze komen uit onderzoek naar wat er
+herhaaldelijk als lokale favoriet naar voren komt (Gambero Rosso-vermeldingen,
+terugkerende Google-reviews, culinaire tv-programma's als 4 Ristoranti). Op de
+meest afgelegen route, Costa Verde, staat dat er eerlijk bij vermeld — daar is
+simpelweg geen sterk onderbouwde aanrader gevonden, en dan verzinnen we er
+liever geen.
+
+**Een update pushen:** dezelfde route als altijd — bestand aanpassen op
+GitHub, commit, klaar binnen een minuut. Voeg je zelf een eetadres toe, zet
+het in de `dining`-array van het bijbehorende routebestand met dezelfde
+velden als de bestaande entries (`meal`, `town`, `lat`/`lon`, `name`, `tip`,
+`specialty`, `price`).
+
 ## Een route toevoegen
 
 Zelfde als bij de native versie: kopieer een bestand in `data/`, hernoem het
@@ -146,7 +176,8 @@ js/
   navEngine.js         turn-by-turn via OSRM
   tourEngine.js        highlights + weetjes, zelfde logica als native
   enrichment.js        Wikipedia-extra's
-  map.js                Leaflet-kaart
+  map.js                Leaflet-kaart (routedetail & rijscherm)
+  overviewMap.js         alle acht routes op één kaart, beginscherm
   storage.js            instellingen + routecache in localStorage
   i18n.js                NL/EN teksten voor de interface
 data/                  dezelfde acht routes + weetjes als de native versie
