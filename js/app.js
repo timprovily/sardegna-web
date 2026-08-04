@@ -11,6 +11,7 @@ import { WakeLockManager } from './wakeLock.js';
 import { t, applyStaticStrings } from './i18n.js';
 import { ThemeManager } from './theme.js';
 import { buildRouteFromGPX } from './gpxImport.js';
+import { fetchWeather, describeCode, goldenHourDeparture, formatTime } from './weather.js';
 
 // ─────────────────────────── State ───────────────────────────
 
@@ -135,6 +136,8 @@ function openDetail(route) {
   renderHighlightList(route);
   renderDining(route);
   renderCustomRouteControls(route);
+  renderWeather(route);
+  loadHighlightPhotos(route);
   showScreen('detail-screen');
 
   requestAnimationFrame(() => {
@@ -161,6 +164,7 @@ function renderHighlightList(route) {
   for (const h of route.highlights) {
     const row = document.createElement('div');
     row.className = 'panel highlight-row';
+    row.dataset.highlightId = h.id;
     row.innerHTML = `
       <div class="highlight-row-head">
         <div class="highlight-row-icon">${iconFor(h.kind)}</div>
@@ -209,6 +213,105 @@ function renderCustomRouteControls(route) {
   del.addEventListener('click', () => removeCustomRoute(route));
   block.appendChild(del);
   host.appendChild(block);
+}
+
+// ─────────────────────────── Weather & photos ───────────────────────────
+
+async function renderWeather(route) {
+  const panel = document.getElementById('weather-panel');
+  panel.style.display = 'none';
+  if (!settings.onlineExtras) return;
+
+  const start = route.waypoints[0];
+  if (!start) return;
+
+  const data = await fetchWeather(start.lat, start.lon);
+  // Only paint if the user hasn't navigated elsewhere in the meantime.
+  if (!data || currentRoute !== route) return;
+
+  const lang = settings.language;
+  const cond = describeCode(data.current?.weather_code, lang);
+  const temp = Math.round(data.current?.temperature_2m ?? 0);
+  const wind = Math.round(data.current?.wind_speed_10m ?? 0);
+  const sunriseISO = data.daily?.sunrise?.[0];
+  const sunsetISO = data.daily?.sunset?.[0];
+  const rainChance = data.daily?.precipitation_probability_max?.[0];
+
+  const golden = goldenHourDeparture(sunsetISO, route.durationMinutes);
+  const departed = golden && golden.depart < new Date();
+
+  panel.innerHTML = `
+    <div class="weather-now">
+      <span class="icon">${cond.icon}</span>
+      <div>
+        <div class="temp">${temp}°</div>
+        <div class="cond">${cond.text}</div>
+      </div>
+      <div class="wind">
+        ${wind} km/h${rainChance != null ? `<br>${rainChance}% ${lang === 'nl' ? 'regen' : 'rain'}` : ''}
+      </div>
+    </div>
+    <div class="weather-sun">
+      <div>${lang === 'nl' ? 'Zon op' : 'Sunrise'}<b>${formatTime(sunriseISO ? new Date(sunriseISO) : null, lang)}</b></div>
+      <div>${lang === 'nl' ? 'Zon onder' : 'Sunset'}<b>${formatTime(sunsetISO ? new Date(sunsetISO) : null, lang)}</b></div>
+    </div>
+    ${golden ? `
+      <div class="golden-hour">
+        <div class="gh-label">${lang === 'nl' ? 'Voor het mooiste licht' : 'For the best light'}</div>
+        <div class="gh-time">${lang === 'nl' ? 'Vertrek om' : 'Set off at'} ${formatTime(golden.depart, lang)}</div>
+        <div class="gh-note">${
+          departed
+            ? (lang === 'nl'
+                ? `Dat moment is vandaag voorbij. Morgen weer, of rijd 'm nu gewoon — hij is ook overdag de moeite.`
+                : `That window has passed for today. Try tomorrow, or just drive it now — it's worth it in daylight too.`)
+            : (lang === 'nl'
+                ? `Dan ben je rond ${formatTime(golden.arrive, lang)} aan het eind, net voor zonsondergang. Inclusief ruime marge voor stoppen.`
+                : `That puts you at the end around ${formatTime(golden.arrive, lang)}, just before sunset. Generous margin for stops included.`)
+        }</div>
+      </div>` : ''}
+  `;
+  panel.style.display = 'block';
+}
+
+/** Pulls a picture for each highlight that has a Wikipedia page, and
+ *  slots it into the row it belongs to. Entirely optional: no connection
+ *  or extras switched off simply means no photos. */
+async function loadHighlightPhotos(route) {
+  if (!settings.onlineExtras) return;
+  const lang = settings.language;
+
+  for (const highlight of route.highlights) {
+    if (!highlight.wikipedia) continue;
+    const title = highlight.wikipedia[lang];
+    if (!title) continue;
+
+    enrichment.image(title, lang).then((src) => {
+      if (!src || currentRoute !== route) return;
+      const row = document.querySelector(`[data-highlight-id="${cssEscape(highlight.id)}"]`);
+      if (!row || row.querySelector('.highlight-photo')) return;
+
+      const img = document.createElement('img');
+      img.className = 'highlight-photo';
+      img.loading = 'lazy';
+      img.alt = highlight.name[lang];
+      img.addEventListener('load', () => img.classList.add('loaded'));
+      img.addEventListener('error', () => img.remove());
+      img.src = src;
+      row.appendChild(img);
+
+      const credit = document.createElement('div');
+      credit.className = 'photo-credit';
+      credit.textContent = 'Wikipedia';
+      row.appendChild(credit);
+    });
+  }
+}
+
+/** Our ids are safe already, but building selectors from data without
+ *  escaping is the kind of thing that breaks the day someone adds a
+ *  route whose id contains a quote. */
+function cssEscape(value) {
+  return window.CSS && CSS.escape ? CSS.escape(value) : String(value).replace(/["\\]/g, '\\$&');
 }
 
 // ─────────────────────────── Dining ───────────────────────────
@@ -408,7 +511,10 @@ function renderNowPlaying() {
         <div class="speaking-indicator active"><span></span><span></span><span></span></div>
         <div class="eyebrow tint-porphyry">${label}</div>
       </div>
-      <div class="now-title">${escapeHTML(current.title)}</div>`;
+      <div class="now-head">
+        <div class="now-text"><div class="now-title">${escapeHTML(current.title)}</div></div>
+      </div>`;
+    showNowPhoto(current, container);
   } else if (tourEngine.nextHighlight) {
     container.innerHTML = `
       <div class="eyebrow">${t('drive.nextUp', lang)}</div>
@@ -420,6 +526,32 @@ function renderNowPlaying() {
       <div class="now-title" style="font-size:22px">${t('drive.allTold', lang)}</div>
       <p style="color:var(--ash);font-size:13px;margin-top:6px">${t('drive.allToldSub', lang)}</p>`;
   }
+}
+
+/** A small picture of the place currently being described. It sits next
+ *  to the title rather than above it, so the card doesn't jump in height
+ *  while you're driving. */
+function showNowPhoto(item, container) {
+  if (!settings.onlineExtras || !currentRoute) return;
+  if (!item.source || !item.source.startsWith('highlight:')) return;
+
+  const id = item.source.slice('highlight:'.length);
+  const highlight = currentRoute.highlights.find((h) => h.id === id);
+  if (!highlight || !highlight.wikipedia) return;
+
+  const lang = settings.language;
+  enrichment.image(highlight.wikipedia[lang], lang).then((src) => {
+    if (!src) return;
+    const head = container.querySelector('.now-head');
+    if (!head || head.querySelector('.now-photo')) return;
+    const img = document.createElement('img');
+    img.className = 'now-photo';
+    img.alt = '';
+    img.addEventListener('load', () => img.classList.add('loaded'));
+    img.addEventListener('error', () => img.remove());
+    img.src = src;
+    head.insertBefore(img, head.firstChild);
+  });
 }
 
 // ─────────────────────────── Global controls ───────────────────────────
