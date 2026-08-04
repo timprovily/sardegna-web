@@ -5,6 +5,7 @@ const SETTINGS_KEY = 'sardegna.settings.v1';
 
 const DEFAULT_SETTINGS = {
   language: (navigator.language || 'nl').toLowerCase().startsWith('en') ? 'en' : 'nl',
+  theme: 'auto',          // 'auto' | 'light' | 'dark'
   speechRate: 0.95,       // multiplier on the browser's default rate
   factInterval: 7,        // minutes of silence before a fact
   factsEnabled: true,
@@ -55,4 +56,41 @@ export function saveCachedGeometry(routeId, data) {
     // Quota exceeded on very old devices — routing just falls back to
     // fetching fresh next time instead of caching.
   }
+}
+
+// Custom routes imported from GPX. Kept separate from the bundled routes
+// so an app update never overwrites something you added yourself.
+
+const CUSTOM_ROUTES_KEY = 'sardegna.customRoutes.v1';
+
+export function loadCustomRoutes() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_ROUTES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveCustomRoute(route) {
+  const routes = loadCustomRoutes();
+  routes.push(route);
+  try {
+    localStorage.setItem(CUSTOM_ROUTES_KEY, JSON.stringify(routes));
+    return { ok: true };
+  } catch (err) {
+    // localStorage is typically capped around 5 MB. A very dense track
+    // can get close, so say so plainly rather than failing silently.
+    return {
+      ok: false,
+      error: 'De opslag van je browser zit vol. Verwijder een eerder geïmporteerde route en probeer het opnieuw.'
+    };
+  }
+}
+
+export function deleteCustomRoute(routeId) {
+  const routes = loadCustomRoutes().filter((r) => r.id !== routeId);
+  try {
+    localStorage.setItem(CUSTOM_ROUTES_KEY, JSON.stringify(routes));
+  } catch { /* nothing sensible to do here */ }
 }

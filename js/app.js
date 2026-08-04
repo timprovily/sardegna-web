@@ -1,5 +1,5 @@
 import { loadRoutes, loadFacts, formatDistance, progressFraction } from './data.js';
-import { loadSettings, saveSettings } from './storage.js';
+import { loadSettings, saveSettings, loadCustomRoutes, saveCustomRoute, deleteCustomRoute } from './storage.js';
 import { SpeechService } from './speech.js';
 import { LocationService } from './geo.js';
 import { NavEngine } from './navEngine.js';
@@ -9,6 +9,8 @@ import { RouteMap } from './map.js';
 import { OverviewMap, ROUTE_COLORS } from './overviewMap.js';
 import { WakeLockManager } from './wakeLock.js';
 import { t, applyStaticStrings } from './i18n.js';
+import { ThemeManager } from './theme.js';
+import { buildRouteFromGPX } from './gpxImport.js';
 
 // ─────────────────────────── State ───────────────────────────
 
@@ -19,6 +21,7 @@ const enrichment = new EnrichmentService();
 const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment });
 const navEngine = new NavEngine(speech);
 const wakeLock = new WakeLockManager();
+const theme = new ThemeManager(settings);
 
 let routes = [];
 let currentRoute = null;
@@ -31,11 +34,14 @@ syncSpeechFromSettings();
 // ─────────────────────────── Boot ───────────────────────────
 
 (async function boot() {
+  theme.start();
   applyStaticStrings(settings.language);
   document.getElementById('header-sub').textContent = '';
 
   try {
-    [routes, tourEngine.facts] = await Promise.all([loadRoutes(), loadFacts()]);
+    const [bundled, facts] = await Promise.all([loadRoutes(), loadFacts()]);
+    tourEngine.facts = facts;
+    routes = [...bundled, ...loadCustomRoutes()];
   } catch (err) {
     document.getElementById('route-list').innerHTML =
       `<div class="panel"><div class="eyebrow tint-porphyry">Content</div><p>${escapeHTML(String(err))}</p></div>`;
@@ -71,8 +77,10 @@ function renderRouteList() {
   for (const route of routes) {
     const card = document.createElement('button');
     card.className = 'panel route-card';
+    const badge = route.custom
+      ? `<span class="custom-badge">${t('import.custom', lang)}</span>` : '';
     card.innerHTML = `
-      <div class="eyebrow">${route.region[lang]}</div>
+      <div class="eyebrow">${route.region[lang]}${badge}</div>
       <h2>${route.name[lang]}</h2>
       <p class="summary">${route.summary[lang]}</p>
       <div class="route-stats">
@@ -126,12 +134,15 @@ function openDetail(route) {
 
   renderHighlightList(route);
   renderDining(route);
+  renderCustomRouteControls(route);
   showScreen('detail-screen');
 
   requestAnimationFrame(() => {
     if (!detailMap) detailMap = new RouteMap('map-preview');
     detailMap.invalidateSize();
-    const skeleton = route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
+    const skeleton = route.geometry && route.geometry.length > 2
+      ? route.geometry.map((p) => ({ lat: p.lat, lon: p.lon }))
+      : route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
     detailMap.showRoute(route, skeleton);
     detailMap.onHighlightTap = (h) => tourEngine.playHighlight(h);
 
@@ -175,6 +186,29 @@ function renderHighlightList(route) {
 function iconFor(kind) {
   const map = { town: '🏘️', viewpoint: '🔭', nature: '🌿', beach: '🌊', archaeology: '🏛️', heritage: '📖', mining: '⛏️', culture: '🎭', pass: '⛰️' };
   return map[kind] || '📍';
+}
+
+/** Imported routes get a note about their single language and a way to
+ *  remove them again — bundled routes get neither. */
+function renderCustomRouteControls(route) {
+  const lang = settings.language;
+  const host = document.getElementById('dining-section').parentElement;
+  document.getElementById('custom-route-controls')?.remove();
+  if (!route.custom) return;
+
+  const block = document.createElement('div');
+  block.id = 'custom-route-controls';
+  const note = route.sourceLanguage === 'en'
+    ? t('import.singleLangEn', lang)
+    : t('import.singleLang', lang);
+  block.innerHTML = `<p class="import-hint">${escapeHTML(note)}</p>`;
+
+  const del = document.createElement('button');
+  del.className = 'btn-delete-route';
+  del.textContent = t('import.delete', lang);
+  del.addEventListener('click', () => removeCustomRoute(route));
+  block.appendChild(del);
+  host.appendChild(block);
 }
 
 // ─────────────────────────── Dining ───────────────────────────
@@ -264,6 +298,7 @@ function startDrive() {
     tourEngine.start(currentRoute);
     navEngine.enabled = settings.turnByTurnEnabled;
     location.start();
+    renderWakeLockPill(false);   // shown straight away, updated by the event
     wakeLock.enable();
     renderRibbon();
     renderNowPlaying();
@@ -280,22 +315,30 @@ function endDrive() {
 }
 
 wakeLock.addEventListener('change', (e) => {
+  renderWakeLockPill(e.detail.active);
+});
+
+/** The pill stayed blank before because it only ever filled in on an
+ *  event. Now the drive screen paints it on open, and the event just
+ *  updates it. */
+function renderWakeLockPill(active) {
   const el = document.getElementById('wakelock-pill');
   if (!el) return;
   const lang = settings.language;
-  if (e.detail.active) {
-    el.textContent = lang === 'nl' ? '☀️ Scherm blijft aan' : '☀️ Screen stays on';
+  if (active) {
+    el.textContent = `☀️ ${t('wake.on', lang)}`;
     el.classList.remove('warn');
   } else {
-    el.textContent = lang === 'nl' ? '🔅 Houd het scherm zelf actief' : '🔅 Keep the screen on yourself';
+    el.textContent = `🔅 ${t('wake.off', lang)}`;
     el.classList.add('warn');
   }
-});
+}
 
 location.addEventListener('position', (e) => {
   const pos = e.detail;
   document.getElementById('drive-speed').textContent = Math.round(pos.speedKmh);
   tourEngine.setSpeedKmh(pos.speedKmh);
+  theme.setCoords(pos.lat, pos.lon);
 
   if (driveMap) driveMap.updateUserPosition(pos);
 
@@ -382,6 +425,7 @@ function renderNowPlaying() {
 // ─────────────────────────── Global controls ───────────────────────────
 
 function wireGlobalControls() {
+  wireImport();
   document.getElementById('back-to-list').addEventListener('click', () => showScreen('list-screen'));
   document.getElementById('start-drive').addEventListener('click', startDrive);
   document.getElementById('open-osm').addEventListener('click', openInMapsApp);
@@ -398,6 +442,87 @@ function wireGlobalControls() {
   document.getElementById('test-audio').addEventListener('click', () => {
     speech.speakNow({ title: 'Test', body: t('test.text', settings.language), source: 'system' });
   });
+}
+
+// ─────────────────────────── GPX import ───────────────────────────
+
+function wireImport() {
+  const lang = settings.language;
+  document.getElementById('import-label').textContent = t('import.label', lang);
+  document.getElementById('import-hint').textContent = t('import.hint', lang);
+
+  const input = document.getElementById('gpx-input');
+  document.getElementById('import-gpx').addEventListener('click', () => input.click());
+  input.addEventListener('change', async () => {
+    const file = input.files?.[0];
+    if (file) await handleGPXFile(file);
+    input.value = ''; // so picking the same file again still fires
+  });
+}
+
+async function handleGPXFile(file) {
+  const lang = settings.language;
+  const progress = document.getElementById('import-progress');
+  const msg = document.getElementById('import-msg');
+  const fill = document.getElementById('import-bar-fill');
+  const errorEl = document.getElementById('import-error');
+  const button = document.getElementById('import-gpx');
+
+  errorEl.style.display = 'none';
+  progress.style.display = 'block';
+  button.disabled = true;
+  msg.textContent = t('import.working', lang);
+  fill.style.width = '2%';
+
+  try {
+    const text = await file.text();
+    const suggestedName = file.name.replace(/\.gpx$/i, '').replace(/[_-]+/g, ' ');
+
+    const route = await buildRouteFromGPX(text, {
+      language: lang,
+      fallbackName: suggestedName,
+      onProgress: ({ phase, done, total, message }) => {
+        msg.textContent = message;
+        if (total) {
+          // Searching is the long half, summaries the short one.
+          const base = phase === 'summaries' ? 60 : 5;
+          const span = phase === 'summaries' ? 38 : 55;
+          fill.style.width = `${base + (done / total) * span}%`;
+        }
+      }
+    });
+
+    const result = saveCustomRoute(route);
+    if (!result.ok) throw new Error(result.error);
+
+    routes = [...routes, route];
+    fill.style.width = '100%';
+    msg.textContent = route.highlights.length === 0
+      ? t('import.noHighlights', lang)
+      : `${t('import.done', lang)}: ${route.name[lang]} — ${route.highlights.length} ${lang === 'nl' ? 'plekken' : 'places'}`;
+
+    renderRouteList();
+    renderOverviewMap();
+
+    setTimeout(() => { progress.style.display = 'none'; }, 6000);
+  } catch (err) {
+    progress.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.textContent = err.message || String(err);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function removeCustomRoute(route) {
+  const lang = settings.language;
+  if (!confirm(t('import.deleteConfirm', lang))) return;
+  deleteCustomRoute(route.id);
+  routes = routes.filter((r) => r.id !== route.id);
+  currentRoute = null;
+  renderRouteList();
+  renderOverviewMap();
+  showScreen('list-screen');
 }
 
 function openInMapsApp() {
@@ -452,11 +577,31 @@ function wireSettingsSheet() {
       persist();
       langButtons.forEach((b) => b.classList.toggle('active', b === btn));
       applyStaticStrings(settings.language);
+      document.getElementById('import-label').textContent = t('import.label', settings.language);
+      document.getElementById('import-hint').textContent = t('import.hint', settings.language);
+      refreshThemeUI();
       renderRouteList();
       renderOverviewMap();
       if (currentRoute) openDetail(currentRoute);
     });
   });
+
+  const themeButtons = document.querySelectorAll('#theme-toggle button');
+  const refreshThemeUI = () => {
+    themeButtons.forEach((b) =>
+      b.classList.toggle('active', b.dataset.themeMode === (settings.theme || 'auto'))
+    );
+    document.getElementById('theme-explain').textContent = theme.describe(settings.language);
+  };
+  themeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      settings.theme = btn.dataset.themeMode;
+      persist();
+      theme.apply();
+      refreshThemeUI();
+    });
+  });
+  refreshThemeUI();
 
   const rateSlider = document.getElementById('rate-slider');
   rateSlider.value = settings.speechRate;

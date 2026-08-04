@@ -121,8 +121,12 @@ export class NavEngine extends EventTarget {
       return;
     }
 
-    // Show the coarse skeleton immediately so the map isn't empty while we wait.
-    this.geometry = route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
+    // Show something immediately so the map isn't empty while we wait.
+    // An imported GPX already carries a dense, accurate line — use that
+    // rather than the coarse waypoint skeleton we derived from it.
+    this.geometry = route.geometry && route.geometry.length > 2
+      ? route.geometry.map((p) => ({ lat: p.lat, lon: p.lon }))
+      : route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
     this.steps = [];
     this.quality = 'skeleton';
     this._notifyGeometry();
