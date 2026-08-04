@@ -1,0 +1,119 @@
+{
+  "id": "barbagia",
+  "name": {
+    "nl": "Barbagia: het hart van het eiland",
+    "en": "Barbagia: the island's heart"
+  },
+  "region": { "nl": "Nuoro & Gennargentu", "en": "Nuoro & Gennargentu" },
+  "summary": {
+    "nl": "Geen zee, geen toeristen. Bergdorpen met maskers, muurschilderingen en een taal die ouder is dan het Italiaans. Dit is het Sardinië dat zichzelf nooit heeft laten veroveren.",
+    "en": "No sea, no tourists. Mountain villages with masks, murals and a language older than Italian. This is the Sardinia that was never conquered."
+  },
+  "distanceKm": 95,
+  "durationMinutes": 150,
+  "character": { "nl": "Bergwegen, smal, weinig verkeer", "en": "Mountain roads, narrow, little traffic" },
+  "bestTime": {
+    "nl": "Eind mei of oktober. In de winter kan er sneeuw liggen boven de 1000 meter.",
+    "en": "Late May or October. Snow is possible above 1,000 metres in winter."
+  },
+  "waypoints": [
+    { "lat": 40.3200, "lon": 9.3300 },
+    { "lat": 40.3130, "lon": 9.3620 },
+    { "lat": 40.2600, "lon": 9.3000 },
+    { "lat": 40.2140, "lon": 9.2670 },
+    { "lat": 40.2030, "lon": 9.3520 },
+    { "lat": 40.1750, "lon": 9.3200 },
+    { "lat": 40.1350, "lon": 9.2900 },
+    { "lat": 40.1150, "lon": 9.2560 },
+    { "lat": 40.0600, "lon": 9.2900 },
+    { "lat": 40.0130, "lon": 9.3130 }
+  ],
+  "highlights": [
+    {
+      "id": "monte-ortobene",
+      "kind": "viewpoint",
+      "lat": 40.3130,
+      "lon": 9.3620,
+      "radius": 900,
+      "name": { "nl": "Monte Ortobene & Nuoro", "en": "Monte Ortobene & Nuoro" },
+      "script": {
+        "nl": "Boven Nuoro staat op de Monte Ortobene een zeven meter hoge bronzen Christus uit 1901. Nuoro is de literaire hoofdstad van Sardinië: hier werd Grazia Deledda geboren, die in 1926 de Nobelprijs voor Literatuur won — de tweede vrouw ooit. Ze schreef over precies dit landschap: herders, bloedwraak en katholieke schuld. Haar geboortehuis in de oude stad is nu een museum.",
+        "en": "Above Nuoro on Monte Ortobene stands a seven-metre bronze Christ from 1901. Nuoro is Sardinia's literary capital: Grazia Deledda was born here and won the Nobel Prize in Literature in 1926 — only the second woman ever to do so. She wrote about exactly this landscape: shepherds, blood feuds and Catholic guilt. Her birthplace in the old town is now a museum."
+      }
+    },
+    {
+      "id": "mamoiada",
+      "kind": "culture",
+      "lat": 40.2140,
+      "lon": 9.2670,
+      "radius": 1000,
+      "name": { "nl": "Mamoiada — de Mamuthones", "en": "Mamoiada — the Mamuthones" },
+      "wikipedia": { "nl": "Mamoiada", "en": "Mamoiada" },
+      "script": {
+        "nl": "Mamoiada is het dorp van de Mamuthones. Elk jaar op 17 januari trekken mannen in zwarte schapenvachten met houten maskers door de straten, met dertig kilo koebellen op hun rug. Ze bewegen in een langzaam, stampend ritme, omringd door de Issohadores in het rood die met een lasso mensen uit het publiek vangen. Niemand weet precies hoe oud het is. Sommigen zeggen Dionysos, anderen een jachtritueel. Het is in elk geval ouder dan het christendom hier.",
+        "en": "Mamoiada is the village of the Mamuthones. Every year on 17 January men in black sheepskins and wooden masks move through the streets carrying thirty kilos of cowbells on their backs. They advance in a slow, stamping rhythm, flanked by the Issohadores in red who lasso people out of the crowd. Nobody knows quite how old it is. Some say Dionysus, others a hunting rite. It is certainly older than Christianity here."
+      }
+    },
+    {
+      "id": "orgosolo",
+      "kind": "culture",
+      "lat": 40.2030,
+      "lon": 9.3520,
+      "radius": 1000,
+      "name": { "nl": "Orgosolo — de murales", "en": "Orgosolo — the murals" },
+      "wikipedia": { "nl": "Orgosolo", "en": "Orgosolo" },
+      "script": {
+        "nl": "Orgosolo had in de jaren zestig de reputatie van het gevaarlijkste dorp van Italië — veeroof, ontvoeringen en bloedwraak. Vandaag is het beroemd om iets anders: meer dan tweehonderd muurschilderingen. De eerste kwamen in 1969, toen het leger een schietterrein wilde aanleggen op het gemeenschappelijk weiland en de herders in verzet kwamen. Ze wonnen. De schilderingen gaan over Vietnam, Palestina, mijnwerkers en vrouwenrechten. Het is geen decoratie maar politiek.",
+        "en": "In the nineteen-sixties Orgosolo had a reputation as Italy's most dangerous village — cattle rustling, kidnappings and blood feuds. Today it is famous for something else: more than two hundred murals. The first appeared in 1969, when the army tried to build a firing range on the common pasture and the shepherds resisted. They won. The paintings deal with Vietnam, Palestine, miners and women's rights. This isn't decoration, it's politics."
+      }
+    },
+    {
+      "id": "supramonte-orgosolo",
+      "kind": "nature",
+      "lat": 40.1750,
+      "lon": 9.3200,
+      "radius": 1400,
+      "name": { "nl": "Sopramonte", "en": "The Supramonte" },
+      "script": {
+        "nl": "Je rijdt nu langs het Supramonte, een kalksteenplateau vol steeneiken, grotten en verdwenen dorpen. Hier zat de bandiet Graziano Mesina ondergedoken, die in de jaren zestig zo vaak ontsnapte dat hij een volksheld werd. En hier ligt Tiscali: een nuraghisch dorp gebouwd in een ingestorte grotholte, dat pas in 1910 werd herontdekt. Je kunt er alleen te voet komen, twee uur klimmen, en dat is precies waarom het zo lang verborgen bleef.",
+        "en": "You're now skirting the Supramonte, a limestone plateau of holm oaks, caves and vanished villages. This is where the bandit Graziano Mesina hid, a man who escaped so often in the nineteen-sixties that he became a folk hero. And this is where Tiscali lies: a Nuragic village built inside a collapsed cave chamber, only rediscovered in 1910. You can only reach it on foot, two hours of climbing, which is precisely why it stayed hidden so long."
+      }
+    },
+    {
+      "id": "lago-gusana",
+      "kind": "viewpoint",
+      "lat": 40.1350,
+      "lon": 9.2900,
+      "radius": 1000,
+      "name": { "nl": "Lago di Gusana", "en": "Lago di Gusana" },
+      "script": {
+        "nl": "Het meer links is het Lago di Gusana, een stuwmeer uit 1961. Sardinië heeft opvallend veel stuwmeren — er zijn er meer dan dertig — omdat het eiland lange, kurkdroge zomers heeft en de rivieren in augustus gewoon verdwijnen. Bij laag water komen soms de resten van oude bruggen en huizen weer boven. Dit meer wordt bovendien gebruikt voor forelvisserij.",
+        "en": "The lake on your left is Lago di Gusana, a reservoir created in 1961. Sardinia has a striking number of reservoirs — over thirty — because the island has long, bone-dry summers and its rivers simply disappear in August. When the water drops, the remains of old bridges and houses sometimes reappear. This lake is also used for trout fishing."
+      }
+    },
+    {
+      "id": "fonni",
+      "kind": "town",
+      "lat": 40.1150,
+      "lon": 9.2560,
+      "radius": 1000,
+      "name": { "nl": "Fonni", "en": "Fonni" },
+      "script": {
+        "nl": "Fonni ligt op 1000 meter en is daarmee het hoogste dorp van Sardinië. Er is een skilift, wat de meeste mensen verrast bij een eiland in de Middellandse Zee. Het is ook het dorp van de cavallo del Sarcidano en van de Fonni-schapenrassen. In de basiliek hangen barokke fresco's die er, midden in dit sobere bergdorp, volstrekt buitenproportioneel uitzien.",
+        "en": "Fonni sits at 1,000 metres, making it the highest village in Sardinia. There's a ski lift, which surprises most people on a Mediterranean island. It's also home to the Sarcidano horse and to the Fonni sheep breeds. The basilica holds baroque frescoes that look wildly out of proportion in the middle of this austere mountain village."
+      }
+    },
+    {
+      "id": "bruncu-spina",
+      "kind": "pass",
+      "lat": 40.0130,
+      "lon": 9.3130,
+      "radius": 1200,
+      "name": { "nl": "Bruncu Spina & Gennargentu", "en": "Bruncu Spina & Gennargentu" },
+      "script": {
+        "nl": "Je bent nu op het dak van Sardinië. Bruncu Spina is 1829 meter, en de top vlak ernaast, Punta La Marmora, is met 1834 meter het hoogste punt van het eiland. Gennargentu betekent waarschijnlijk zilveren poort — naar de sneeuw die hier in de winter ligt. Het is een kaal, boomloos landschap met moeflons en steenarenden. Vanaf de top zie je bij helder weer beide kusten tegelijk. Einde van de route.",
+        "en": "You're on the roof of Sardinia. Bruncu Spina is 1,829 metres, and the summit right beside it, Punta La Marmora, is the island's highest point at 1,834. Gennargentu probably means silver gate — after the snow that lies here in winter. It's a bare, treeless landscape with mouflon and golden eagles. From the top on a clear day you can see both coasts at once. End of the route."
+      }
+    }
+  ]
+}

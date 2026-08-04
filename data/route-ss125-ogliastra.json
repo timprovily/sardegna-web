@@ -1,0 +1,119 @@
+{
+  "id": "ss125-ogliastra",
+  "name": {
+    "nl": "SS125: Dorgali → Santa Maria Navarrese",
+    "en": "SS125: Dorgali → Santa Maria Navarrese"
+  },
+  "region": { "nl": "Golfo di Orosei & Ogliastra", "en": "Golfo di Orosei & Ogliastra" },
+  "summary": {
+    "nl": "De legendarische Orientale Sarda: kalkstenen canyons, een bergpas op 1017 meter en een afdaling naar zee. Motorrijders komen hier van over heel Europa voor.",
+    "en": "The legendary Orientale Sarda: limestone canyons, a pass at 1,017 metres and a descent to the sea. Motorcyclists come from all over Europe for this."
+  },
+  "distanceKm": 72,
+  "durationMinutes": 110,
+  "character": { "nl": "Bergpas, brede bochten, veel hoogtemeters", "en": "Mountain pass, sweeping bends, big elevation" },
+  "bestTime": {
+    "nl": "Vroeg in de ochtend — dan hangt er mist in de canyon onder de pas.",
+    "en": "Early morning — mist sits in the canyon below the pass."
+  },
+  "waypoints": [
+    { "lat": 40.2900, "lon": 9.6100 },
+    { "lat": 40.2600, "lon": 9.5900 },
+    { "lat": 40.2200, "lon": 9.5700 },
+    { "lat": 40.1830, "lon": 9.5580 },
+    { "lat": 40.1590, "lon": 9.5860 },
+    { "lat": 40.1200, "lon": 9.6100 },
+    { "lat": 40.0800, "lon": 9.6400 },
+    { "lat": 40.0350, "lon": 9.6650 },
+    { "lat": 40.0100, "lon": 9.6800 },
+    { "lat": 39.9930, "lon": 9.6900 }
+  ],
+  "highlights": [
+    {
+      "id": "dorgali",
+      "kind": "town",
+      "lat": 40.2900,
+      "lon": 9.6100,
+      "radius": 1200,
+      "name": { "nl": "Dorgali", "en": "Dorgali" },
+      "wikipedia": { "nl": "Dorgali", "en": "Dorgali" },
+      "script": {
+        "nl": "Dorgali ligt geklemd tussen de Monte Bardia en het kalksteenmassief van de Supramonte. Het is het dorp van het leerwerk en de filigraan, maar vooral van de Cannonau-wijn. Deze streek heeft een van de hoogste concentraties honderdjarigen ter wereld — Sardinië is een van de vijf zogeheten Blue Zones. De verklaring is waarschijnlijk saaier dan de wijn: veel lopen op steile hellingen, weinig vlees, en families die generaties bij elkaar blijven wonen.",
+        "en": "Dorgali sits wedged between Monte Bardia and the limestone mass of the Supramonte. It's a village of leatherwork and filigree, but above all of Cannonau wine. This district has one of the world's highest concentrations of centenarians — Sardinia is one of the five so-called Blue Zones. The explanation is probably duller than the wine: a lot of walking on steep ground, little meat, and families that stay together for generations."
+      }
+    },
+    {
+      "id": "cala-gonone",
+      "kind": "nature",
+      "lat": 40.2810,
+      "lon": 9.6300,
+      "radius": 1000,
+      "name": { "nl": "Afslag Cala Gonone", "en": "Cala Gonone turn-off" },
+      "script": {
+        "nl": "Links gaat de weg naar Cala Gonone, door een tunnel die in 1860 met de hand door de berg is gehakt — daarvoor was het dorp alleen per boot bereikbaar. Vanuit die haven vertrekken de boten naar Cala Luna en Cala Mariolu, stranden waar geen weg heen gaat. En naar de Grotta del Bue Marino, genoemd naar de monniksrob. Die is hier sinds de jaren tachtig niet meer gezien, maar de grot draagt nog zijn naam.",
+        "en": "To the left the road drops to Cala Gonone, through a tunnel hand-cut through the mountain in 1860 — before that the village could only be reached by boat. From that harbour the boats leave for Cala Luna and Cala Mariolu, beaches no road reaches. And for the Grotta del Bue Marino, named after the monk seal. None has been seen here since the nineteen-eighties, but the cave still carries its name."
+      }
+    },
+    {
+      "id": "gorropu",
+      "kind": "nature",
+      "lat": 40.1830,
+      "lon": 9.5580,
+      "radius": 1200,
+      "name": { "nl": "Gola su Gorropu", "en": "Gola su Gorropu" },
+      "wikipedia": { "nl": "Gorropu", "en": "Gorropu" },
+      "script": {
+        "nl": "Diep onder je, aan het einde van dat dal rechts, ligt de Gola su Gorropu. De wanden zijn op de nauwste plek nog geen vier meter uit elkaar en lopen vijfhonderd meter recht omhoog — een van de diepste kloven van Europa. Er stroomt bijna nooit water doorheen, maar bij hevige regen wil je er absoluut niet in staan. Er groeit een plantje dat nergens anders ter wereld voorkomt: de Aquilegia nuragica, waarvan nog geen tien exemplaren bestaan.",
+        "en": "Far below you, at the end of that valley on the right, lies the Gola su Gorropu. At its narrowest the walls stand less than four metres apart and rise five hundred metres straight up — one of the deepest gorges in Europe. Water almost never runs through it, but in heavy rain it's the last place you want to be. One plant grows there and nowhere else on earth: Aquilegia nuragica, of which fewer than ten specimens survive."
+      }
+    },
+    {
+      "id": "genna-silana",
+      "kind": "pass",
+      "lat": 40.1590,
+      "lon": 9.5860,
+      "radius": 900,
+      "name": { "nl": "Passo Genna 'e Silana", "en": "Genna 'e Silana pass" },
+      "script": {
+        "nl": "Je bent nu op het hoogste punt van deze weg: Genna 'e Silana, 1017 meter. Dit is het klassieke fotomoment van Sardinië. De weg die je zo afdaalt richting Baunei is in de jaren zeventig aangelegd; daarvoor duurde de reis van Dorgali naar Baunei een halve dag. Kijk vooruit — bij helder weer zie je vanaf hier de zee bij Arbatax, dertig kilometer verderop en een kilometer lager.",
+        "en": "You're at the highest point of this road: Genna 'e Silana, 1,017 metres. This is the classic Sardinian photo stop. The road you're about to descend towards Baunei was built in the nineteen-seventies; before that the journey from Dorgali to Baunei took half a day. Look ahead — on a clear day you can see the sea at Arbatax from here, thirty kilometres on and a kilometre below."
+      }
+    },
+    {
+      "id": "golgo",
+      "kind": "nature",
+      "lat": 40.0900,
+      "lon": 9.6600,
+      "radius": 1500,
+      "name": { "nl": "Altopiano del Golgo", "en": "Golgo plateau" },
+      "script": {
+        "nl": "Rechts boven je ligt het Altopiano del Golgo, een oude basaltvlakte waar ezels en varkens los rondlopen. Daar zit ook Su Sterru: een verticale schacht van 270 meter diep, ontstaan doordat het dak van een enorme grot instortte. Het is een van de diepste karstputten ter wereld en de rand is niet afgezet — je staat er zo bovenop. De weg erheen is smal en steil, maar het uitzicht over de Punta Giradili is de moeite waard.",
+        "en": "Above you on the right lies the Golgo plateau, an old basalt tableland where donkeys and pigs roam free. It also holds Su Sterru: a vertical shaft 270 metres deep, formed when the roof of an enormous cave collapsed. It's one of the deepest karst pits in the world, and the rim is unfenced — you simply walk up to it. The road there is narrow and steep, but the view over Punta Giradili repays it."
+      }
+    },
+    {
+      "id": "baunei",
+      "kind": "town",
+      "lat": 40.0350,
+      "lon": 9.6650,
+      "radius": 900,
+      "name": { "nl": "Baunei", "en": "Baunei" },
+      "script": {
+        "nl": "Baunei plakt tegen de rotswand op vierhonderd meter hoogte. Dit was tot ver in de twintigste eeuw herdersland, en de herders van Baunei liepen met hun geiten helemaal tot aan de zee. Zij ontdekten Cala Goloritzé, dat inmiddels op de werelderfgoedlijst staat en waar dagelijks maar tweehonderdvijftig mensen mogen komen. Je herkent het aan de kalkstenen naald van 143 meter die pal naast het strand omhoog steekt.",
+        "en": "Baunei clings to the rock wall at four hundred metres. This was shepherd country well into the twentieth century, and Baunei's shepherds walked their goats all the way down to the sea. They were the ones who found Cala Goloritzé, now a UNESCO monument where only two hundred and fifty people a day are allowed. You'll know it by the 143-metre limestone spire standing right beside the beach."
+      }
+    },
+    {
+      "id": "santa-maria-navarrese",
+      "kind": "town",
+      "lat": 39.9930,
+      "lon": 9.6900,
+      "radius": 900,
+      "name": { "nl": "Santa Maria Navarrese", "en": "Santa Maria Navarrese" },
+      "script": {
+        "nl": "Je rolt de kust op bij Santa Maria Navarrese. Het verhaal gaat dat een Navarrese prinses hier in 1052 schipbreuk leed en uit dankbaarheid het kerkje liet bouwen — vandaar de naam. Voor dat kerkje staan olijfbomen die volgens metingen ruim duizend jaar oud zijn, dus die stonden er al toen zij aanspoelde. Einde van de route. Ga even naar het strand kijken; het zwarte silhouet voor de kust is het eilandje Ogliastra.",
+        "en": "You roll out onto the coast at Santa Maria Navarrese. The story goes that a Navarrese princess was shipwrecked here in 1052 and had the little church built in gratitude — hence the name. In front of it stand olive trees measured at over a thousand years old, so they were already there when she washed ashore. End of the route. Go and look at the beach; the dark silhouette offshore is the islet of Ogliastra."
+      }
+    }
+  ]
+}

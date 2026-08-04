@@ -1,0 +1,121 @@
+{
+  "id": "alghero-bosa",
+  "name": {
+    "nl": "Alghero → Bosa: de Litoranea",
+    "en": "Alghero → Bosa: the Litoranea"
+  },
+  "region": { "nl": "Noordwestkust", "en": "Northwest coast" },
+  "summary": {
+    "nl": "Zesenveertig kilometer bochten tussen kliffen en zee, zonder één dorp onderweg. Veel Sarden noemen dit simpelweg de mooiste weg van het eiland.",
+    "en": "Forty-six kilometres of curves between cliff and sea, without a single village in between. Many Sardinians simply call this the finest road on the island."
+  },
+  "distanceKm": 46,
+  "durationMinutes": 80,
+  "character": { "nl": "Smal, bochtig, klifrand", "en": "Narrow, twisty, clifftop" },
+  "bestTime": {
+    "nl": "Laat in de middag — je rijdt zuidwaarts met de zon boven zee.",
+    "en": "Late afternoon — you drive south with the sun out over the water."
+  },
+  "waypoints": [
+    { "lat": 40.5590, "lon": 8.3180 },
+    { "lat": 40.5400, "lon": 8.2900 },
+    { "lat": 40.5100, "lon": 8.2560 },
+    { "lat": 40.4780, "lon": 8.2230 },
+    { "lat": 40.4470, "lon": 8.2100 },
+    { "lat": 40.4180, "lon": 8.2420 },
+    { "lat": 40.3900, "lon": 8.2900 },
+    { "lat": 40.3720, "lon": 8.3500 },
+    { "lat": 40.3450, "lon": 8.4050 },
+    { "lat": 40.3150, "lon": 8.4600 },
+    { "lat": 40.2880, "lon": 8.4810 },
+    { "lat": 40.2965, "lon": 8.5000 }
+  ],
+  "highlights": [
+    {
+      "id": "alghero",
+      "kind": "town",
+      "lat": 40.5590,
+      "lon": 8.3180,
+      "radius": 1400,
+      "name": { "nl": "Alghero", "en": "Alghero" },
+      "wikipedia": { "nl": "Alghero", "en": "Alghero" },
+      "script": {
+        "nl": "Je vertrekt uit Alghero, en dat is geen gewone Sardische stad. In de veertiende eeuw verdreven de Catalanen de hele bevolking en verhuisden er mensen uit Barcelona naartoe. Zevenhonderd jaar later spreken ze in de oude stad nog steeds Catalaans — de straatnaambordjes zijn tweetalig, en de lokale taal heet Alguerés. Let op de gele stadsmuren aan de zeekant: die zijn Spaans, niet Italiaans. En het koraal in de juwelierswinkels komt echt uit deze baai; Alghero heet niet voor niets de Koraalrivièra.",
+        "en": "You're leaving Alghero, and this is no ordinary Sardinian town. In the fourteenth century the Catalans expelled the entire population and moved in people from Barcelona. Seven hundred years on, the old town still speaks Catalan — the street signs are bilingual, and the local tongue is called Alguerés. Notice the yellow sea walls: those are Spanish, not Italian. And the coral in the jewellers' windows really does come from this bay; Alghero is known as the Coral Riviera for a reason."
+      }
+    },
+    {
+      "id": "guardia-grande",
+      "kind": "viewpoint",
+      "lat": 40.5010,
+      "lon": 8.2480,
+      "radius": 900,
+      "name": { "nl": "Begin van de kustweg", "en": "Start of the coast road" },
+      "script": {
+        "nl": "Vanaf hier begint het echte werk. De SP-105 is in de jaren zestig uit de rots gehakt en er is sindsdien nauwelijks iets aan veranderd — geen vangrail op de meeste stukken, geen benzinestation, geen dorp tot Bosa. Wat je links ziet is macchia: steeneik, mastiek, rozemarijn en cistusroos. Rij je met open raam, dan ruik je het. Het is ook de reden dat de honing hier zo bitter en kruidig smaakt.",
+        "en": "This is where the real thing begins. The SP-105 was cut out of the rock in the nineteen-sixties and has barely changed since — no guardrail on most stretches, no petrol station, no village until Bosa. What you see on your left is macchia: holm oak, mastic, rosemary and rock rose. Drive with the window down and you'll smell it. It's also why the honey here tastes so bitter and herbal."
+      }
+    },
+    {
+      "id": "torre-argentina",
+      "kind": "viewpoint",
+      "lat": 40.4470,
+      "lon": 8.2100,
+      "radius": 800,
+      "name": { "nl": "Torre Argentina", "en": "Torre Argentina" },
+      "script": {
+        "nl": "Rechts van je staat Torre Argentina op de klif. Sardinië heeft ruim honderd van deze torens, allemaal gebouwd tussen 1570 en 1620 onder Spaans bestuur, tegen de Barbarijse zeerovers. Ze stonden zo geplaatst dat elke toren er twee kon zien: een rooksignaal reisde in een paar uur van Cagliari tot hier. Dat verklaart ook waarom de oude dorpen van Sardinië bijna allemaal landinwaarts liggen. Aan zee wonen was eeuwenlang levensgevaarlijk.",
+        "en": "On your right, Torre Argentina stands on the cliff. Sardinia has over a hundred of these towers, all built between 1570 and 1620 under Spanish rule, against Barbary corsairs. They were sited so each tower could see two others: a smoke signal travelled from Cagliari to here in a few hours. It also explains why almost every old Sardinian village sits inland. For centuries, living by the sea was simply too dangerous."
+      }
+    },
+    {
+      "id": "capo-marargiu",
+      "kind": "nature",
+      "lat": 40.3750,
+      "lon": 8.3620,
+      "radius": 1200,
+      "name": { "nl": "Capo Marargiu — de gieren", "en": "Capo Marargiu — the vultures" },
+      "script": {
+        "nl": "Kijk nu eens omhoog. Deze kliffen zijn het laatste bolwerk van de vale gier in Italië. Rond 1970 waren er nog een handvol broedparen over; na jaren bijvoeren zijn het er weer meer dan honderd. Ze hebben een spanwijdte van bijna drie meter en cirkelen op de warme lucht die tegen de klifwand omhoog stuwt — dus vaak precies boven deze weg. Als je een grote vogel ziet zweven zonder te klapwieken, is dat hem.",
+        "en": "Look up for a moment. These cliffs are the last stronghold of the griffon vulture in Italy. Around 1970 only a handful of breeding pairs were left; after years of supplementary feeding there are more than a hundred again. They have a wingspan of nearly three metres and ride the warm air pushed up the cliff face — which often means directly above this road. If you see a large bird soaring without flapping, that's him."
+      }
+    },
+    {
+      "id": "bosa-marina",
+      "kind": "town",
+      "lat": 40.2880,
+      "lon": 8.4810,
+      "radius": 900,
+      "name": { "nl": "Bosa Marina", "en": "Bosa Marina" },
+      "script": {
+        "nl": "Je komt Bosa Marina binnen, de badplaats aan de riviermonding. Dat torentje op het eilandje voor de kust is de Torre dell'Isola Rossa — rossig van kleur door het vulkanische gesteente. De rivier waar je zo overheen rijdt is de Temo, en dat is de enige bevaarbare rivier van heel Sardinië. Twee kilometer landinwaarts kunnen boten nog aanleggen, wat voor een eiland vol droge beddingen behoorlijk uitzonderlijk is.",
+        "en": "You're entering Bosa Marina, the seaside quarter at the river mouth. That little tower on the islet offshore is the Torre dell'Isola Rossa — reddish from the volcanic rock. The river you're about to cross is the Temo, and it is the only navigable river in all of Sardinia. Boats can still come two kilometres inland, which on an island full of dry beds is quite something."
+      }
+    },
+    {
+      "id": "sas-conzas",
+      "kind": "heritage",
+      "lat": 40.2930,
+      "lon": 8.4950,
+      "radius": 500,
+      "name": { "nl": "Sas Conzas — de leerlooierijen", "en": "Sas Conzas — the tanneries" },
+      "script": {
+        "nl": "Langs de rivieroever zie je een rij identieke stenen huisjes met bogen aan het water: Sas Conzas, de oude leerlooierijen. Tot in de jaren zestig werden hier huiden gelooid met schors van de steeneik, gespoeld in de Temo en gedroogd op de bovenverdieping. Het is een van de weinige complete industriële monumenten van Sardinië, en het staat er nog precies zo bij als toen de laatste looier de deur dichttrok.",
+        "en": "Along the riverbank you'll see a row of identical stone houses with arches at the water: Sas Conzas, the old tanneries. Until the nineteen-sixties hides were tanned here with holm-oak bark, rinsed in the Temo and dried on the upper floor. It's one of the few complete industrial monuments in Sardinia, standing exactly as it did the day the last tanner locked up."
+      }
+    },
+    {
+      "id": "bosa-castello",
+      "kind": "town",
+      "lat": 40.2965,
+      "lon": 8.5000,
+      "radius": 1000,
+      "name": { "nl": "Bosa & Castello Malaspina", "en": "Bosa & Castello Malaspina" },
+      "wikipedia": { "nl": "Bosa", "en": "Bosa" },
+      "script": {
+        "nl": "En daar is Bosa: pastelkleurige huizen die tegen de heuvel op kruipen naar het kasteel. Dat kasteel is in 1112 gebouwd door de familie Malaspina uit Toscane. In het kerkje binnen de muren zitten veertiende-eeuwse fresco's die pas in 1972 zijn ontdekt, onder een laag pleister. De kleuren van de huizen zijn overigens geen toeval — ze zijn bij wet vastgelegd, dus je mag hier niet zomaar je gevel wit schilderen. Einde van de route. Geniet ervan.",
+        "en": "And there is Bosa: pastel houses climbing the hill towards the castle. It was built in 1112 by the Malaspina family from Tuscany. The little church inside the walls holds fourteenth-century frescoes that were only discovered in 1972, under a layer of plaster. The colours of the houses are no accident either — they're fixed by local law, so you can't simply paint your façade white here. End of the route. Enjoy it."
+      }
+    }
+  ]
+}

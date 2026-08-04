@@ -1,0 +1,119 @@
+{
+  "id": "sinis-barumini",
+  "name": {
+    "nl": "Sinis & Barumini: 3500 jaar geschiedenis",
+    "en": "Sinis & Barumini: 3,500 years of history"
+  },
+  "region": { "nl": "Oristano & Marmilla", "en": "Oristano & Marmilla" },
+  "summary": {
+    "nl": "Van een Fenicische havenstad in zee naar de best bewaarde nuraghe ter wereld. De archeologische route van Sardinië, met een kwartsstrand tussendoor.",
+    "en": "From a Phoenician port town in the sea to the best-preserved nuraghe on earth. Sardinia's archaeological route, with a quartz beach in between."
+  },
+  "distanceKm": 105,
+  "durationMinutes": 150,
+  "character": { "nl": "Vlak, rustig, deels lange rechte stukken", "en": "Flat, quiet, some long straights" },
+  "bestTime": {
+    "nl": "Ochtend bij Tharros, middag bij Barumini — dan sta je niet in de zon.",
+    "en": "Morning at Tharros, afternoon at Barumini — that keeps you out of the sun."
+  },
+  "waypoints": [
+    { "lat": 39.9040, "lon": 8.5910 },
+    { "lat": 39.9270, "lon": 8.5290 },
+    { "lat": 39.9000, "lon": 8.4600 },
+    { "lat": 39.8730, "lon": 8.4400 },
+    { "lat": 39.8720, "lon": 8.4130 },
+    { "lat": 39.9550, "lon": 8.3670 },
+    { "lat": 40.0470, "lon": 8.7620 },
+    { "lat": 39.8500, "lon": 8.9000 },
+    { "lat": 39.7050, "lon": 8.9910 }
+  ],
+  "highlights": [
+    {
+      "id": "oristano",
+      "kind": "town",
+      "lat": 39.9040,
+      "lon": 8.5910,
+      "radius": 1400,
+      "name": { "nl": "Oristano", "en": "Oristano" },
+      "script": {
+        "nl": "Oristano was de hoofdstad van het Judicaat van Arborea, een van de vier onafhankelijke koninkrijkjes waarin Sardinië in de middeleeuwen was verdeeld. Hier regeerde Eleonora d'Arborea, die rond 1392 een wetboek uitvaardigde, de Carta de Logu. Daarin stond onder meer dat een vrouw niet tegen haar wil kon worden uitgehuwelijkt en dat verkrachting zwaar bestraft werd — in de veertiende eeuw. Die wet bleef geldig tot 1827.",
+        "en": "Oristano was the capital of the Judicate of Arborea, one of the four independent kingdoms into which medieval Sardinia was divided. Here ruled Eleonora d'Arborea, who around 1392 issued a legal code, the Carta de Logu. Among other things it held that a woman could not be married against her will and that rape carried heavy punishment — in the fourteenth century. That law stayed in force until 1827."
+      }
+    },
+    {
+      "id": "cabras",
+      "kind": "archaeology",
+      "lat": 39.9270,
+      "lon": 8.5290,
+      "radius": 1100,
+      "name": { "nl": "Cabras — de Giganten van Mont'e Prama", "en": "Cabras — the Giants of Mont'e Prama" },
+      "wikipedia": { "nl": "Giganten van Mont'e Prama", "en": "Giants of Mont'e Prama" },
+      "script": {
+        "nl": "In 1974 stootte een boer bij het ploegen op een stuk steen. Het bleek een hoofd te zijn. Uiteindelijk kwamen er ruim vijfduizend fragmenten uit de grond, die samen zo'n veertig beelden vormen van boogschutters, worstelaars en krijgers, tot twee meter vijftig hoog. Ze zijn ongeveer 2900 jaar oud en daarmee mogelijk de oudste monumentale beelden van het westelijk Middellandse Zeegebied — ouder dan de Griekse kouroi. Ze staan in het museum hier en in Cagliari.",
+        "en": "In 1974 a farmer struck a piece of stone while ploughing. It turned out to be a head. Eventually more than five thousand fragments came out of the ground, forming around forty statues of archers, wrestlers and warriors, up to two and a half metres tall. They're about 2,900 years old, making them possibly the oldest monumental statues in the western Mediterranean — older than the Greek kouroi. They're displayed in the museum here and in Cagliari."
+      }
+    },
+    {
+      "id": "san-giovanni-sinis",
+      "kind": "heritage",
+      "lat": 39.8720,
+      "lon": 8.4130,
+      "radius": 700,
+      "name": { "nl": "San Giovanni di Sinis", "en": "San Giovanni di Sinis" },
+      "script": {
+        "nl": "Dat lage kerkje van zandsteen is San Giovanni di Sinis, en de kern ervan dateert uit de zesde eeuw — een van de oudste kerken van Sardinië, gebouwd toen het eiland nog Byzantijns was. Ernaast stonden tot in de jaren zeventig de laatste vissershutten van riet en biezen, de zogeheten barracche. Er zijn er een paar gereconstrueerd. Vissers woonden er alleen in het seizoen, want in de zomer was de lagune door de malaria onleefbaar.",
+        "en": "That low sandstone church is San Giovanni di Sinis, its core dating from the sixth century — one of the oldest churches in Sardinia, built when the island was still Byzantine. Beside it, until the nineteen-seventies, stood the last fishermen's huts of reed and rush, the barracche. A few have been reconstructed. Fishermen lived in them only in season, because in summer the lagoon was uninhabitable from malaria."
+      }
+    },
+    {
+      "id": "tharros",
+      "kind": "archaeology",
+      "lat": 39.8730,
+      "lon": 8.4400,
+      "radius": 800,
+      "name": { "nl": "Tharros", "en": "Tharros" },
+      "wikipedia": { "nl": "Tharros", "en": "Tharros" },
+      "script": {
+        "nl": "Tharros is rond 800 voor Christus gesticht door de Feniciërs, daarna Punisch, daarna Romeins. Wat je ziet — de zuilen, de straten met riolering eronder, de thermen — is grotendeels Romeins, maar eronder ligt de Fenicische stad. In het jaar 1070 werd de stad verlaten omdat Saraceense aanvallen het onhoudbaar maakten; de bewoners verhuisden naar Oristano en namen de stenen mee. Een deel van Tharros staat dus verwerkt in de huizen daar.",
+        "en": "Tharros was founded around 800 BC by the Phoenicians, then became Punic, then Roman. What you see — the columns, the streets with drains beneath them, the baths — is largely Roman, but the Phoenician city lies underneath. In 1070 the town was abandoned because Saracen raids made it untenable; the inhabitants moved to Oristano and took the stones with them. So part of Tharros is built into the houses there."
+      }
+    },
+    {
+      "id": "is-arutas",
+      "kind": "beach",
+      "lat": 39.9550,
+      "lon": 8.3670,
+      "radius": 900,
+      "name": { "nl": "Is Arutas", "en": "Is Arutas" },
+      "script": {
+        "nl": "Is Arutas heeft geen zand maar korreltjes kwarts, wit tot roze, zo groot als rijstkorrels. Ze zijn ontstaan uit de erosie van kwartsaders in het achterland. In de jaren negentig werd het strand op grote schaal geplunderd door toeristen die het in flessen meenamen; nu staat er een boete van vijfhonderd euro op het meenemen van ook maar een handvol. Bij de veerhaven van Olbia scannen ze zelfs koffers.",
+        "en": "Is Arutas has no sand but grains of quartz, white to pink, the size of rice. They come from the erosion of quartz veins in the hinterland. In the nineties the beach was looted on a large scale by tourists bottling it as a souvenir; taking even a handful now carries a five-hundred-euro fine. At the ferry port in Olbia they even scan suitcases for it."
+      }
+    },
+    {
+      "id": "santa-cristina",
+      "kind": "archaeology",
+      "lat": 40.0470,
+      "lon": 8.7620,
+      "radius": 800,
+      "name": { "nl": "Pozzo Sacro di Santa Cristina", "en": "Santa Cristina well temple" },
+      "script": {
+        "nl": "Hier ligt de mooiste heilige bron van Sardinië. Een trap van vijfentwintig treden daalt af naar een ondergrondse waterput, afgedekt met een perfecte kegelvormige koepel van gehouwen basalt. Het is 3000 jaar oud en de stenen sluiten zo strak aan dat er geen mortel aan te pas is gekomen. Bij de zonnewende valt het licht precies loodrecht de schacht in, en tweemaal per jaar weerspiegelt de maan zich exact in het midden van het water.",
+        "en": "This is the finest sacred well in Sardinia. A stairway of twenty-five steps descends to an underground spring, roofed by a perfect conical dome of dressed basalt. It's 3,000 years old and the stones fit so tightly that no mortar was used. At the solstice the light falls exactly vertically down the shaft, and twice a year the moon reflects precisely in the centre of the water."
+      }
+    },
+    {
+      "id": "su-nuraxi",
+      "kind": "archaeology",
+      "lat": 39.7050,
+      "lon": 8.9910,
+      "radius": 1000,
+      "name": { "nl": "Su Nuraxi di Barumini", "en": "Su Nuraxi di Barumini" },
+      "wikipedia": { "nl": "Su Nuraxi", "en": "Su Nuraxi di Barumini" },
+      "script": {
+        "nl": "Su Nuraxi is het einde van de route en het belangrijkste monument van Sardinië: sinds 1997 werelderfgoed. Een centrale toren uit ongeveer 1500 voor Christus, later omringd door vier torens en een heel dorp van rondhuizen. Het bijzondere is dat het compleet onder de aarde verdwenen was — men dacht dat het een heuvel was, tot Giovanni Lilliu er in 1949 begon te graven. Op het eiland staan nog zo'n zevenduizend nuraghi. Niemand weet zeker waarvoor ze dienden.",
+        "en": "Su Nuraxi is the end of the route and Sardinia's most important monument: a World Heritage Site since 1997. A central tower from around 1500 BC, later surrounded by four towers and an entire village of round houses. What's remarkable is that it had vanished completely under earth — people thought it was a hill, until Giovanni Lilliu started digging in 1949. Around seven thousand nuraghi still stand on the island. Nobody knows for certain what they were for."
+      }
+    }
+  ]
+}

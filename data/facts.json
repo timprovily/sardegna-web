@@ -1,0 +1,324 @@
+{
+  "facts": [
+    {
+      "id": "lang-01",
+      "category": "language",
+      "text": {
+        "nl": "Sardisch is geen dialect van het Italiaans. Het is een eigen Romaanse taal, en taalkundigen beschouwen het als de taal die het dichtst bij het Latijn is gebleven. Een Italiaan uit Milaan verstaat er vrijwel niets van.",
+        "en": "Sardinian isn't a dialect of Italian. It's a separate Romance language, and linguists consider it the closest surviving language to Latin. An Italian from Milan understands almost none of it."
+      }
+    },
+    {
+      "id": "lang-02",
+      "category": "language",
+      "text": {
+        "nl": "Op Sardinië worden eigenlijk zes talen gesproken: Sardisch in twee hoofdvarianten, Catalaans in Alghero, Ligurisch op het eiland Carloforte, Corsicaans in het noorden, en Italiaans. Allemaal officieel erkend.",
+        "en": "Sardinia actually speaks six languages: Sardinian in two main variants, Catalan in Alghero, Ligurian on the island of Carloforte, Corsican in the north, and Italian. All officially recognised."
+      }
+    },
+    {
+      "id": "hist-01",
+      "category": "history",
+      "text": {
+        "nl": "De naam Italië komt mogelijk niet van het vasteland maar van hier. Sommige historici koppelen hem aan de Iolaeërs, een van de volkeren die de Grieken op Sardinië beschreven.",
+        "en": "The name Italy may not come from the mainland at all. Some historians link it to the Iolaei, one of the peoples the Greeks described on Sardinia."
+      }
+    },
+    {
+      "id": "hist-02",
+      "category": "history",
+      "text": {
+        "nl": "De uitdrukking sardonisch lachen komt van dit eiland. De Romeinen geloofden dat een plaatselijke plant, waarschijnlijk een soort waterranonkel, de gezichtsspieren zo verkrampte dat een stervende leek te grijnzen.",
+        "en": "The phrase sardonic laughter comes from this island. The Romans believed a local plant, probably a kind of water crowfoot, cramped the facial muscles so a dying person appeared to grin."
+      }
+    },
+    {
+      "id": "hist-03",
+      "category": "history",
+      "text": {
+        "nl": "Het Koninkrijk Sardinië heeft Italië verenigd, niet andersom. De koning van Sardinië werd in 1861 koning van Italië, en de Italiaanse driekleur en het parlement komen rechtstreeks uit dat koninkrijk voort.",
+        "en": "The Kingdom of Sardinia unified Italy, not the other way round. The king of Sardinia became king of Italy in 1861, and the Italian tricolour and parliament descend directly from that kingdom."
+      }
+    },
+    {
+      "id": "hist-04",
+      "category": "history",
+      "text": {
+        "nl": "De vlag van Sardinië toont vier geblinddoekte Moorse hoofden. De oorsprong is omstreden en waarschijnlijk Aragonees. In 1999 draaide de regio de blinddoeken om tot hoofdbanden en liet de gezichten naar links kijken.",
+        "en": "The Sardinian flag shows four blindfolded Moorish heads. Its origin is disputed and probably Aragonese. In 1999 the region turned the blindfolds into headbands and had the faces look left."
+      }
+    },
+    {
+      "id": "nature-01",
+      "category": "nature",
+      "text": {
+        "nl": "Sardinië heeft geen adders, geen wolven en geen beren. Er is geen enkele giftige slang op het eiland. Het gevaarlijkste dier dat je tegenkomt is waarschijnlijk een loslopend varken.",
+        "en": "Sardinia has no vipers, no wolves and no bears. There isn't a single venomous snake on the island. The most dangerous animal you'll meet is probably a free-roaming pig."
+      }
+    },
+    {
+      "id": "nature-02",
+      "category": "nature",
+      "text": {
+        "nl": "Op het schiereiland Giara di Gesturi leven nog ongeveer zevenhonderd wilde paardjes, de cavallini della Giara. Ze zijn maar 120 centimeter hoog en leven daar al minstens sinds de Feniciërs.",
+        "en": "About seven hundred wild horses still live on the Giara di Gesturi plateau, the cavallini della Giara. They stand only 120 centimetres tall and have been there since at least Phoenician times."
+      }
+    },
+    {
+      "id": "nature-03",
+      "category": "nature",
+      "text": {
+        "nl": "Er groeit een olijfboom bij Luras die volgens koolstofdatering ongeveer 3800 jaar oud is. Hij heet S'Ozzastru en is daarmee waarschijnlijk de oudste boom van Italië.",
+        "en": "An olive tree near Luras has been carbon-dated at around 3,800 years old. It's called S'Ozzastru and is probably the oldest tree in Italy."
+      }
+    },
+    {
+      "id": "nature-04",
+      "category": "nature",
+      "text": {
+        "nl": "Sardinië is geologisch gezien geen deel van Italië. Het is samen met Corsica een afgebroken stuk van het Iberisch schiereiland dat zo'n dertig miljoen jaar geleden losraakte en wegdraaide.",
+        "en": "Geologically Sardinia isn't part of Italy at all. Together with Corsica it's a broken-off piece of the Iberian peninsula that detached and rotated away some thirty million years ago."
+      }
+    },
+    {
+      "id": "nature-05",
+      "category": "nature",
+      "text": {
+        "nl": "De flamingo's die je in de lagunes ziet zijn pas sinds 1993 vaste broedvogels. Daarvoor kwamen ze alleen langs. Nu broeden er duizenden paren rond Cagliari en Oristano.",
+        "en": "The flamingos in the lagoons have only bred here since 1993. Before that they merely passed through. Now thousands of pairs nest around Cagliari and Oristano."
+      }
+    },
+    {
+      "id": "nature-06",
+      "category": "nature",
+      "text": {
+        "nl": "Voor de kust groeit zeegras dat Neptunusgras heet. De vezels spoelen aan en rollen door de branding tot perfecte bruine bolletjes, die egagropili worden genoemd. Je vindt ze bij honderden op het strand.",
+        "en": "Offshore grows a seagrass known as Neptune grass. Its fibres wash up and roll in the surf into perfect brown spheres, called egagropili. You'll find hundreds of them on the beach."
+      }
+    },
+    {
+      "id": "food-01",
+      "category": "food",
+      "text": {
+        "nl": "Sardinië heeft meer schapen dan mensen: ongeveer drie miljoen schapen tegenover 1,6 miljoen inwoners. Het eiland produceert het overgrote deel van alle Italiaanse schapenmelk.",
+        "en": "Sardinia has more sheep than people: roughly three million sheep against 1.6 million inhabitants. The island produces the vast majority of all Italian sheep's milk."
+      }
+    },
+    {
+      "id": "food-02",
+      "category": "food",
+      "text": {
+        "nl": "Casu marzu is een Sardische kaas met levende maden erin. Hij is officieel verboden binnen de EU, maar wordt nog steeds gemaakt. De maden springen tot vijftien centimeter hoog, dus men eet hem met de hand voor de ogen.",
+        "en": "Casu marzu is a Sardinian cheese containing live maggots. It's officially banned in the EU but is still made. The maggots can leap fifteen centimetres, so people eat it with a hand shielding their eyes."
+      }
+    },
+    {
+      "id": "food-03",
+      "category": "food",
+      "text": {
+        "nl": "Het dunne knapperige brood heet pane carasau, ook wel carta da musica omdat het zo dun is als bladmuziek. Herders namen het mee de bergen in: het blijft maanden goed en je maakt het weer zacht met een beetje water.",
+        "en": "The thin crisp bread is pane carasau, also called carta da musica because it's as thin as sheet music. Shepherds took it into the mountains: it keeps for months and softens again with a splash of water."
+      }
+    },
+    {
+      "id": "food-04",
+      "category": "food",
+      "text": {
+        "nl": "Bottarga is gedroogde en geperste kuit van de harder, gevangen in de lagunes bij Cabras. Het wordt geraspt over pasta en heet hier het goud van Sardinië — een kilo kost al snel meer dan honderd euro.",
+        "en": "Bottarga is dried, pressed grey mullet roe, caught in the lagoons near Cabras. It's grated over pasta and is known here as Sardinian gold — a kilo easily costs over a hundred euros."
+      }
+    },
+    {
+      "id": "food-05",
+      "category": "food",
+      "text": {
+        "nl": "Cannonau is dezelfde druif als de Spaanse garnacha, maar er is bewijs dat hij hier al 3200 jaar geleden werd geteeld. Dat zou Sardinië tot een van de oudste wijnstreken van het Middellandse Zeegebied maken.",
+        "en": "Cannonau is the same grape as Spanish garnacha, but there's evidence it was cultivated here 3,200 years ago. That would make Sardinia one of the oldest wine regions in the Mediterranean."
+      }
+    },
+    {
+      "id": "food-06",
+      "category": "food",
+      "text": {
+        "nl": "Porceddu is speenvarken aan het spit, traditioneel gegaard boven mirtehout en daarna in mirtebladeren gewikkeld. In het binnenland is het het gerecht voor elk feest dat er toe doet.",
+        "en": "Porceddu is spit-roasted suckling pig, traditionally cooked over myrtle wood and then wrapped in myrtle leaves. Inland it's the dish for every celebration that matters."
+      }
+    },
+    {
+      "id": "food-07",
+      "category": "food",
+      "text": {
+        "nl": "Mirto is de likeur van het eiland, gemaakt van mirtebessen op alcohol. Hij wordt ijskoud gedronken na het eten. Bijna elk gezin in het binnenland maakt zijn eigen versie, en iedereen vindt die van moeder de beste.",
+        "en": "Mirto is the island's liqueur, made from myrtle berries steeped in alcohol. It's drunk ice cold after dinner. Almost every inland family makes its own, and everyone thinks their mother's is best."
+      }
+    },
+    {
+      "id": "archaeo-01",
+      "category": "archaeology",
+      "text": {
+        "nl": "Er staan nog ongeveer zevenduizend nuraghi op Sardinië, en er zijn er waarschijnlijk twintigduizend geweest. Dat is één megalithische toren per acht vierkante kilometer. Nergens ter wereld staat er zoiets.",
+        "en": "Around seven thousand nuraghi still stand in Sardinia, and there were probably twenty thousand. That's one megalithic tower per eight square kilometres. There's nothing like it anywhere else on earth."
+      }
+    },
+    {
+      "id": "archaeo-02",
+      "category": "archaeology",
+      "text": {
+        "nl": "De nuraghi zijn gebouwd zonder mortel, met stenen die tot twee ton wegen, in een techniek waarbij elke laag iets naar binnen steekt. Sommige waren oorspronkelijk meer dan twintig meter hoog.",
+        "en": "The nuraghi were built without mortar, from stones weighing up to two tonnes, using a technique in which each course steps slightly inward. Some originally stood more than twenty metres tall."
+      }
+    },
+    {
+      "id": "archaeo-03",
+      "category": "archaeology",
+      "text": {
+        "nl": "De prehistorische graven heten domus de janas: huizen van de feeën. Het zijn kamers uitgehakt in de rots, soms met nagebootste balken en deuren aan het plafond, alsof men het huis van de levenden nabootste.",
+        "en": "The prehistoric tombs are called domus de janas: houses of the fairies. They're chambers cut into rock, sometimes with imitation beams and doorways carved into the ceiling, as if mimicking the house of the living."
+      }
+    },
+    {
+      "id": "archaeo-04",
+      "category": "archaeology",
+      "text": {
+        "nl": "De Sarden van de bronstijd waren vermoedelijk de Sherden, een van de Zeevolken die het Egyptische rijk aanvielen. Op Egyptische reliëfs dragen ze gehoornde helmen — precies zoals de bronzen beeldjes die hier gevonden zijn.",
+        "en": "Bronze Age Sardinians were probably the Sherden, one of the Sea Peoples who attacked Egypt. On Egyptian reliefs they wear horned helmets — exactly like the bronze figurines found here."
+      }
+    },
+    {
+      "id": "culture-01",
+      "category": "culture",
+      "text": {
+        "nl": "Het canto a tenore is een vorm van vierstemmig keelzang die door UNESCO is erkend. De vier stemmen heten de solist, de stier, de stem en de halve stem. De laatste twee bootsen letterlijk kudde-geluiden na.",
+        "en": "Canto a tenore is a form of four-part throat singing recognised by UNESCO. The four voices are called the soloist, the bull, the voice and the half voice. The last two literally imitate the sounds of the flock."
+      }
+    },
+    {
+      "id": "culture-02",
+      "category": "culture",
+      "text": {
+        "nl": "De launeddas is een rieten blaasinstrument met drie pijpen dat met circulaire ademhaling wordt bespeeld, zodat de klank nooit stopt. Het is minstens 2500 jaar oud en er zijn nog maar enkele tientallen echte spelers.",
+        "en": "The launeddas is a triple-pipe reed instrument played with circular breathing, so the sound never stops. It's at least 2,500 years old and only a few dozen genuine players remain."
+      }
+    },
+    {
+      "id": "culture-03",
+      "category": "culture",
+      "text": {
+        "nl": "Bij de Sartiglia in Oristano rijdt een gemaskerde ruiter in volle galop met een degen naar een hangende ster. Hoe vaker hij hem raakt, hoe beter de oogst wordt. Het gebruik gaat terug tot de middeleeuwse steekspelen.",
+        "en": "At the Sartiglia in Oristano a masked rider gallops at a hanging star with a sword. The more times he spears it, the better the harvest will be. The custom goes back to medieval jousting."
+      }
+    },
+    {
+      "id": "culture-04",
+      "category": "culture",
+      "text": {
+        "nl": "In Sedilo wordt elk jaar de Ardia gereden: honderden ruiters in volle galop rond een kerkje, zonder helm en zonder regels. Er vallen regelmatig gewonden. Het is een van de ruigste feesten van Italië.",
+        "en": "In Sedilo they ride the Ardia every year: hundreds of riders at full gallop around a small church, without helmets and without rules. Injuries are common. It's one of the wildest festivals in Italy."
+      }
+    },
+    {
+      "id": "culture-05",
+      "category": "culture",
+      "text": {
+        "nl": "Tot in de twintigste eeuw kende Sardinië de accabadora: een vrouw die op verzoek van de familie stervenden uit hun lijden hielp. Ze werkte in het geheim en de kerk keek de andere kant op.",
+        "en": "Into the twentieth century Sardinia had the accabadora: a woman who, at a family's request, ended the suffering of the dying. She worked in secret and the church looked the other way."
+      }
+    },
+    {
+      "id": "geo-01",
+      "category": "geography",
+      "text": {
+        "nl": "Sardinië is het op één na grootste eiland van de Middellandse Zee, na Sicilië. Het is bijna zo groot als Nederland en België samen, maar er wonen maar 1,6 miljoen mensen.",
+        "en": "Sardinia is the Mediterranean's second-largest island after Sicily. It's nearly the size of Belgium and the Netherlands combined, but only 1.6 million people live here."
+      }
+    },
+    {
+      "id": "geo-02",
+      "category": "geography",
+      "text": {
+        "nl": "Het eiland heeft ongeveer 1900 kilometer kustlijn, waarvan een groot deel onbebouwd is. Sinds 2004 mag er binnen tweeduizend meter van de kust vrijwel niet meer gebouwd worden.",
+        "en": "The island has roughly 1,900 kilometres of coastline, much of it undeveloped. Since 2004 building within two thousand metres of the coast has been almost entirely banned."
+      }
+    },
+    {
+      "id": "geo-03",
+      "category": "geography",
+      "text": {
+        "nl": "De mistral waait hier vanuit het noordwesten en kan dagenlang aanhouden. Aan de westkust groeien de jeneverbessen daardoor niet omhoog maar zijwaarts, permanent naar het zuidoosten gebogen.",
+        "en": "The mistral blows in from the northwest and can last for days. On the west coast junipers grow not upwards but sideways, permanently bent to the southeast."
+      }
+    },
+    {
+      "id": "geo-04",
+      "category": "geography",
+      "text": {
+        "nl": "Sardinië heeft geen aardbevingen. Het ligt op een stabiel continentaal blok, ver van elke actieve breuklijn — een zeldzaamheid in het Middellandse Zeegebied.",
+        "en": "Sardinia has no earthquakes. It sits on a stable continental block far from any active fault — a rarity in the Mediterranean."
+      }
+    },
+    {
+      "id": "modern-01",
+      "category": "modern",
+      "text": {
+        "nl": "De Costa Smeralda is in 1962 uit het niets bedacht door de Aga Khan, die met een groepje investeerders een stuk onbewoonde kust opkocht. Herders verkochten hun grond destijds voor een paar honderd lire per hectare.",
+        "en": "The Costa Smeralda was invented from nothing in 1962 by the Aga Khan, who bought a stretch of empty coast with a group of investors. Shepherds sold their land at the time for a few hundred lire a hectare."
+      }
+    },
+    {
+      "id": "modern-02",
+      "category": "modern",
+      "text": {
+        "nl": "Sardinië is de enige Italiaanse regio zonder aardgasnet. Er is nooit een pijpleiding aangelegd, dus veel huizen koken op flessengas en verwarmen met hout of elektriciteit.",
+        "en": "Sardinia is the only Italian region without a natural gas network. A pipeline was never built, so many homes cook on bottled gas and heat with wood or electricity."
+      }
+    },
+    {
+      "id": "modern-03",
+      "category": "modern",
+      "text": {
+        "nl": "De trenino verde is een smalspoorlijn die door het binnenland kronkelt met een gemiddelde snelheid van dertig kilometer per uur. D.H. Lawrence reisde er in 1921 mee en schreef er een boek over.",
+        "en": "The trenino verde is a narrow-gauge line winding through the interior at an average of thirty kilometres an hour. D.H. Lawrence rode it in 1921 and wrote a book about it."
+      }
+    },
+    {
+      "id": "modern-04",
+      "category": "modern",
+      "text": {
+        "nl": "Op het eiland staan tientallen verlaten dorpen. Sommige werden ontruimd na de sluiting van een mijn, andere na een aardverschuiving. Er zijn er die nog volledig gemeubileerd zijn.",
+        "en": "Dozens of abandoned villages stand on the island. Some were cleared after a mine closed, others after a landslide. A few are still fully furnished."
+      }
+    },
+    {
+      "id": "driving-01",
+      "category": "driving",
+      "text": {
+        "nl": "Een praktisch punt: benzinestations in het binnenland sluiten vaak tussen één en vier uur 's middags, en op zondag helemaal. Tank hier bij minder dan een kwart in de tank, niet bij de reservelamp.",
+        "en": "A practical note: petrol stations inland often close between one and four in the afternoon, and all day Sunday. Fill up here below a quarter tank, not when the light comes on."
+      }
+    },
+    {
+      "id": "driving-02",
+      "category": "driving",
+      "text": {
+        "nl": "Loslopend vee heeft hier geen enkel benul van verkeer. Koeien, varkens, geiten en ezels staan regelmatig midden op de weg, vooral in de Barbagia en op de hoogvlaktes. Rustig aan in blinde bochten.",
+        "en": "Free-roaming livestock here has no concept of traffic. Cows, pigs, goats and donkeys stand in the middle of the road regularly, especially in the Barbagia and on the plateaus. Take blind bends gently."
+      }
+    },
+    {
+      "id": "driving-03",
+      "category": "driving",
+      "text": {
+        "nl": "Sardinië heeft geen enkele tolweg. De belangrijkste verbinding is de SS131, de Carlo Felice, die in 1820 als koninklijke weg werd aangelegd en nog steeds vrijwel hetzelfde tracé volgt.",
+        "en": "Sardinia has no toll roads at all. The main artery is the SS131, the Carlo Felice, laid out as a royal road in 1820 and still following almost exactly the same line."
+      }
+    },
+    {
+      "id": "driving-04",
+      "category": "driving",
+      "text": {
+        "nl": "Als een tegenligger met zijn koplampen knippert, betekent dat hier meestal een politiecontrole verderop. Soms betekent het ook: er staat een kudde om de bocht.",
+        "en": "If an oncoming car flashes its headlights here, it usually means a police check ahead. Sometimes it means there's a flock of sheep around the bend."
+      }
+    }
+  ]
+}

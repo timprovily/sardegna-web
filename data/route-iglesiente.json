@@ -1,0 +1,119 @@
+{
+  "id": "iglesiente",
+  "name": {
+    "nl": "Iglesiente: Nebida, Masua & Buggerru",
+    "en": "Iglesiente: Nebida, Masua & Buggerru"
+  },
+  "region": { "nl": "Sulcis-Iglesiente", "en": "Sulcis-Iglesiente" },
+  "summary": {
+    "nl": "Een kustweg langs mijnbouwruïnes die letterlijk in zee hangen, met de rotszuil Pan di Zucchero als middelpunt. Rauw, industrieel en spectaculair tegelijk.",
+    "en": "A coast road past mining ruins that literally hang over the sea, with the Pan di Zucchero sea stack at its centre. Raw, industrial and spectacular at once."
+  },
+  "distanceKm": 42,
+  "durationMinutes": 85,
+  "character": { "nl": "Krappe bochten, steile klifweg", "en": "Tight bends, steep clifftop road" },
+  "bestTime": {
+    "nl": "Ochtend — de zon staat dan achter je op de kliffen.",
+    "en": "Morning — the sun is behind you on the cliffs."
+  },
+  "waypoints": [
+    { "lat": 39.3090, "lon": 8.5320 },
+    { "lat": 39.2950, "lon": 8.4700 },
+    { "lat": 39.2870, "lon": 8.4000 },
+    { "lat": 39.3130, "lon": 8.4030 },
+    { "lat": 39.3200, "lon": 8.3990 },
+    { "lat": 39.3450, "lon": 8.4150 },
+    { "lat": 39.3830, "lon": 8.4020 },
+    { "lat": 39.3960, "lon": 8.3990 },
+    { "lat": 39.4300, "lon": 8.3850 },
+    { "lat": 39.4550, "lon": 8.3800 }
+  ],
+  "highlights": [
+    {
+      "id": "iglesias",
+      "kind": "town",
+      "lat": 39.3090,
+      "lon": 8.5320,
+      "radius": 1400,
+      "name": { "nl": "Iglesias", "en": "Iglesias" },
+      "wikipedia": { "nl": "Iglesias (Italië)", "en": "Iglesias, Sardinia" },
+      "script": {
+        "nl": "Iglesias is gebouwd op zilver. In de dertiende eeuw stichtte de Pisaanse edelman Ugolino della Gherardesca hier een mijnstad met een eigen wetboek voor de mijnbouw, de Breve di Villa di Chiesa — een van de oudste mijnwetten van Europa. Diezelfde Ugolino kwam later in Dantes Inferno terecht, opgesloten in een toren waar hij van de honger zijn eigen kinderen zou hebben opgegeten. Dante zette hem in de negende cirkel van de hel.",
+        "en": "Iglesias was built on silver. In the thirteenth century the Pisan nobleman Ugolino della Gherardesca founded a mining town here with its own mining code, the Breve di Villa di Chiesa — among the oldest mining laws in Europe. That same Ugolino later turned up in Dante's Inferno, locked in a tower where he supposedly ate his own children out of hunger. Dante put him in the ninth circle of hell."
+      }
+    },
+    {
+      "id": "nebida",
+      "kind": "mining",
+      "lat": 39.2870,
+      "lon": 8.4000,
+      "radius": 800,
+      "name": { "nl": "Nebida & Laveria Lamarmora", "en": "Nebida & Laveria Lamarmora" },
+      "script": {
+        "nl": "Onder Nebida hangt de Laveria Lamarmora aan de klifwand, een ertswasserij uit 1897 die met de zee als koelwater en de zwaartekracht als motor werkte. Het erts kwam van boven naar beneden, het afval ging rechtstreeks de zee in. Er loopt een wandelpad langs de rand met een balkon over het water. Het gebouw staat er nog, wortelend in de rots, terwijl de golven eronder doorslaan.",
+        "en": "Below Nebida the Laveria Lamarmora clings to the cliff, an ore-washing plant from 1897 that used the sea for cooling water and gravity as its engine. The ore came down from above, the waste went straight into the sea. A walkway runs along the edge with a balcony over the water. The building is still there, rooted in the rock, waves breaking underneath it."
+      }
+    },
+    {
+      "id": "pan-di-zucchero",
+      "kind": "nature",
+      "lat": 39.3200,
+      "lon": 8.3980,
+      "radius": 900,
+      "name": { "nl": "Pan di Zucchero", "en": "Pan di Zucchero" },
+      "wikipedia": { "nl": "Pan di Zucchero", "en": "Pan di Zucchero" },
+      "script": {
+        "nl": "Die enorme witte rots in zee is Pan di Zucchero, de suikerbrood. Hij is 133 meter hoog en daarmee de hoogste zeestapel van Italië. De naam is geleend van de Suikerbroodberg in Rio de Janeiro, door mijningenieurs die de wereld over reisden. Het is puur kalksteen uit het Cambrium, ruim vijfhonderd miljoen jaar oud — dit is het oudste gesteente van heel Italië.",
+        "en": "That huge white rock in the sea is Pan di Zucchero, the sugarloaf. It stands 133 metres high, making it the tallest sea stack in Italy. The name was borrowed from Rio de Janeiro's Sugarloaf by mining engineers who travelled the world. It's pure Cambrian limestone, over five hundred million years old — the oldest rock in all of Italy."
+      }
+    },
+    {
+      "id": "porto-flavia",
+      "kind": "mining",
+      "lat": 39.3210,
+      "lon": 8.4000,
+      "radius": 600,
+      "name": { "nl": "Porto Flavia", "en": "Porto Flavia" },
+      "script": {
+        "nl": "Recht tegenover die rots zit Porto Flavia, en dat is technisch gezien het mooiste dat de mijnbouw hier heeft achtergelaten. In 1924 boorde ingenieur Cesare Vecelli twee tunnels van zeshonderd meter dwars door de klif, met daarin een uitschuifbare transportband die het erts rechtstreeks in het ruim van een schip stortte. Wat eerst drie dagen laden kostte met roeiboten, duurde daarna twee uur. Hij noemde het naar zijn dochter Flavia.",
+        "en": "Directly opposite that rock is Porto Flavia, technically the finest thing mining left behind here. In 1924 the engineer Cesare Vecelli bored two six-hundred-metre tunnels straight through the cliff, holding a retractable conveyor that tipped ore directly into a ship's hold. What had taken three days of loading by rowing boat now took two hours. He named it after his daughter, Flavia."
+      }
+    },
+    {
+      "id": "cala-domestica",
+      "kind": "beach",
+      "lat": 39.3830,
+      "lon": 8.4020,
+      "radius": 800,
+      "name": { "nl": "Cala Domestica", "en": "Cala Domestica" },
+      "script": {
+        "nl": "Cala Domestica ligt verscholen in een smalle inham tussen twee rotswanden, met een Spaanse toren op de kop. Er loopt een korte tunnel door de rots naar een tweede, kleiner strandje aan de andere kant — ook die is door mijnwerkers uitgehakt. Het strand deed dienst in de film Swept Away van Guy Ritchie, maar veel Sarden kennen het vooral als de plek waar je in oktober nog kunt zwemmen.",
+        "en": "Cala Domestica hides in a narrow inlet between two rock walls, with a Spanish tower on the headland. A short tunnel runs through the rock to a second, smaller beach on the far side — also cut by miners. The beach appeared in Guy Ritchie's film Swept Away, but most Sardinians know it as the place where you can still swim in October."
+      }
+    },
+    {
+      "id": "buggerru",
+      "kind": "town",
+      "lat": 39.3960,
+      "lon": 8.3990,
+      "radius": 900,
+      "name": { "nl": "Buggerru", "en": "Buggerru" },
+      "script": {
+        "nl": "Buggerru heeft een zware plek in de Italiaanse geschiedenis. Op 4 september 1904 schoot het leger hier drie stakende mijnwerkers dood. De verontwaardiging was zo groot dat het uitliep op de allereerste algemene staking van Italië, twee weken later. Het dorp lag toen zo geïsoleerd dat het nieuws per boot naar het vasteland moest. Nu is het een rustige haven met een strand, maar het monument staat er nog.",
+        "en": "Buggerru holds a heavy place in Italian history. On 4 September 1904 the army shot dead three striking miners here. The outrage was so great that it triggered Italy's very first general strike, two weeks later. The village was then so isolated that the news had to travel to the mainland by boat. Today it's a quiet harbour with a beach, but the monument is still there."
+      }
+    },
+    {
+      "id": "capo-pecora",
+      "kind": "viewpoint",
+      "lat": 39.4550,
+      "lon": 8.3800,
+      "radius": 1000,
+      "name": { "nl": "Capo Pecora", "en": "Capo Pecora" },
+      "script": {
+        "nl": "Capo Pecora sluit de route af. Het landschap verandert hier abrupt: geen kalksteen meer maar graniet, in enorme afgeronde blokken die door de wind zijn uitgesleten tot rare vormen. Het is een geliefde plek voor boulderaars en voor mensen die niets willen. Er is geen bar, geen parkeerautomaat en geen bereik. Precies daarom komen mensen hier.",
+        "en": "Capo Pecora closes the route. The landscape changes abruptly here: no more limestone, but granite, in enormous rounded blocks weathered by the wind into strange shapes. It's a favourite with boulderers and with people who want nothing at all. There's no bar, no parking meter and no signal. Which is exactly why people come."
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "id": "costa-verde",
+  "name": {
+    "nl": "Costa Verde: mijnen & woestijnduinen",
+    "en": "Costa Verde: mines & desert dunes"
+  },
+  "region": { "nl": "Medio Campidano / Arburese", "en": "Medio Campidano / Arburese" },
+  "summary": {
+    "nl": "Van verlaten mijnstadjes naar de hoogste duinen van Europa. Een kust zonder hotels, zonder strandtenten, en met een sterk gevoel van verlatenheid.",
+    "en": "From abandoned mining towns to the highest dunes in Europe. A coast with no hotels, no beach clubs, and a powerful sense of abandonment."
+  },
+  "distanceKm": 58,
+  "durationMinutes": 100,
+  "character": { "nl": "Deels onverhard, afgelegen", "en": "Partly unpaved, remote" },
+  "bestTime": {
+    "nl": "Zonsondergang bij Piscinas — het licht kleurt de duinen oranje.",
+    "en": "Sunset at Piscinas — the light turns the dunes orange."
+  },
+  "waypoints": [
+    { "lat": 39.5270, "lon": 8.5980 },
+    { "lat": 39.5560, "lon": 8.5680 },
+    { "lat": 39.5400, "lon": 8.5350 },
+    { "lat": 39.5240, "lon": 8.5100 },
+    { "lat": 39.5300, "lon": 8.4700 },
+    { "lat": 39.5320, "lon": 8.4340 },
+    { "lat": 39.5800, "lon": 8.4350 },
+    { "lat": 39.6420, "lon": 8.4450 },
+    { "lat": 39.7000, "lon": 8.4600 },
+    { "lat": 39.7500, "lon": 8.4700 }
+  ],
+  "highlights": [
+    {
+      "id": "arbus",
+      "kind": "town",
+      "lat": 39.5270,
+      "lon": 8.5980,
+      "radius": 1200,
+      "name": { "nl": "Arbus", "en": "Arbus" },
+      "script": {
+        "nl": "Arbus is het startpunt en staat bekend om één ding: het mes. De arburesa is een Sardisch zakmes met een blad in de vorm van een mirtenblad en een heft van moeflonhoorn. Er zijn nog een handvol smeden die ze met de hand maken, en een goed exemplaar kost al snel tweehonderd euro. Vanaf hier daal je af naar wat ooit het rijkste mijngebied van Italië was.",
+        "en": "Arbus is the starting point and is known for one thing: the knife. The arburesa is a Sardinian folding knife with a blade shaped like a myrtle leaf and a handle of mouflon horn. A handful of smiths still make them by hand, and a good one runs to two hundred euros. From here you drop down into what was once the richest mining district in Italy."
+      }
+    },
+    {
+      "id": "montevecchio",
+      "kind": "mining",
+      "lat": 39.5560,
+      "lon": 8.5680,
+      "radius": 900,
+      "name": { "nl": "Montevecchio", "en": "Montevecchio" },
+      "script": {
+        "nl": "Montevecchio was ooit een van de grootste lood- en zinkmijnen van Europa, met meer dan tienduizend inwoners. Het bijzondere is de architectuur: de directie liet hier in de negentiende eeuw een compleet dorp bouwen met een paleisje, een school, een ziekenhuis en een theater — een soort industriële utopie midden in de bergen. In 1991 sloot de laatste schacht. Het dorp is nooit helemaal verlaten, maar het is er stil.",
+        "en": "Montevecchio was once among the largest lead and zinc mines in Europe, with more than ten thousand inhabitants. What's remarkable is the architecture: in the nineteenth century the management built an entire village here with a small palace, a school, a hospital and a theatre — a kind of industrial utopia in the middle of the mountains. The last shaft closed in 1991. The village was never quite abandoned, but it is very quiet."
+      }
+    },
+    {
+      "id": "ingurtosu",
+      "kind": "mining",
+      "lat": 39.5240,
+      "lon": 8.5100,
+      "radius": 800,
+      "name": { "nl": "Ingurtosu", "en": "Ingurtosu" },
+      "script": {
+        "nl": "Ingurtosu is wél verlaten. Dat gebouw met de kantelen boven de weg is het oude mijndirectiekantoor — het ziet eruit als een kasteel omdat de Engelse eigenaren dat nu eenmaal mooi vonden. Beneden in het dal staat de Laveria Brassey, waar erts werd gewassen. De rivier die je zo passeert kleurde jarenlang wit van het slib. Er wonen nu nog een paar mensen; in 1900 waren het er vijfduizend.",
+        "en": "Ingurtosu, by contrast, really is abandoned. That crenellated building above the road is the old mine directors' office — it looks like a castle simply because the English owners liked it that way. Down in the valley stands the Laveria Brassey, where ore was washed. The river you're about to cross ran white with tailings for years. A few people still live here; in 1900 there were five thousand."
+      }
+    },
+    {
+      "id": "piscinas",
+      "kind": "nature",
+      "lat": 39.5320,
+      "lon": 8.4340,
+      "radius": 1200,
+      "name": { "nl": "Duinen van Piscinas", "en": "Piscinas dunes" },
+      "wikipedia": { "nl": "Piscinas", "en": "Piscinas" },
+      "script": {
+        "nl": "En dan opeens: de duinen van Piscinas. Ze lopen tot zestig meter hoog en strekken zich twee kilometer landinwaarts uit — de grootste actieve duinen van Europa. Ze verplaatsen zich elk jaar een paar meter door de mistral. Er groeien jeneverbesstruiken op die eeuwenoud zijn maar door de wind kruipend blijven. En er leeft nog een kleine populatie Sardische herten, die je bij zonsopgang soms tussen de duinpannen ziet.",
+        "en": "And then suddenly: the dunes of Piscinas. They rise up to sixty metres and run two kilometres inland — the largest active dune field in Europe. The mistral shifts them a few metres every year. Junipers grow on them that are centuries old but stay creeping low because of the wind. A small population of Sardinian deer survives here too, sometimes visible between the dune hollows at dawn."
+      }
+    },
+    {
+      "id": "torre-dei-corsari",
+      "kind": "viewpoint",
+      "lat": 39.6420,
+      "lon": 8.4450,
+      "radius": 900,
+      "name": { "nl": "Torre dei Corsari", "en": "Torre dei Corsari" },
+      "script": {
+        "nl": "Torre dei Corsari — de toren van de zeerovers. Ook hier duinen, en bovenop staat de Spaanse wachttoren waar het dorp naar heet. Vanaf de top zie je bij helder weer het eiland Sant'Antioco liggen, zestig kilometer naar het zuiden. Het zand hier is opvallend goudgeel; dat komt door het ijzer in het gesteente dat vanuit de mijnen naar zee is gespoeld.",
+        "en": "Torre dei Corsari — the corsairs' tower. Dunes here too, and on top stands the Spanish watchtower the village is named after. From the summit on a clear day you can see the island of Sant'Antioco, sixty kilometres south. The sand here is strikingly golden; that's the iron in the rock, washed down to the sea from the mines."
+      }
+    },
+    {
+      "id": "capo-frasca",
+      "kind": "viewpoint",
+      "lat": 39.7500,
+      "lon": 8.4700,
+      "radius": 1200,
+      "name": { "nl": "Capo Frasca", "en": "Capo Frasca" },
+      "script": {
+        "nl": "Capo Frasca is het einde van de route, en meteen een gesloten deur: het schiereiland is militair oefenterrein en meestal niet toegankelijk. Sardinië herbergt ongeveer zestig procent van alle militaire oefengebieden van Italië, op een eiland met nog geen drie procent van de bevolking. Dat is hier een gevoelig en veel besproken onderwerp. Het onbedoelde neveneffect: de kust erachter is zo goed als onaangeroerd gebleven.",
+        "en": "Capo Frasca is the end of the route and immediately a closed door: the headland is a military range and usually off limits. Sardinia hosts roughly sixty percent of Italy's military training areas, on an island with under three percent of its population. It's a sensitive and much-debated subject here. The unintended side effect: the coast behind it has stayed almost entirely untouched."
+      }
+    }
+  ]
+}

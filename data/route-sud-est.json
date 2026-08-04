@@ -1,0 +1,105 @@
+{
+  "id": "sud-est",
+  "name": {
+    "nl": "Cagliari → Costa Rei via Villasimius",
+    "en": "Cagliari → Costa Rei via Villasimius"
+  },
+  "region": { "nl": "Zuidoostkust", "en": "Southeast coast" },
+  "summary": {
+    "nl": "De klassieke zuidelijke kustrit: van de hoofdstad langs kliffen en lagunes naar het lichtste turkoois van het eiland.",
+    "en": "The classic southern coast run: from the capital along cliffs and lagoons to the palest turquoise on the island."
+  },
+  "distanceKm": 82,
+  "durationMinutes": 120,
+  "character": { "nl": "Kustweg, brede bochten, in de zomer druk", "en": "Coast road, sweeping bends, busy in summer" },
+  "bestTime": {
+    "nl": "Juni of september. In augustus staat het hier vast.",
+    "en": "June or September. In August it's gridlocked."
+  },
+  "waypoints": [
+    { "lat": 39.2200, "lon": 9.1120 },
+    { "lat": 39.1970, "lon": 9.1660 },
+    { "lat": 39.1750, "lon": 9.2400 },
+    { "lat": 39.1580, "lon": 9.3230 },
+    { "lat": 39.1450, "lon": 9.4200 },
+    { "lat": 39.1400, "lon": 9.5170 },
+    { "lat": 39.1030, "lon": 9.5230 },
+    { "lat": 39.1800, "lon": 9.5500 },
+    { "lat": 39.2450, "lon": 9.5760 }
+  ],
+  "highlights": [
+    {
+      "id": "cagliari",
+      "kind": "town",
+      "lat": 39.2200,
+      "lon": 9.1120,
+      "radius": 1600,
+      "name": { "nl": "Cagliari — Castello", "en": "Cagliari — Castello" },
+      "wikipedia": { "nl": "Cagliari", "en": "Cagliari" },
+      "script": {
+        "nl": "Je vertrekt uit Cagliari, waar de Pisanen in de dertiende eeuw de wijk Castello bovenop de heuvel bouwden en de Sarden verboden er 's nachts te blijven. De witte kalkstenen torens die je van ver ziet zijn nog origineel. Onder de stad ligt een tweede stad: Romeinse cisternes, een amfitheater uit de rots gehakt en kilometers schuilkelders uit 1943, toen Cagliari zwaar gebombardeerd werd. In de zoutmeren aan de rand staan flamingo's, het hele jaar door.",
+        "en": "You're leaving Cagliari, where in the thirteenth century the Pisans built the Castello quarter on top of the hill and forbade Sardinians from staying there at night. The white limestone towers you can see from far off are still original. Beneath the city lies a second city: Roman cisterns, an amphitheatre cut from the rock, and kilometres of air-raid shelters from 1943, when Cagliari was heavily bombed. Flamingos stand in the salt pans at the edge of town, all year round."
+      }
+    },
+    {
+      "id": "sella-del-diavolo",
+      "kind": "viewpoint",
+      "lat": 39.1970,
+      "lon": 9.1660,
+      "radius": 1000,
+      "name": { "nl": "Poetto & Sella del Diavolo", "en": "Poetto & the Devil's Saddle" },
+      "script": {
+        "nl": "Rechts ligt het Poetto, acht kilometer stadsstrand, en aan het eind het rotsmassief dat de Sella del Diavolo heet — de zadel van de duivel. De legende zegt dat hier een veldslag tussen engelen en duivels plaatsvond en dat Lucifer van zijn paard viel; het zadel bleef liggen. In 2002 werd het strand met grijzer zand uit zee aangevuld en dat ging spectaculair mis. Cagliaritanen zijn er nog steeds boos over.",
+        "en": "On your right is the Poetto, eight kilometres of city beach, and at its end the rock mass called the Sella del Diavolo — the Devil's Saddle. Legend says a battle between angels and devils took place here and Lucifer fell from his horse; the saddle stayed behind. In 2002 the beach was replenished with greyer sand dredged from the sea and it went spectacularly wrong. People in Cagliari are still angry about it."
+      }
+    },
+    {
+      "id": "solanas",
+      "kind": "viewpoint",
+      "lat": 39.1580,
+      "lon": 9.3230,
+      "radius": 1200,
+      "name": { "nl": "Solanas & Torre delle Stelle", "en": "Solanas & Torre delle Stelle" },
+      "script": {
+        "nl": "Deze weg, de SP17, klimt en daalt langs een kust die tot in de jaren zestig vrijwel onbewoond was. De reden was malaria: de kustmoerassen van Sardinië zaten er vol mee, en tot 1951 stierven er jaarlijks duizenden mensen aan. Toen kwam de campagne met DDT, uitgevoerd door de Rockefeller Foundation. Binnen vijf jaar was de ziekte weg — en pas daarna kon de kust bebouwd worden. Zonder die operatie was er hier geen toerisme geweest.",
+        "en": "This road, the SP17, climbs and drops along a coast that was virtually uninhabited until the nineteen-sixties. The reason was malaria: Sardinia's coastal marshes were full of it, and until 1951 thousands died of it every year. Then came the DDT campaign, run by the Rockefeller Foundation. Within five years the disease was gone — and only then could the coast be built on. Without that operation there would be no tourism here."
+      }
+    },
+    {
+      "id": "villasimius",
+      "kind": "town",
+      "lat": 39.1400,
+      "lon": 9.5170,
+      "radius": 1300,
+      "name": { "nl": "Villasimius", "en": "Villasimius" },
+      "script": {
+        "nl": "Villasimius is de badplaats van het zuidoosten, en de zee eromheen is sinds 1998 beschermd zeegebied. Dat betekent geen ankeren op de zeegrasvelden — Posidonia oceanica, dat geen wier is maar een bloeiende plant. Een kolonie voor de kust van Ibiza is met honderdduizend jaar mogelijk het oudste levende organisme ter wereld. Het zeegras produceert zuurstof, houdt het zand vast en is de reden dat het water hier zo helder is.",
+        "en": "Villasimius is the southeast's resort town, and the sea around it has been a marine protected area since 1998. That means no anchoring on the seagrass meadows — Posidonia oceanica, which isn't algae but a flowering plant. A colony off Ibiza, at a hundred thousand years old, may be the oldest living organism on earth. The seagrass produces oxygen, holds the sand in place and is the reason the water here is so clear."
+      }
+    },
+    {
+      "id": "capo-carbonara",
+      "kind": "nature",
+      "lat": 39.1030,
+      "lon": 9.5230,
+      "radius": 1000,
+      "name": { "nl": "Capo Carbonara", "en": "Capo Carbonara" },
+      "script": {
+        "nl": "Capo Carbonara is het zuidoostelijkste punt van Sardinië, met een vuurtoren en het eilandje Serpentara ervoor. Onder water liggen hier verschillende wrakken, waaronder een schip uit de Romeinse tijd. Vlakbij ligt Punta Molentis, waar tot 1968 kwarts werd gewonnen — het witte zand daar is geen gewoon zand maar vermalen kwarts, en daarom voelt het bijna als suiker.",
+        "en": "Capo Carbonara is Sardinia's southeastern tip, with a lighthouse and the islet of Serpentara offshore. Several wrecks lie underwater here, including a Roman-era ship. Nearby is Punta Molentis, where quartz was quarried until 1968 — the white sand there isn't ordinary sand but ground quartz, which is why it feels almost like sugar."
+      }
+    },
+    {
+      "id": "costa-rei",
+      "kind": "beach",
+      "lat": 39.2450,
+      "lon": 9.5760,
+      "radius": 1200,
+      "name": { "nl": "Costa Rei & Scoglio di Peppino", "en": "Costa Rei & Scoglio di Peppino" },
+      "script": {
+        "nl": "Costa Rei sluit de rit af: tien kilometer wit strand in een rechte lijn, met de rode granietrots Scoglio di Peppino aan het zuidelijke eind. Achter je ligt de Monte dei Sette Fratelli, de berg van de zeven broers, waar de laatste Sardische herten leven. Ze waren in 1970 bijna uitgestorven — nog geen honderd dieren — en er zijn er nu weer een paar duizend. Einde van de route.",
+        "en": "Costa Rei closes the drive: ten kilometres of white beach in a straight line, with the red granite Scoglio di Peppino at the southern end. Behind you rises Monte dei Sette Fratelli, the mountain of the seven brothers, home to the last Sardinian deer. They were nearly extinct in 1970 — fewer than a hundred animals — and there are several thousand again now. End of the route."
+      }
+    }
+  ]
+}

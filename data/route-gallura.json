@@ -1,0 +1,119 @@
+{
+  "id": "gallura",
+  "name": {
+    "nl": "Gallura: graniet, wind en kurk",
+    "en": "Gallura: granite, wind and cork"
+  },
+  "region": { "nl": "Noord-Sardinië", "en": "Northern Sardinia" },
+  "summary": {
+    "nl": "Van Palau langs de Straat van Bonifacio naar Capo Testa, en dan het binnenland in naar de kurkeikenbossen van Aggius. Overal graniet in absurde vormen.",
+    "en": "From Palau along the Strait of Bonifacio to Capo Testa, then inland to the cork oak forests of Aggius. Granite in absurd shapes throughout."
+  },
+  "distanceKm": 88,
+  "durationMinutes": 130,
+  "character": { "nl": "Golvend, goed asfalt, veel wind", "en": "Rolling, good tarmac, very windy" },
+  "bestTime": {
+    "nl": "Bij mistral — dan is het zicht op Corsica het scherpst.",
+    "en": "During the mistral — that's when Corsica is sharpest on the horizon."
+  },
+  "waypoints": [
+    { "lat": 41.1790, "lon": 9.3830 },
+    { "lat": 41.1870, "lon": 9.4090 },
+    { "lat": 41.1830, "lon": 9.3400 },
+    { "lat": 41.1830, "lon": 9.2830 },
+    { "lat": 41.2100, "lon": 9.2200 },
+    { "lat": 41.2400, "lon": 9.1900 },
+    { "lat": 41.2430, "lon": 9.1420 },
+    { "lat": 41.1200, "lon": 9.1100 },
+    { "lat": 41.0000, "lon": 9.0700 },
+    { "lat": 40.9160, "lon": 9.0630 },
+    { "lat": 40.9010, "lon": 9.1000 }
+  ],
+  "highlights": [
+    {
+      "id": "palau",
+      "kind": "town",
+      "lat": 41.1790,
+      "lon": 9.3830,
+      "radius": 1200,
+      "name": { "nl": "Palau", "en": "Palau" },
+      "script": {
+        "nl": "Palau is de veerhaven naar La Maddalena, een archipel van zestig eilanden die sinds 1994 nationaal park is. Op het eiland Caprera bracht Giuseppe Garibaldi zijn laatste jaren door — de man die Italië verenigde, kocht daar in 1855 de helft van het eiland en werd boer. Zijn huis staat er nog met zijn spullen erin, inclusief het bed waar hij in 1882 stierf, met uitzicht op zee.",
+        "en": "Palau is the ferry port for La Maddalena, an archipelago of sixty islands that became a national park in 1994. On the island of Caprera, Giuseppe Garibaldi spent his final years — the man who unified Italy bought half the island in 1855 and became a farmer. His house still stands with his belongings inside, including the bed where he died in 1882, looking out at the sea."
+      }
+    },
+    {
+      "id": "capo-orso",
+      "kind": "nature",
+      "lat": 41.1870,
+      "lon": 9.4090,
+      "radius": 800,
+      "name": { "nl": "Capo d'Orso", "en": "Capo d'Orso" },
+      "script": {
+        "nl": "Rechts van je ligt Capo d'Orso, met bovenop een granietrots die door wind en zand is uitgesleten tot de vorm van een zittende beer. Ptolemaeus beschreef hem al in de tweede eeuw als navigatiepunt, dus zeelieden gebruiken deze rots nu al bijna tweeduizend jaar. Dit soort vormen heet tafoni: de wind vreet het zachtere mineraal uit het graniet en laat holtes achter. In Gallura zie je ze overal.",
+        "en": "To your right lies Capo d'Orso, topped by a granite rock that wind and sand have worn into the shape of a sitting bear. Ptolemy described it as a navigation mark in the second century, so sailors have been using this rock for nearly two thousand years. Formations like this are called tafoni: the wind eats the softer mineral out of the granite and leaves cavities. In Gallura you'll see them everywhere."
+      }
+    },
+    {
+      "id": "porto-pollo",
+      "kind": "viewpoint",
+      "lat": 41.1830,
+      "lon": 9.2830,
+      "radius": 900,
+      "name": { "nl": "Porto Pollo", "en": "Porto Pollo" },
+      "script": {
+        "nl": "Porto Pollo is het windsurfmekka van de Middellandse Zee. De zandtong naar het schiereiland Isola dei Gabbiani splitst de baai in tweeën: aan de ene kant vlak water, aan de andere kant golven — en de mistral wordt tussen Sardinië en Corsica samengeperst tot een constante krachtige wind. Dat verschijnsel heet het venturi-effect, en het is de reden dat deze zeestraat berucht is bij zeilers.",
+        "en": "Porto Pollo is the Mediterranean's windsurfing mecca. The sand spit out to the Isola dei Gabbiani peninsula splits the bay in two: flat water on one side, waves on the other — and the mistral is squeezed between Sardinia and Corsica into a steady, powerful wind. That's the venturi effect, and it's why this strait has a fearsome reputation among sailors."
+      }
+    },
+    {
+      "id": "santa-teresa",
+      "kind": "town",
+      "lat": 41.2400,
+      "lon": 9.1900,
+      "radius": 1200,
+      "name": { "nl": "Santa Teresa Gallura", "en": "Santa Teresa Gallura" },
+      "script": {
+        "nl": "Santa Teresa Gallura is het noordelijkste punt van Sardinië. Corsica ligt hier maar elf kilometer verderop; op een heldere dag zie je de witte kliffen van Bonifacio zo liggen. De veerboot doet er vijftig minuten over. Wat je van hieruit niet ziet, is dat dit een van de drukst bevaren en gevaarlijkste zeestraten van de Middellandse Zee is — er liggen tientallen wrakken op de bodem.",
+        "en": "Santa Teresa Gallura is Sardinia's northernmost point. Corsica is only eleven kilometres away; on a clear day you can pick out the white cliffs of Bonifacio. The ferry takes fifty minutes. What you can't see from here is that this is one of the busiest and most dangerous straits in the Mediterranean — dozens of wrecks lie on the bottom."
+      }
+    },
+    {
+      "id": "capo-testa",
+      "kind": "nature",
+      "lat": 41.2430,
+      "lon": 9.1420,
+      "radius": 1000,
+      "name": { "nl": "Capo Testa", "en": "Capo Testa" },
+      "wikipedia": { "nl": "Capo Testa", "en": "Capo Testa" },
+      "script": {
+        "nl": "Capo Testa is een landschap dat niet echt lijkt: reusachtige granietblokken die op elkaar balanceren, met daartussen zandpaadjes. De Romeinen hakten hier zuilen uit die naar Rome werden verscheept — sommige liggen nog half afgewerkt in de rotsen. In de jaren zeventig streek er een hippiecommune neer in de zogenoemde Valle della Luna, de maanvallei. Een paar van hen wonen daar nog steeds, in grotten en zelfgebouwde hutjes.",
+        "en": "Capo Testa is a landscape that doesn't look real: giant granite blocks balanced on each other with sandy paths between them. The Romans cut columns here that were shipped to Rome — some still lie half-finished in the rock. In the nineteen-seventies a hippie commune settled in the so-called Valle della Luna, the valley of the moon. A few of them are still there, living in caves and self-built shelters."
+      }
+    },
+    {
+      "id": "aggius",
+      "kind": "town",
+      "lat": 40.9160,
+      "lon": 9.0630,
+      "radius": 1000,
+      "name": { "nl": "Aggius & de Valle della Luna", "en": "Aggius & the Valle della Luna" },
+      "script": {
+        "nl": "Aggius ligt tussen een chaos van granietrotsen die de Piana dei Grandi Sassi heet — ook wel Valle della Luna, net als bij Capo Testa. Verwarrend, maar dit is de indrukwekkendste van de twee. Aggius zelf staat bekend om zijn tenores-koren: vier mannen die een keelklank produceren die klinkt alsof er instrumenten bij zijn. UNESCO heeft dit meerstemmig gezang erkend als immaterieel werelderfgoed.",
+        "en": "Aggius sits amid a chaos of granite boulders called the Piana dei Grandi Sassi — also known as the Valle della Luna, like the one at Capo Testa. Confusing, but this is the more striking of the two. Aggius itself is known for its tenores choirs: four men producing a throat sound that seems to include instruments. UNESCO has recognised this polyphonic singing as intangible world heritage."
+      }
+    },
+    {
+      "id": "tempio-pausania",
+      "kind": "town",
+      "lat": 40.9010,
+      "lon": 9.1000,
+      "radius": 1200,
+      "name": { "nl": "Tempio Pausania", "en": "Tempio Pausania" },
+      "script": {
+        "nl": "Tempio Pausania is helemaal uit graniet gebouwd — grijze huizen, grijze straten, grijze kerken. Dit is ook het centrum van de kurkindustrie. De kurkeiken die je in de bossen ziet met een rode kale stam zijn kortgeleden geschild; dat gebeurt om de negen tot twaalf jaar en de boom overleeft het probleemloos. Sardinië levert ruim tachtig procent van alle Italiaanse kurk. Einde van de route.",
+        "en": "Tempio Pausania is built entirely of granite — grey houses, grey streets, grey churches. It's also the centre of the cork industry. The cork oaks you see in the forest with bare red trunks were stripped recently; it happens every nine to twelve years and the tree survives it perfectly well. Sardinia supplies over eighty percent of all Italian cork. End of the route."
+      }
+    }
+  ]
+}
