@@ -12,6 +12,8 @@ import { t, applyStaticStrings } from './i18n.js';
 import { ThemeManager } from './theme.js';
 import { buildRouteFromGPX } from './gpxImport.js';
 import { fetchWeather, describeCode, goldenHourDeparture, formatTime } from './weather.js';
+import { SpotifyController, redirectURI } from './spotify.js';
+import { RadioController, searchStations, BUILTIN_STATIONS } from './radio.js';
 
 // ─────────────────────────── State ───────────────────────────
 
@@ -23,6 +25,8 @@ const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment });
 const navEngine = new NavEngine(speech);
 const wakeLock = new WakeLockManager();
 const theme = new ThemeManager(settings);
+const spotify = new SpotifyController(settings);
+const radio = new RadioController();
 
 let routes = [];
 let currentRoute = null;
@@ -58,6 +62,7 @@ syncSpeechFromSettings();
   renderOverviewMap();
   wireGlobalControls();
   wireSettingsSheet();
+  initMusic();
   updateAudioStatus();
 
   if ('mediaSession' in navigator) {
@@ -405,6 +410,8 @@ function startDrive() {
     wakeLock.enable();
     renderRibbon();
     renderNowPlaying();
+    spotify.startPolling();
+    renderMusicBar();
   });
 }
 
@@ -412,6 +419,9 @@ function endDrive() {
   tourEngine.stop();
   location.stop();
   wakeLock.disable();
+  spotify.stopPolling();
+  // The radio keeps playing on purpose — ending the tour shouldn't cut
+  // your music off mid-song.
   navEngine.currentStepIndex = 0;
   navEngine.announcedThisStep.clear();
   showScreen('detail-screen');
@@ -552,6 +562,252 @@ function showNowPhoto(item, container) {
     img.src = src;
     head.insertBefore(img, head.firstChild);
   });
+}
+
+// ─────────────────────────── Music ───────────────────────────
+//
+// Two sources, one bar. Spotify is a remote control over the network:
+// it can steer whatever is already playing on your phone, but it needs a
+// connection and lags by a second or so. The radio plays here in the app,
+// which means it is instant and — the real reason it exists — can be
+// ducked precisely instead of bluntly paused.
+
+let musicSource = 'spotify';   // 'spotify' | 'radio'
+let stationResults = [];
+
+function initMusic() {
+  // Coming back from the Spotify approval page.
+  spotify.handleRedirect()
+    .then((didLogin) => { if (didLogin) refreshSpotifySettingsUI(); })
+    .catch((err) => showMusicProblem(err.message));
+
+  spotify.addEventListener('state', () => renderMusicBar());
+  spotify.addEventListener('authchange', () => { refreshSpotifySettingsUI(); renderMusicBar(); });
+  spotify.addEventListener('problem', (e) => showMusicProblem(e.detail));
+  radio.addEventListener('state', () => renderMusicBar());
+  radio.addEventListener('problem', (e) => showMusicProblem(e.detail));
+
+  radio.setVolume(settings.radioVolume ?? 0.8);
+
+  // Ducking, driven by the guide itself.
+  speech.addEventListener('itemstart', () => {
+    if (!settings.duckEnabled) return;
+    radio.duck(settings.duckLevel);
+    spotify.duck(settings.duckLevel);
+  });
+  speech.addEventListener('itemend', () => {
+    if (!settings.duckEnabled) return;
+    radio.unduck();
+    spotify.unduck();
+  });
+
+  document.getElementById('music-toggle').addEventListener('click', () => {
+    if (musicSource === 'spotify') spotify.toggle();
+    else radio.toggle(lastStation());
+  });
+  document.getElementById('music-next').addEventListener('click', () => {
+    if (musicSource === 'spotify') spotify.next();
+  });
+  document.getElementById('music-prev').addEventListener('click', () => {
+    if (musicSource === 'spotify') spotify.prev();
+  });
+
+  document.querySelectorAll('#music-source button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      musicSource = btn.dataset.source;
+      if (musicSource === 'spotify') radio.stop();
+      renderMusicBar();
+    });
+  });
+}
+
+function lastStation() {
+  if (!settings.lastStationUrl) return BUILTIN_STATIONS[0];
+  return {
+    id: settings.lastStationId,
+    name: settings.lastStationName,
+    url: settings.lastStationUrl
+  };
+}
+
+function showMusicProblem(message) {
+  if (!message) return;
+  const sub = document.getElementById('music-sub');
+  if (sub) sub.textContent = message;
+  const status = document.getElementById('spotify-status');
+  if (status && document.getElementById('sheet-backdrop').classList.contains('open')) {
+    status.textContent = message;
+  }
+}
+
+function renderMusicBar() {
+  const bar = document.getElementById('music-bar');
+  const sourceRow = document.getElementById('music-source');
+  const onDriveScreen = document.getElementById('drive-screen').classList.contains('active');
+  if (!bar || !onDriveScreen) { if (bar) bar.style.display = 'none'; if (sourceRow) sourceRow.style.display = 'none'; return; }
+
+  const lang = settings.language;
+  const usable = spotify.isLoggedIn || radio.station || settings.lastStationUrl;
+  bar.style.display = usable ? 'flex' : 'none';
+  sourceRow.style.display = spotify.isLoggedIn ? 'flex' : 'none';
+  if (!usable) return;
+
+  document.querySelectorAll('#music-source button').forEach((b) =>
+    b.classList.toggle('active', b.dataset.source === musicSource)
+  );
+
+  const art = document.getElementById('music-art');
+  const title = document.getElementById('music-title');
+  const sub = document.getElementById('music-sub');
+  const toggle = document.getElementById('music-toggle');
+
+  if (musicSource === 'spotify') {
+    const s = spotify.state;
+    if (s) {
+      if (s.art) art.src = s.art; else art.removeAttribute('src');
+      title.textContent = s.title;
+      sub.textContent = s.artist + (s.device ? ` · ${s.device}` : '');
+      toggle.textContent = s.isPlaying ? '⏸' : '▶';
+    } else {
+      art.removeAttribute('src');
+      title.textContent = t('music.nothing', lang);
+      sub.textContent = t('music.startInApp', lang);
+      toggle.textContent = '▶';
+    }
+  } else {
+    const station = radio.station || lastStation();
+    art.removeAttribute('src');
+    title.textContent = station?.name || t('music.radioLabel', lang);
+    sub.textContent = radio.isPlaying ? t('music.radioLabel', lang) : '—';
+    toggle.textContent = radio.isPlaying ? '⏸' : '▶';
+  }
+
+  bar.classList.toggle('ducked', radio.ducking || spotify.ducking);
+  document.getElementById('music-next').style.opacity = musicSource === 'spotify' ? '1' : '0.3';
+  document.getElementById('music-prev').style.opacity = musicSource === 'spotify' ? '1' : '0.3';
+}
+
+function wireMusicSettings() {
+  const lang = settings.language;
+
+  // Ducking
+  const duckToggle = document.getElementById('duck-toggle');
+  duckToggle.classList.toggle('on', settings.duckEnabled);
+  duckToggle.addEventListener('click', () => {
+    settings.duckEnabled = !settings.duckEnabled;
+    duckToggle.classList.toggle('on', settings.duckEnabled);
+    persist();
+  });
+
+  const duckSlider = document.getElementById('duck-slider');
+  duckSlider.value = settings.duckLevel;
+  document.getElementById('duck-value').textContent = `${settings.duckLevel}%`;
+  duckSlider.addEventListener('input', () => {
+    settings.duckLevel = parseInt(duckSlider.value, 10);
+    document.getElementById('duck-value').textContent = `${settings.duckLevel}%`;
+    persist();
+  });
+
+  // Spotify
+  const idField = document.getElementById('spotify-client-id');
+  idField.value = settings.spotifyClientId || '';
+  idField.addEventListener('change', () => {
+    settings.spotifyClientId = idField.value.trim();
+    persist();
+    refreshSpotifySettingsUI();
+  });
+
+  document.getElementById('spotify-redirect-note').textContent =
+    `${t('music.redirect', lang)} ${redirectURI()}`;
+
+  document.getElementById('spotify-login').addEventListener('click', () => {
+    settings.spotifyClientId = idField.value.trim();
+    persist();
+    spotify.login().catch((err) => showMusicProblem(err.message));
+  });
+  document.getElementById('spotify-logout').addEventListener('click', () => {
+    spotify.logout();
+    refreshSpotifySettingsUI();
+  });
+  refreshSpotifySettingsUI();
+
+  // Radio
+  const volSlider = document.getElementById('radio-volume');
+  volSlider.value = Math.round((settings.radioVolume ?? 0.8) * 100);
+  document.getElementById('radio-volume-value').textContent = `${volSlider.value}%`;
+  volSlider.addEventListener('input', () => {
+    settings.radioVolume = parseInt(volSlider.value, 10) / 100;
+    document.getElementById('radio-volume-value').textContent = `${volSlider.value}%`;
+    radio.setVolume(settings.radioVolume);
+    persist();
+  });
+
+  document.getElementById('station-search-btn').addEventListener('click', runStationSearch);
+  document.getElementById('station-query').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') runStationSearch();
+  });
+
+  renderStations(BUILTIN_STATIONS);
+}
+
+function refreshSpotifySettingsUI() {
+  const lang = settings.language;
+  const status = document.getElementById('spotify-status');
+  const loginBtn = document.getElementById('spotify-login');
+  const logoutBtn = document.getElementById('spotify-logout');
+  if (!status) return;
+
+  if (spotify.isLoggedIn) {
+    status.textContent = t('music.connected', lang);
+    loginBtn.style.display = 'none';
+    logoutBtn.style.display = 'flex';
+  } else {
+    status.textContent = spotify.isConfigured ? t('music.notConnected', lang) : t('music.needsId', lang);
+    loginBtn.style.display = 'flex';
+    logoutBtn.style.display = 'none';
+    loginBtn.textContent = t('music.connect', lang);
+  }
+  logoutBtn.textContent = t('music.disconnect', lang);
+}
+
+async function runStationSearch() {
+  const lang = settings.language;
+  const query = document.getElementById('station-query').value.trim();
+  const list = document.getElementById('station-list');
+  list.innerHTML = `<p class="import-hint">${t('music.searching', lang)}</p>`;
+
+  const found = await searchStations(query);
+  if (found.length === 0) {
+    list.innerHTML = `<p class="import-hint">${t('music.noStations', lang)}</p>`;
+    return;
+  }
+  renderStations(found);
+}
+
+function renderStations(stations) {
+  stationResults = stations;
+  const list = document.getElementById('station-list');
+  list.innerHTML = '';
+
+  for (const station of stations) {
+    const btn = document.createElement('button');
+    btn.className = 'station-item';
+    if (station.id === settings.lastStationId) btn.classList.add('current');
+    btn.innerHTML = `<span class="st-name"></span><span class="st-meta">${station.bitrate ? station.bitrate + 'k' : ''}</span>`;
+    btn.querySelector('.st-name').textContent = station.name;
+    btn.addEventListener('click', () => {
+      settings.lastStationId = station.id;
+      settings.lastStationName = station.name;
+      settings.lastStationUrl = station.url;
+      persist();
+      musicSource = 'radio';
+      // Started from a tap, which is what the browser requires.
+      radio.play(station);
+      renderStations(stations);
+      renderMusicBar();
+    });
+    list.appendChild(btn);
+  }
 }
 
 // ─────────────────────────── Global controls ───────────────────────────
@@ -758,6 +1014,8 @@ function wireSettingsSheet() {
   wireToggle('nav-toggle', 'turnByTurnEnabled', () => { navEngine.enabled = settings.turnByTurnEnabled; });
   wireToggle('facts-toggle', 'factsEnabled');
   wireToggle('wiki-toggle', 'onlineExtras');
+
+  wireMusicSettings();
 
   document.getElementById('voice-sample').addEventListener('click', () => {
     speech.speakNow({ title: 'Sample', body: t('sample.text', settings.language), source: 'system' });

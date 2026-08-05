@@ -11,7 +11,15 @@ const DEFAULT_SETTINGS = {
   factsEnabled: true,
   onlineExtras: true,     // Wikipedia summaries
   turnByTurnEnabled: true,
-  chimeBeforeSpeech: true
+  chimeBeforeSpeech: true,
+  // Music
+  spotifyClientId: '',
+  duckEnabled: true,
+  duckLevel: 25,          // percent of normal volume during a story
+  radioVolume: 0.8,
+  lastStationId: null,
+  lastStationName: null,
+  lastStationUrl: null
 };
 
 export function loadSettings() {
