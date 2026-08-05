@@ -289,10 +289,24 @@ nieuwe route vanaf waar je nu bent rechtstreeks naar het volgende punt dat je
 wél wilt zien. Er is immers geen reden om je nog een omweg door te sturen
 naar iets wat je zojuist hebt weggetikt.
 
-Wat er precies gebeurt:
+Wat er precies gebeurt, hangt af van wat er op dat moment klinkt:
 
-- Speelt er een verhaal, dan is dát de plek die je overslaat. Speelt er
-  niets, dan de eerstvolgende.
+| Er speelt | Overslaan doet |
+|---|---|
+| Een verhaal over een plek | die plek overslaan + nieuwe route |
+| Een weetje over het eiland | alleen het geluid stoppen |
+| Een navigatie-instructie | alleen het geluid stoppen |
+| De Wikipedia-aanvulling | alleen het geluid stoppen |
+| Niets | de eerstvolgende plek overslaan + nieuwe route |
+
+Alleen een verhaal over een plek telt dus als "deze wil ik niet". Druk je op
+overslaan omdat je dat weetje over casu marzu niet wilt horen, dan raak je
+niet stilzwijgend een plek kwijt die je verderop juist wél had willen zien.
+
+De Wikipedia-aanvulling die na een verhaal komt telt bewust ook niet mee: die
+plek is dan al verteld, dus er valt niets meer over te slaan.
+
+Verder:
 - De nieuwe route loopt via het volgende highlight en pakt daarna de
   oorspronkelijke route weer op — je verliest dus alleen de omweg, niet de
   mooie weg erna.
@@ -307,13 +321,26 @@ kortere weggetje aan elke volgende rit opdringen.
 
 ### En de bug die eronder zat
 
-De knop deed daarvoor helemaal niets, ook niet als pauzeknop. De oorzaak:
-`cancel()` in de spraakmodule is niet meteen klaar — Safari meldt daarna nog
-even dat er gesproken wordt, en de code die het volgende fragment start
-stapte daar precies op uit. Hij wacht nu tot de motor echt stil is.
+De knop deed lange tijd helemaal niets, ook niet als pauzeknop. De oorzaak
+zat een laag dieper dan hij leek.
+
+`speechSynthesis.cancel()` is op iOS niet te vertrouwen: de motor blijft
+daarna geregeld melden dat er nog gesproken wordt, en het `onend`-signaal van
+het afgebroken fragment komt soms nooit. De wachtrij vroeg de motor "ben je
+bezig?" en kreeg voor altijd "ja" terug, waarop hij niets meer startte.
+
+Een eerdere poging wachtte netjes tot de motor stil zou zijn — maar die
+wachtte dus eeuwig, en de noodklep viel alsnog op precies dezelfde controle
+stuk. De wachtrij vraagt het nu helemaal niet meer aan de motor, maar houdt
+zelf bij of hij aan het werk is. Daarnaast volgt na elke `cancel()` een
+`resume()`, omdat een afgebroken motor op iOS in een gepauzeerde toestand kan
+blijven hangen waarin nieuwe opdrachten stilzwijgend verdwijnen.
+
+Er zit nu ook een bewaker op elk fragment: blijft een bevestiging uit, dan
+gaat de wachtrij vanzelf verder in plaats van de rest van de rit te zwijgen.
 
 Diezelfde fout kon ook een navigatie-instructie laten verdwijnen als die
-precies tijdens een verhaal viel. Dat is nu mee opgelost.
+precies tijdens een verhaal viel. Dat is hiermee mee opgelost.
 
 ---
 
