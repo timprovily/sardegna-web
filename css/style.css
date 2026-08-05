@@ -611,3 +611,40 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
   color: var(--sea); font-size: 13px; font-weight: 600;
   text-align: center;
 }
+
+/* --- Send a place to the car --- */
+
+.next-row { display: flex; align-items: center; gap: 12px; }
+.next-text { flex: 1; min-width: 0; }
+
+.send-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 14px; flex-shrink: 0;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--sea) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sea) 45%, transparent);
+  color: var(--shallow);
+}
+.send-btn:active { background: color-mix(in srgb, var(--sea) 32%, transparent); }
+.send-icon { font-size: 17px; line-height: 1; }
+.send-label { font-family: var(--font-display); font-weight: 700; font-size: 10px; }
+
+.highlight-row-share {
+  width: 34px; height: 34px; border-radius: 999px; flex-shrink: 0;
+  margin-left: auto;
+  background: color-mix(in srgb, var(--sea) 12%, transparent);
+  color: var(--shallow); font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+}
+/* The play button no longer needs to claim the free space. */
+.highlight-row-play { margin-left: 6px; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 12px);
+  padding: 11px 18px; border-radius: 999px;
+  background: var(--slate); border: 1px solid var(--seam); color: var(--quartz);
+  font-size: 13px; font-weight: 600; z-index: 2000;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
