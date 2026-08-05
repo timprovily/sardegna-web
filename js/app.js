@@ -577,9 +577,12 @@ function renderNowPlaying() {
  *  while you're driving. */
 function showNowPhoto(item, container) {
   if (!settings.onlineExtras || !currentRoute) return;
-  if (!item.source || !item.source.startsWith('highlight:')) return;
+  // Both the story and its Wikipedia follow-up are about the same place,
+  // so both deserve the picture.
+  const prefix = ['highlight:', 'extra:'].find((p) => item.source?.startsWith(p));
+  if (!prefix) return;
 
-  const id = item.source.slice('highlight:'.length);
+  const id = item.source.slice(prefix.length);
   const highlight = currentRoute.highlights.find((h) => h.id === id);
   if (!highlight || !highlight.wikipedia) return;
 

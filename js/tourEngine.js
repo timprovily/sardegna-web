@@ -341,7 +341,10 @@ export class TourEngine extends EventTarget {
       this.speech.enqueue({
         title: `${highlight.name[lang]} — Wikipedia`,
         body,
-        source: `highlight:${highlight.id}`
+        // Deliberately not `highlight:` — this plays *after* you've
+        // already been told about the place, so silencing it must not be
+        // read as "skip this stop".
+        source: `extra:${highlight.id}`
       });
     });
   }

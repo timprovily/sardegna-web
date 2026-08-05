@@ -37,6 +37,9 @@ export class SpeechService extends EventTarget {
     // onend/onerror from a just-cancelled utterance can never advance the
     // chunk queue of whatever we spoke next.
     this._token = 0;
+    // Our own busy flag. The engine's `speaking` is not trustworthy on iOS.
+    this._active = false;
+    this._watchdog = null;
 
     if ('onvoiceschanged' in this.synth) {
       this.synth.onvoiceschanged = () => { this._voicesReady = true; };
@@ -67,48 +70,27 @@ export class SpeechService extends EventTarget {
     this._token++;
     this.normalQueue = [];
     this._pendingChunks = [];
-    const wasSpeaking = this.synth.speaking || this.synth.pending;
-    if (wasSpeaking) this.synth.cancel();
+    this._hardStop();
     this.normalQueue.unshift(item);
-    if (wasSpeaking) this._pumpAfterCancel();
-    else this._pump();
+    this._pump();
   }
 
   skip() {
     this._token++;
-    this.synth.cancel();
-    this.isSpeaking = false;
-    this.current = null;
     this._pendingChunks = [];
-    this.dispatchEvent(new Event('itemend'));
-    this._pumpAfterCancel();
-  }
-
-  /**
-   * Starts the next item once the engine has actually gone quiet.
-   *
-   * cancel() is not synchronous: for a short while afterwards
-   * speechSynthesis.speaking still reports true. _pump() bails out while
-   * that's the case, so calling it straight after cancel() silently did
-   * nothing — which is exactly why the skip button appeared dead, and why
-   * a navigation prompt would occasionally swallow itself.
-   */
-  _pumpAfterCancel(attempt = 0) {
-    if (attempt > 25) { this._pump(); return; }   // give up waiting, try anyway
-    setTimeout(() => {
-      if (this.synth.speaking || this.synth.pending) {
-        this._pumpAfterCancel(attempt + 1);
-      } else {
-        this._pump();
-      }
-    }, 60);
+    const had = this.current;
+    this.current = null;
+    this.isSpeaking = false;
+    this._hardStop();
+    if (had) this.dispatchEvent(new Event('itemend'));
+    this._pump();
   }
 
   stopAll() {
     this._token++;
     this.normalQueue = [];
     this._pendingChunks = [];
-    this.synth.cancel();
+    this._hardStop();
     this.current = null;
     this.isSpeaking = false;
   }
@@ -118,12 +100,32 @@ export class SpeechService extends EventTarget {
     if (last) this.speakNow({ ...last });
   }
 
+  /**
+   * Stops the engine and releases our own busy flag.
+   *
+   * On iOS, speechSynthesis.cancel() regularly leaves `speaking` stuck on
+   * true and never fires the utterance's onend. Anything that waits for
+   * `speaking` to go false therefore waits forever — which is exactly why
+   * the skip button did nothing. So we keep our own flag and never ask
+   * the engine whether it is busy.
+   *
+   * The paired resume() is the other half of the same folklore: a
+   * cancelled engine can be left in a paused state where subsequent
+   * speak() calls are silently swallowed.
+   */
+  _hardStop() {
+    this._active = false;
+    try { this.synth.cancel(); } catch { /* nothing useful to do */ }
+    try { this.synth.resume(); } catch { /* not paused; fine */ }
+  }
+
   _pump() {
     if (this._pendingChunks.length > 0) {
       this._speakChunk(this._token);
       return;
     }
-    if (this.synth.speaking || this.normalQueue.length === 0) return;
+    // Our own flag, not synth.speaking — see _hardStop above.
+    if (this._active || this.normalQueue.length === 0) return;
 
     const item = this.normalQueue.shift();
     this.current = item;
@@ -149,6 +151,7 @@ export class SpeechService extends EventTarget {
 
     const text = this._pendingChunks.shift();
     if (text === undefined) {
+      this._active = false;
       this.isSpeaking = false;
       this.current = null;
       this.dispatchEvent(new Event('itemend'));
@@ -161,8 +164,27 @@ export class SpeechService extends EventTarget {
     if (voice) utterance.voice = voice;
     utterance.lang = this.language === 'nl' ? 'nl-NL' : 'en-GB';
     utterance.rate = this.rate;
-    utterance.onend = () => this._speakChunk(token);
-    utterance.onerror = () => this._speakChunk(token);
+
+    const done = () => {
+      if (token !== this._token) return;
+      this._active = false;
+      this._speakChunk(token);
+    };
+    utterance.onend = done;
+    utterance.onerror = done;
+
+    // A chunk that never reports back would strand the queue. iOS drops
+    // an onend now and then, so a watchdog sized to the text moves things
+    // along instead of leaving the guide mute for the rest of the drive.
+    const expectedMs = Math.max(4000, (text.length / 12) * 1000 / Math.max(0.5, this.rate));
+    clearTimeout(this._watchdog);
+    this._watchdog = setTimeout(() => {
+      if (token !== this._token || !this._active) return;
+      this._active = false;
+      this._speakChunk(token);
+    }, expectedMs + 5000);
+
+    this._active = true;
     this.synth.speak(utterance);
   }
 
