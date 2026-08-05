@@ -25,6 +25,19 @@ export class LocationService extends EventTarget {
     );
   }
 
+  /** A single fix, without starting continuous tracking. Used on the
+   *  route screen to work out how far you are from the start. */
+  once(timeout = 8000) {
+    return new Promise((resolve, reject) => {
+      if (!this.isSupported) return reject(new Error('no geolocation'));
+      navigator.geolocation.getCurrentPosition(
+        (pos) => { this._handle(pos); resolve(this.last); },
+        reject,
+        { enableHighAccuracy: false, maximumAge: 60000, timeout }
+      );
+    });
+  }
+
   stop() {
     if (this.watchId != null) {
       navigator.geolocation.clearWatch(this.watchId);

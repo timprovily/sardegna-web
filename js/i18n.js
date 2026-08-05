@@ -71,6 +71,10 @@ export const STRINGS = {
     'music.searching': 'Zoeken…',
     'music.noStations': 'Geen zenders gevonden die veilig af te spelen zijn.',
     'music.radioLabel': 'Radio',
+    'detail.navToStart': 'Navigeer naar het startpunt',
+    'detail.navToEnd': 'Navigeer naar het eindpunt',
+    'detail.navToStartAlt': 'Of navigeer naar het startpunt',
+    'detail.navToEndAlt': 'Of navigeer naar het eindpunt',
     'sample.text': 'Zo klinkt de gids. Rechts van je ligt een Spaanse wachttoren uit 1580.',
     'test.text': 'Zo klinkt de gids in je auto. Als je dit hoort, staat alles goed.'
   },
@@ -146,6 +150,10 @@ export const STRINGS = {
     'music.searching': 'Searching…',
     'music.noStations': 'No stations found that can be played safely.',
     'music.radioLabel': 'Radio',
+    'detail.navToStart': 'Navigate to the start',
+    'detail.navToEnd': 'Navigate to the finish',
+    'detail.navToStartAlt': 'Or navigate to the start',
+    'detail.navToEndAlt': 'Or navigate to the finish',
     'sample.text': 'This is how the guide sounds. On your right stands a Spanish watchtower from 1580.',
     'test.text': "This is how the guide will sound in your car. If you can hear this, you're set."
   }

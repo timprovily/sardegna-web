@@ -1,4 +1,4 @@
-import { loadRoutes, loadFacts, formatDistance, progressFraction } from './data.js';
+import { loadRoutes, loadFacts, formatDistance, progressFraction, distanceMetres, distanceToPolyline } from './data.js';
 import { loadSettings, saveSettings, loadCustomRoutes, saveCustomRoute, deleteCustomRoute } from './storage.js';
 import { SpeechService } from './speech.js';
 import { LocationService } from './geo.js';
@@ -143,6 +143,15 @@ function openDetail(route) {
   renderCustomRouteControls(route);
   renderWeather(route);
   loadHighlightPhotos(route);
+  updateMapsButton(route);
+  // Only ask for a fix if permission was already given on an earlier
+  // drive — nobody should get a location prompt just for reading about
+  // a route.
+  if (settings.locationGranted) {
+    location.once().then(() => {
+      if (currentRoute === route) updateMapsButton(route);
+    }).catch(() => {});
+  }
   showScreen('detail-screen');
 
   requestAnimationFrame(() => {
@@ -452,6 +461,10 @@ location.addEventListener('position', (e) => {
   document.getElementById('drive-speed').textContent = Math.round(pos.speedKmh);
   tourEngine.setSpeedKmh(pos.speedKmh);
   theme.setCoords(pos.lat, pos.lon);
+  if (!settings.locationGranted) { settings.locationGranted = true; persist(); }
+  if (currentRoute && document.getElementById('detail-screen').classList.contains('active')) {
+    updateMapsButton(currentRoute);
+  }
 
   if (driveMap) driveMap.updateUserPosition(pos);
 
@@ -816,7 +829,9 @@ function wireGlobalControls() {
   wireImport();
   document.getElementById('back-to-list').addEventListener('click', () => showScreen('list-screen'));
   document.getElementById('start-drive').addEventListener('click', startDrive);
-  document.getElementById('open-osm').addEventListener('click', openInMapsApp);
+  document.getElementById('open-osm').addEventListener('click', () => openInMapsApp(mapsTarget));
+  document.getElementById('open-osm-alt').addEventListener('click', () =>
+    openInMapsApp(mapsTarget === 'start' ? 'end' : 'start'));
 
   document.getElementById('end-drive').addEventListener('click', () => {
     const lang = settings.language;
@@ -913,15 +928,80 @@ function removeCustomRoute(route) {
   showScreen('list-screen');
 }
 
-function openInMapsApp() {
+// Which end of the route the maps button will take you to. Recomputed
+// whenever the detail screen opens and whenever a fresh GPS fix lands.
+let mapsTarget = 'start';
+
+const ON_ROUTE_THRESHOLD_M = 1500;
+
+/**
+ * Decides where "open in maps" should send you.
+ *
+ * The old behaviour always aimed at the finish, which is exactly wrong
+ * when you're still at the hotel: these routes are the point, not the
+ * destination, so getting to the start is what you actually need.
+ *
+ * The test is proximity to the route *line*, not to the start point. Ask
+ * "how far from the start" and someone standing halfway along the drive
+ * gets sent back to the beginning, which is the last thing they want.
+ */
+function updateMapsButton(route) {
+  const button = document.getElementById('open-osm');
+  const alt = document.getElementById('open-osm-alt');
+  if (!button || !route) return;
+
+  const lang = settings.language;
+  const start = route.waypoints[0];
+  const here = location.last;
+  const line = route.geometry && route.geometry.length > 2
+    ? route.geometry
+    : route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
+
+  let note = '';
+
+  if (!here || !start) {
+    // No fix yet — assume you still have to get there.
+    mapsTarget = 'start';
+  } else {
+    const offRoute = distanceToPolyline(here, line);
+    mapsTarget = offRoute <= ON_ROUTE_THRESHOLD_M ? 'end' : 'start';
+    if (mapsTarget === 'start') {
+      note = ` · ${formatDistance(distanceMetres(here, { lat: start.lat, lon: start.lon }))}`;
+    }
+  }
+
+  button.innerHTML =
+    `🗺 <span>${mapsTarget === 'start'
+      ? t('detail.navToStart', lang)
+      : t('detail.navToEnd', lang)}${note}</span>`;
+
+  // The other end stays one tap away, so the choice is never taken from you.
+  if (alt) {
+    alt.textContent = mapsTarget === 'start'
+      ? t('detail.navToEndAlt', lang)
+      : t('detail.navToStartAlt', lang);
+  }
+}
+
+function openInMapsApp(which = mapsTarget) {
   if (!currentRoute) return;
-  const dest = currentRoute.waypoints[currentRoute.waypoints.length - 1];
+  const points = currentRoute.waypoints;
+  const target = which === 'start' ? points[0] : points[points.length - 1];
+  if (!target) return;
+
   // Apple Maps understands this URL scheme on iOS without any SDK or key;
   // on other platforms it falls back to a geo: URI that Android resolves too.
   const ua = navigator.userAgent;
+  const label = encodeURIComponent(
+    `${currentRoute.name[settings.language]} — ${
+      which === 'start'
+        ? (settings.language === 'nl' ? 'start' : 'start')
+        : (settings.language === 'nl' ? 'einde' : 'finish')
+    }`
+  );
   const url = /iPhone|iPad|Macintosh/.test(ua)
-    ? `https://maps.apple.com/?daddr=${dest.lat},${dest.lon}&dirflg=d`
-    : `geo:${dest.lat},${dest.lon}`;
+    ? `https://maps.apple.com/?daddr=${target.lat},${target.lon}&dirflg=d`
+    : `geo:${target.lat},${target.lon}?q=${target.lat},${target.lon}(${label})`;
   window.open(url, '_blank');
 }
 

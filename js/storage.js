@@ -19,7 +19,8 @@ const DEFAULT_SETTINGS = {
   radioVolume: 0.8,
   lastStationId: null,
   lastStationName: null,
-  lastStationUrl: null
+  lastStationUrl: null,
+  locationGranted: false
 };
 
 export function loadSettings() {
