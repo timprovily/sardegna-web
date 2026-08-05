@@ -248,6 +248,54 @@ elkaar:
 
 ---
 
+## Minder gepraat van de navigatie
+
+De gids ratelde onderweg door, en daar waren twee oorzaken voor.
+
+**OSRM levert een "stap" voor elke bocht en elke naamswijziging.** Op een weg
+als de SP105 of de SS125 betekent dat om de paar honderd meter een instructie,
+terwijl je gewoon dezelfde weg volgt. Die worden nu weggefilterd: alleen echte
+beslissingen blijven over — afslaan, splitsingen, rotondes, op- en afritten, en
+de aankomst. "Rechtdoor" verdwijnt ook, want dat is geen instructie.
+
+**En er waren drie aankondigingen per afslag.** Die op 150 meter viel weg
+tegen de andere twee; op snelheid hoorde je hem nog terwijl de laatste al
+kwam. Er zijn er nu twee: een waarschuwing op 300 meter en de instructie zelf
+op 40 meter.
+
+Daar bovenop twee regels tegen opeenstapeling: liggen twee afslagen binnen
+450 meter van elkaar, dan vervalt de voorwaarschuwing van de tweede — dan
+hoor je hem één keer, van dichtbij. En er zitten altijd minstens zeven
+seconden tussen twee instructies, behalve bij de laatste vlak voor een
+kruising, want die moet er hoe dan ook doorheen.
+
+Op een testroute met zestien OSRM-stappen scheelt dat 48 uitspraken tegenover
+10 — ruim driekwart minder.
+
+---
+
+## Een punt naar je auto sturen
+
+Achter de eerstvolgende plek op het rijscherm staat een **Stuur**-knop, en bij
+elke plek in de routelijst een ↗-knopje.
+
+Dat opent de deelknop van iOS, met daarin de Tesla-app naast Berichten en de
+rest. Tik je die aan, dan staat de bestemming in de navigatie van de auto —
+precies zoals delen vanuit Apple Kaarten of Google Maps werkt.
+
+Twee dingen die je moet weten:
+
+- **Staat Tesla niet in de lijst?** Scrol de rij apps helemaal naar rechts,
+  tik op **Meer**, en zet Tesla aan. Dat hoeft één keer.
+- De gedeelde link is bewust een echte Google Maps-link en geen kale
+  coördinaten. Tesla-eigenaren lopen er al jaren tegenaan dat de app losse
+  lat/lon weigert, terwijl een gewone kaartlink prima wordt herkend.
+
+Werkt de deelknop niet — op een desktop bijvoorbeeld — dan komt de link op je
+klembord te staan.
+
+---
+
 ## Radiovolume — waarom de schuif niets deed
 
 Dit was geen slordigheidje maar een platformbeperking, en een venijnige:
