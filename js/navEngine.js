@@ -12,7 +12,7 @@
 // skeleton and the highlight/fact narration keeps working regardless;
 // only the spoken turn prompts are lost.
 
-import { distanceMetres, distanceToPolyline } from './data.js';
+import { distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 import { loadCachedGeometry, saveCachedGeometry } from './storage.js';
 
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving/';
@@ -97,6 +97,7 @@ export class NavEngine extends EventTarget {
     this.speech = speech;
     this.geometry = [];   // [{lat, lon}, ...] road-snapped line
     this.steps = [];      // [{ location:{lat,lon}, type, modifier, roadName, exit }]
+    this.stepIndex = [];  // where each step sits along `geometry`
     this.quality = 'none'; // 'none' | 'skeleton' | 'routed'
     this.currentStepIndex = 0;
     this.announcedThisStep = new Set();
@@ -117,6 +118,7 @@ export class NavEngine extends EventTarget {
       this.geometry = cached.geometry;
       this.steps = cached.steps;
       this.quality = 'routed';
+      this._indexSteps();
       this._notifyGeometry();
       return;
     }
@@ -136,10 +138,78 @@ export class NavEngine extends EventTarget {
       this.geometry = routed.geometry;
       this.steps = routed.steps;
       this.quality = 'routed';
+      this._indexSteps();
       saveCachedGeometry(route.id, routed);
       this._notifyGeometry();
     } catch (err) {
       console.warn('OSRM routing failed, staying on the skeleton line:', err);
+    }
+  }
+
+  /** Records where each manoeuvre sits along the line, so we can jump to
+   *  the right one when you join a route partway. */
+  _indexSteps() {
+    this.stepIndex = this.steps.map(
+      (step) => nearestIndex(step.location, this.geometry).index
+    );
+  }
+
+  /**
+   * Skips forward to the manoeuvre you're actually approaching.
+   *
+   * Starting at step zero when you joined the route halfway means being
+   * told to turn left at a junction thirty kilometres behind you, and
+   * then silence until the route happens to catch up.
+   */
+  syncToPosition(pos) {
+    if (this.steps.length === 0 || this.geometry.length < 2) return;
+    if (!this.stepIndex || this.stepIndex.length !== this.steps.length) this._indexSteps();
+
+    const { index, distance } = nearestIndex(pos, this.geometry);
+    // Too far off the route to say anything sensible about which turn is
+    // next — leave it at the start and let rerouting handle it.
+    if (distance > 3000) return;
+
+    let next = this.stepIndex.findIndex((at) => at >= index);
+    if (next === -1) next = this.steps.length - 1;
+
+    this.currentStepIndex = next;
+    this.announcedThisStep.clear();
+  }
+
+  /**
+   * Recomputes the route from where you are, through the points you still
+   * want, to the finish.
+   *
+   * Used when you skip a highlight: there's no sense continuing to steer
+   * you down a detour towards something you've just said you don't want
+   * to see. The result deliberately isn't cached — it's a one-off
+   * personal detour, and writing it over the stored route would hand the
+   * shortcut to every future drive.
+   */
+  async rerouteVia(from, viaPoints) {
+    const points = [from, ...viaPoints].filter(Boolean);
+    if (points.length < 2) return false;
+
+    // The public OSRM service is a shared courtesy; keep the request
+    // modest rather than throwing twenty waypoints at it.
+    const trimmed = points.length > 12
+      ? [points[0], ...thinEvenly(points.slice(1, -1), 9), points[points.length - 1]]
+      : points;
+
+    try {
+      const routed = await fetchOSRM(trimmed);
+      this.geometry = routed.geometry;
+      this.steps = routed.steps;
+      this.quality = 'routed';
+      this.currentStepIndex = 0;
+      this.announcedThisStep.clear();
+      this.offRouteSince = null;
+      this._indexSteps();
+      this._notifyGeometry();
+      return true;
+    } catch {
+      return false; // offline or the service is busy; keep the old line
     }
   }
 
@@ -154,6 +224,7 @@ export class NavEngine extends EventTarget {
       this.steps = routed.steps;
       this.currentStepIndex = 0;
       this.announcedThisStep.clear();
+      this._indexSteps();
       this._notifyGeometry();
     } catch (err) {
       console.warn('Reroute failed:', err);
@@ -216,11 +287,23 @@ export class NavEngine extends EventTarget {
     const sentence = maneuverSentence(step, p);
     const prefix = thresholdOrNull ? p.distancePrefix(thresholdOrNull) : p.now;
     const body = prefix + lowerFirst(sentence);
-    this.speech.speakNow({
+    const item = {
       title: lang === 'nl' ? 'Navigatie' : 'Navigation',
       body,
       source: 'nav'
-    });
+    };
+
+    // The early warning at 400 m can wait its turn: cutting a story in
+    // half for a junction you won't reach for twenty seconds is worse
+    // than hearing about it a moment later. Anything closer takes
+    // priority immediately — you need that one before the junction, not
+    // after it.
+    const canWait = thresholdOrNull != null && thresholdOrNull >= 400;
+    if (canWait && this.speech.isSpeaking) {
+      this.speech.enqueue(item);
+    } else {
+      this.speech.speakNow(item);
+    }
   }
 
   _notifyGeometry() {
@@ -282,4 +365,11 @@ async function fetchOSRM(waypoints) {
   }
 
   return { geometry, steps };
+}
+
+/** Keeps `count` points spread evenly across a list. */
+function thinEvenly(points, count) {
+  if (points.length <= count) return points;
+  const step = points.length / count;
+  return Array.from({ length: count }, (_, i) => points[Math.floor(i * step)]);
 }

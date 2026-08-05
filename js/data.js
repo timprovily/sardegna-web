@@ -78,6 +78,19 @@ function distanceToSegment(p, a, b) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+/** Index of the polyline vertex closest to a point, with its distance.
+ *  This is how the app knows *where along* a route you are, as opposed to
+ *  merely how far you are from it. */
+export function nearestIndex(point, polyline) {
+  let bestIndex = 0;
+  let bestDistance = Infinity;
+  for (let i = 0; i < polyline.length; i++) {
+    const d = distanceMetres(point, polyline[i]);
+    if (d < bestDistance) { bestDistance = d; bestIndex = i; }
+  }
+  return { index: bestIndex, distance: bestDistance };
+}
+
 /** Fraction (0–1) of the way along a polyline, based on the nearest vertex
  *  to the given point. Same approach the native app used for its ribbon. */
 export function progressFraction(point, polyline) {

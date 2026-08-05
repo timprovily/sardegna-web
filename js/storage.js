@@ -15,8 +15,8 @@ const DEFAULT_SETTINGS = {
   // Music
   spotifyClientId: '',
   duckEnabled: true,
-  duckLevel: 25,          // percent of normal volume during a story
-  radioVolume: 0.8,
+  duckLevel: 20,          // percent of normal volume during a story
+  radioVolume: 0.55,
   lastStationId: null,
   lastStationName: null,
   lastStationUrl: null,

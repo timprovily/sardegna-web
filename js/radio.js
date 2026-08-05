@@ -33,24 +33,98 @@ export const BUILTIN_STATIONS = [
 export class RadioController extends EventTarget {
   constructor() {
     super();
-    this.audio = new Audio();
-    this.audio.preload = 'none';
-    this.audio.crossOrigin = 'anonymous';
     this.station = null;
-    this.baseVolume = 0.8;
+    this.baseVolume = 0.55;
     this.ducking = false;
+    this.hasGainControl = false;
+    this.ctx = null;
+    this.gain = null;
+    this.source = null;
     this._fade = null;
+    this._triedWithoutCors = false;
+    this._makeAudio(true);
+  }
 
-    this.audio.addEventListener('playing', () => this.emit());
-    this.audio.addEventListener('pause', () => this.emit());
-    this.audio.addEventListener('waiting', () => this.emit('buffering'));
-    this.audio.addEventListener('error', () => {
-      this.dispatchEvent(new CustomEvent('problem', {
-        detail: 'Deze zender doet het niet. Streamadressen veranderen soms — zoek de zender opnieuw of plak een ander adres.'
-      }));
-      this.station = null;
-      this.emit();
-    });
+  /**
+   * Builds the <audio> element.
+   *
+   * `crossOrigin` decides everything downstream. With it, the stream can
+   * be routed through Web Audio and we get real volume control. Without
+   * it, we can only play the stream as-is. Plenty of radio servers send
+   * no CORS headers at all and will refuse a CORS request outright, so
+   * this starts optimistic and falls back on the first failure.
+   */
+  _makeAudio(useCors) {
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.removeAttribute('src');
+    }
+    const audio = new Audio();
+    audio.preload = 'none';
+    if (useCors) audio.crossOrigin = 'anonymous';
+    audio.volume = this.baseVolume;
+
+    audio.addEventListener('playing', () => this.emit());
+    audio.addEventListener('pause', () => this.emit());
+    audio.addEventListener('waiting', () => this.emit('buffering'));
+    audio.addEventListener('error', () => this._handleError());
+
+    this.audio = audio;
+    this.usingCors = useCors;
+    // A fresh element means the old Web Audio graph is gone with it.
+    this.source = null;
+    this.gain = null;
+    this.hasGainControl = false;
+  }
+
+  /**
+   * Routes playback through a gain node.
+   *
+   * This exists for one reason: iOS Safari ignores HTMLMediaElement.volume
+   * entirely — setting it is a no-op, volume is the hardware buttons and
+   * nothing else. A Web Audio gain node *is* honoured, so this is the only
+   * way a volume slider or a ducking fade can do anything at all on an
+   * iPhone. Must be created inside a user gesture.
+   */
+  _ensureGraph() {
+    if (this.ctx && this.source) return;
+    if (!this.usingCors) return;   // untainted audio only
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      this.ctx = this.ctx || new Ctx();
+      this.source = this.ctx.createMediaElementSource(this.audio);
+      this.gain = this.ctx.createGain();
+      this.gain.gain.value = this.ducking ? this.baseVolume * 0.2 : this.baseVolume;
+      this.source.connect(this.gain).connect(this.ctx.destination);
+      this.hasGainControl = true;
+    } catch {
+      // Some browsers refuse on a tainted element. Playback still works,
+      // just without software volume.
+      this.hasGainControl = false;
+    }
+    this.dispatchEvent(new CustomEvent('capabilities', {
+      detail: { volumeControl: this.hasGainControl }
+    }));
+  }
+
+  _handleError() {
+    // First failure with CORS on: very likely the server simply doesn't
+    // send the headers. Retry once as a plain stream — losing volume
+    // control is far better than losing the radio.
+    if (this.usingCors && !this._triedWithoutCors && this.station) {
+      this._triedWithoutCors = true;
+      const station = this.station;
+      this._makeAudio(false);
+      this.dispatchEvent(new CustomEvent('capabilities', { detail: { volumeControl: false } }));
+      this.play(station);
+      return;
+    }
+    this.dispatchEvent(new CustomEvent('problem', {
+      detail: 'Deze zender doet het niet. Streamadressen veranderen soms — zoek de zender opnieuw of plak een ander adres.'
+    }));
+    this.station = null;
+    this.emit();
   }
 
   get isPlaying() {
@@ -66,9 +140,14 @@ export class RadioController extends EventTarget {
   /** Must be called from a tap: browsers only allow audio to start from
    *  a real user gesture, exactly like the speech engine. */
   play(station) {
+    if (this.station?.url !== station.url) this._triedWithoutCors = false;
     this.station = station;
     this.audio.src = station.url;
-    this.audio.volume = this.ducking ? this.baseVolume * 0.15 : this.baseVolume;
+
+    this._ensureGraph();
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+    this.applyVolume(this.ducking ? this.baseVolume * 0.2 : this.baseVolume);
+
     this.audio.play().catch(() => {
       this.dispatchEvent(new CustomEvent('problem', {
         detail: 'De browser wilde de radio niet starten. Tik nog een keer op de zender.'
@@ -87,14 +166,29 @@ export class RadioController extends EventTarget {
 
   toggle(fallbackStation) {
     if (this.isPlaying) this.audio.pause();
-    else if (this.station) this.audio.play().catch(() => {});
-    else if (fallbackStation) this.play(fallbackStation);
+    else if (this.station) {
+      this._ensureGraph();
+      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+      this.audio.play().catch(() => {});
+    } else if (fallbackStation) this.play(fallbackStation);
     this.emit();
+  }
+
+  /** The one place that actually writes a volume, so there is a single
+   *  answer to "does this work here". */
+  applyVolume(value) {
+    const v = Math.max(0, Math.min(1, value));
+    if (this.hasGainControl && this.gain) {
+      this.gain.gain.value = v;
+    } else {
+      // No-op on iOS, honoured everywhere else.
+      this.audio.volume = v;
+    }
   }
 
   setVolume(fraction) {
     this.baseVolume = Math.max(0, Math.min(1, fraction));
-    if (!this.ducking) this.audio.volume = this.baseVolume;
+    if (!this.ducking) this.applyVolume(this.baseVolume);
   }
 
   // ── Ducking ─────────────────────────────────────────────────────────
@@ -112,13 +206,25 @@ export class RadioController extends EventTarget {
   /** A short ramp rather than a jump — a hard volume step sounds like a
    *  fault, a fade sounds deliberate. */
   fadeTo(target, ms) {
+    const clamped = Math.max(0, Math.min(1, target));
+
+    if (this.hasGainControl && this.gain && this.ctx) {
+      // Let the audio engine do the ramp; it's sample-accurate and
+      // doesn't stutter when the main thread is busy drawing the map.
+      const now = this.ctx.currentTime;
+      this.gain.gain.cancelScheduledValues(now);
+      this.gain.gain.setValueAtTime(this.gain.gain.value, now);
+      this.gain.gain.linearRampToValueAtTime(clamped, now + ms / 1000);
+      return;
+    }
+
     clearInterval(this._fade);
     const start = this.audio.volume;
     const steps = Math.max(1, Math.round(ms / 40));
     let i = 0;
     this._fade = setInterval(() => {
       i++;
-      this.audio.volume = Math.max(0, Math.min(1, start + (target - start) * (i / steps)));
+      this.audio.volume = Math.max(0, Math.min(1, start + (clamped - start) * (i / steps)));
       if (i >= steps) clearInterval(this._fade);
     }, 40);
   }

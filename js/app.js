@@ -1,4 +1,4 @@
-import { loadRoutes, loadFacts, formatDistance, progressFraction, distanceMetres, distanceToPolyline } from './data.js';
+import { loadRoutes, loadFacts, formatDistance, progressFraction, distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 import { loadSettings, saveSettings, loadCustomRoutes, saveCustomRoute, deleteCustomRoute } from './storage.js';
 import { SpeechService } from './speech.js';
 import { LocationService } from './geo.js';
@@ -412,7 +412,16 @@ function startDrive() {
     driveMap.setFollow(true);
     driveMap.showRoute(currentRoute, navEngine.geometry.length ? navEngine.geometry : currentRoute.waypoints);
 
-    tourEngine.start(currentRoute);
+    // Hand the engine the real road line and wherever we already know we
+    // are, so joining a route halfway works from the first second.
+    const line = navEngine.geometry.length > 1
+      ? navEngine.geometry
+      : (currentRoute.geometry && currentRoute.geometry.length > 2
+          ? currentRoute.geometry
+          : currentRoute.waypoints.map((w) => ({ lat: w.lat, lon: w.lon })));
+
+    tourEngine.start(currentRoute, { geometry: line, position: location.last });
+    if (location.last) navEngine.syncToPosition(location.last);
     navEngine.enabled = settings.turnByTurnEnabled;
     location.start();
     renderWakeLockPill(false);   // shown straight away, updated by the event
@@ -491,6 +500,18 @@ speech.addEventListener('itemend', () => renderNowPlaying());
 
 navEngine.addEventListener('geometry', (e) => {
   if (driveMap) driveMap.updateGeometry(e.detail.geometry);
+  // Routing often lands a few seconds after the drive starts. Re-anchor
+  // to the better line, otherwise progress was measured against the
+  // coarse skeleton and the next turn could be the wrong one.
+  if (tourEngine.isRunning && location.last) {
+    tourEngine.setGeometry(e.detail.geometry);
+    navEngine.syncToPosition(location.last);
+  }
+});
+
+tourEngine.addEventListener('joined', () => {
+  renderRibbon();
+  renderNowPlaying();
 });
 
 navEngine.addEventListener('offroute', (e) => {
@@ -512,7 +533,7 @@ function renderRibbon() {
 
   const ticks = highlights.map((h, i) => {
     const pos = highlights.length > 1 ? (i / (highlights.length - 1)) * 100 : 50;
-    const played = tourEngine.playedHighlightIds.has(h.id);
+    const played = tourEngine.playedHighlightIds.has(h.id) || tourEngine.skippedHighlightIds.has(h.id);
     const isNext = h.id === nextId;
     return `<div class="ribbon-tick ${played ? 'played' : ''} ${isNext ? 'next' : ''}" style="left:${pos}%"></div>`;
   }).join('');
@@ -577,6 +598,88 @@ function showNowPhoto(item, container) {
   });
 }
 
+/**
+ * The skip button.
+ *
+ * Skipping used to mean only "stop talking". It now means "I don't want
+ * this one" in full: the story stops, the place is written off, and the
+ * route is recomputed from where you are straight to the next thing you
+ * do want — no point steering you down a detour to something you've just
+ * dismissed.
+ */
+async function handleSkip() {
+  const lang = settings.language;
+
+  if (!tourEngine.isRunning || !currentRoute) {
+    speech.skip();
+    return;
+  }
+
+  const dropped = tourEngine.skipHighlight(speech.current);
+  speech.skip();
+  renderRibbon();
+  renderNowPlaying();
+
+  if (!dropped) return;
+
+  const next = tourEngine.nextHighlight;
+  if (!next) {
+    speech.speakNow({
+      title: lang === 'nl' ? 'Overgeslagen' : 'Skipped',
+      body: lang === 'nl'
+        ? `${dropped.name.nl} overgeslagen. Dat was de laatste; we rijden door naar het eind.`
+        : `Skipping ${dropped.name.en}. That was the last one; heading for the finish.`,
+      source: 'system'
+    });
+    return;
+  }
+
+  speech.speakNow({
+    title: lang === 'nl' ? 'Nieuwe route' : 'New route',
+    body: lang === 'nl'
+      ? `${dropped.name.nl} overgeslagen. Ik zoek de snelste weg naar ${next.name.nl}.`
+      : `Skipping ${dropped.name.en}. Finding the quickest way to ${next.name.en}.`,
+    source: 'system'
+  });
+
+  if (!settings.turnByTurnEnabled || !location.last) return;
+
+  const ok = await navEngine.rerouteVia(location.last, buildViaPoints(currentRoute, next));
+  if (ok) {
+    tourEngine.setGeometry(navEngine.geometry);
+    if (driveMap) driveMap.updateGeometry(navEngine.geometry);
+  } else {
+    speech.enqueue({
+      title: lang === 'nl' ? 'Navigatie' : 'Navigation',
+      body: lang === 'nl'
+        ? 'Geen verbinding om een nieuwe route te berekenen. Ik houd de bestaande aan.'
+        : "No connection to work out a new route. Sticking with the current one.",
+      source: 'system'
+    });
+  }
+}
+
+/** The next highlight, then the original route points that come after it,
+ *  so skipping shortcuts the detour without abandoning the scenic road
+ *  for everything beyond it. */
+function buildViaPoints(route, fromHighlight) {
+  const line = tourEngine.geometry.length > 1
+    ? tourEngine.geometry
+    : route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
+
+  const fromIdx = nearestIndex({ lat: fromHighlight.lat, lon: fromHighlight.lon }, line).index;
+  const after = route.waypoints.filter(
+    (w) => nearestIndex({ lat: w.lat, lon: w.lon }, line).index > fromIdx
+  );
+
+  const points = [{ lat: fromHighlight.lat, lon: fromHighlight.lon }, ...after];
+  // Always finish where the route finishes, even if the filter dropped it.
+  const end = route.waypoints[route.waypoints.length - 1];
+  const last = points[points.length - 1];
+  if (!last || last.lat !== end.lat || last.lon !== end.lon) points.push({ lat: end.lat, lon: end.lon });
+  return points;
+}
+
 // ─────────────────────────── Music ───────────────────────────
 //
 // Two sources, one bar. Spotify is a remote control over the network:
@@ -599,6 +702,7 @@ function initMusic() {
   spotify.addEventListener('problem', (e) => showMusicProblem(e.detail));
   radio.addEventListener('state', () => renderMusicBar());
   radio.addEventListener('problem', (e) => showMusicProblem(e.detail));
+  radio.addEventListener('capabilities', () => updateVolumeNote());
 
   radio.setVolume(settings.radioVolume ?? 0.8);
 
@@ -618,11 +722,16 @@ function initMusic() {
     if (musicSource === 'spotify') spotify.toggle();
     else radio.toggle(lastStation());
   });
+  // With the radio there is no "next track", so those two buttons earn
+  // their keep as volume instead — you should never have to open
+  // Settings while driving to turn the music down.
   document.getElementById('music-next').addEventListener('click', () => {
     if (musicSource === 'spotify') spotify.next();
+    else nudgeRadioVolume(+0.1);
   });
   document.getElementById('music-prev').addEventListener('click', () => {
     if (musicSource === 'spotify') spotify.prev();
+    else nudgeRadioVolume(-0.1);
   });
 
   document.querySelectorAll('#music-source button').forEach((btn) => {
@@ -632,6 +741,20 @@ function initMusic() {
       renderMusicBar();
     });
   });
+}
+
+function nudgeRadioVolume(delta) {
+  const next = Math.max(0, Math.min(1, (settings.radioVolume ?? 0.55) + delta));
+  settings.radioVolume = next;
+  radio.setVolume(next);
+  persist();
+
+  const slider = document.getElementById('radio-volume');
+  if (slider) {
+    slider.value = Math.round(next * 100);
+    document.getElementById('radio-volume-value').textContent = `${slider.value}%`;
+  }
+  renderMusicBar();
 }
 
 function lastStation() {
@@ -691,13 +814,28 @@ function renderMusicBar() {
     const station = radio.station || lastStation();
     art.removeAttribute('src');
     title.textContent = station?.name || t('music.radioLabel', lang);
-    sub.textContent = radio.isPlaying ? t('music.radioLabel', lang) : '—';
+    const pct = Math.round((settings.radioVolume ?? 0.55) * 100);
+    sub.textContent = radio.isPlaying
+      ? `${t('music.radioLabel', lang)} · ${pct}%`
+      : '—';
     toggle.textContent = radio.isPlaying ? '⏸' : '▶';
   }
 
   bar.classList.toggle('ducked', radio.ducking || spotify.ducking);
-  document.getElementById('music-next').style.opacity = musicSource === 'spotify' ? '1' : '0.3';
-  document.getElementById('music-prev').style.opacity = musicSource === 'spotify' ? '1' : '0.3';
+
+  const prev = document.getElementById('music-prev');
+  const nextBtn = document.getElementById('music-next');
+  if (musicSource === 'spotify') {
+    prev.textContent = '⏮'; nextBtn.textContent = '⏭';
+    prev.setAttribute('aria-label', lang === 'nl' ? 'Vorige' : 'Previous');
+    nextBtn.setAttribute('aria-label', lang === 'nl' ? 'Volgende' : 'Next');
+  } else {
+    prev.textContent = '🔉'; nextBtn.textContent = '🔊';
+    prev.setAttribute('aria-label', lang === 'nl' ? 'Zachter' : 'Quieter');
+    nextBtn.setAttribute('aria-label', lang === 'nl' ? 'Harder' : 'Louder');
+  }
+  prev.style.opacity = '1';
+  nextBtn.style.opacity = '1';
 }
 
 function wireMusicSettings() {
@@ -746,7 +884,7 @@ function wireMusicSettings() {
 
   // Radio
   const volSlider = document.getElementById('radio-volume');
-  volSlider.value = Math.round((settings.radioVolume ?? 0.8) * 100);
+  volSlider.value = Math.round((settings.radioVolume ?? 0.55) * 100);
   document.getElementById('radio-volume-value').textContent = `${volSlider.value}%`;
   volSlider.addEventListener('input', () => {
     settings.radioVolume = parseInt(volSlider.value, 10) / 100;
@@ -754,6 +892,7 @@ function wireMusicSettings() {
     radio.setVolume(settings.radioVolume);
     persist();
   });
+  updateVolumeNote();
 
   document.getElementById('station-search-btn').addEventListener('click', runStationSearch);
   document.getElementById('station-query').addEventListener('keydown', (e) => {
@@ -761,6 +900,29 @@ function wireMusicSettings() {
   });
 
   renderStations(BUILTIN_STATIONS);
+}
+
+/** Says plainly whether the slider can do anything. On a stream without
+ *  CORS headers the app can only hand the audio straight to the browser,
+ *  and on iOS that means the hardware buttons are the only volume there
+ *  is — better to say so than to leave a slider that quietly does
+ *  nothing. */
+function updateVolumeNote() {
+  const note = document.getElementById('radio-volume-note');
+  if (!note) return;
+  const lang = settings.language;
+  const slider = document.getElementById('radio-volume');
+
+  if (radio.station && !radio.hasGainControl) {
+    note.textContent = lang === 'nl'
+      ? 'Deze zender laat softwarematig volume niet toe. Gebruik de volumeknoppen van je telefoon, of kies een andere zender.'
+      : 'This station does not allow software volume. Use your phone\'s volume buttons, or pick another station.';
+    note.style.display = 'block';
+    if (slider) slider.style.opacity = '0.4';
+  } else {
+    note.style.display = 'none';
+    if (slider) slider.style.opacity = '1';
+  }
 }
 
 function refreshSpotifySettingsUI() {
@@ -818,6 +980,7 @@ function renderStations(stations) {
       radio.play(station);
       renderStations(stations);
       renderMusicBar();
+      setTimeout(updateVolumeNote, 1200);
     });
     list.appendChild(btn);
   }
@@ -839,7 +1002,7 @@ function wireGlobalControls() {
   });
 
   document.getElementById('ctrl-repeat').addEventListener('click', () => speech.repeatLast());
-  document.getElementById('ctrl-skip').addEventListener('click', () => speech.skip());
+  document.getElementById('ctrl-skip').addEventListener('click', handleSkip);
   document.getElementById('ctrl-fact').addEventListener('click', () => tourEngine.speakRandomFact());
 
   document.getElementById('test-audio').addEventListener('click', () => {

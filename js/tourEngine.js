@@ -4,9 +4,18 @@
 // story once it starts (only a nav prompt can), and a fact fills a long
 // silence while you're actually moving.
 
-import { distanceMetres } from './data.js';
+import { distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 
 const IDLE_CHECK_MS = 20000;
+// How close to the route you must be for "joining partway" to make sense.
+const JOIN_CORRIDOR_M = 3000;
+// Slack in vertices, so a highlight right where you're standing isn't
+// written off as already passed.
+const JOIN_TOLERANCE_VERTICES = 2;
+// You can be this far off the line and still be told the story. Wider
+// than the trigger radius on purpose: a parallel street, a diversion or
+// a car park shouldn't cost you the commentary.
+const STORY_CORRIDOR_M = 3000;
 const MIN_SPEED_FOR_FACTS_KMH = 12;
 
 export class TourEngine extends EventTarget {
@@ -19,6 +28,14 @@ export class TourEngine extends EventTarget {
 
     this.route = null;
     this.isRunning = false;
+    this.geometry = [];
+    // Where each highlight sits along the route line, so we can tell
+    // "already behind me" from "still to come".
+    this.highlightIndex = new Map();
+    this.progressIndex = 0;
+    // Highlights deliberately passed over because you joined the route
+    // after them. Distinct from "played": these were never told.
+    this.skippedHighlightIds = new Set();
     this.playedHighlightIds = new Set();
     this.usedFactIds = new Set();
     this.nextHighlight = null;
@@ -31,20 +48,113 @@ export class TourEngine extends EventTarget {
     });
   }
 
-  start(route) {
+  start(route, { geometry = null, position = null } = {}) {
     this.route = route;
     this.playedHighlightIds = new Set();
+    this.skippedHighlightIds = new Set();
     this.usedFactIds = new Set();
     this.isRunning = true;
     this.lastSpeechEndedAt = Date.now();
 
+    this.geometry = (geometry && geometry.length > 1)
+      ? geometry
+      : route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
+
+    // Work out once where every highlight sits along the line.
+    this.highlightIndex.clear();
+    for (const h of route.highlights) {
+      const { index } = nearestIndex({ lat: h.lat, lon: h.lon }, this.geometry);
+      this.highlightIndex.set(h.id, index);
+    }
+
     const lang = this.settings.language;
-    const opening = lang === 'nl'
-      ? `Route gestart: ${route.name.nl}. ${route.summary.nl}`
-      : `Route started: ${route.name.en}. ${route.summary.en}`;
+    const joined = this._joinRoute(position);
+
+    let opening;
+    if (joined.midRoute) {
+      // You didn't start at the beginning, so don't pretend otherwise.
+      const remaining = route.highlights.length - joined.skipped;
+      opening = lang === 'nl'
+        ? `Je pakt ${route.name.nl} op onderweg. ${joined.skipped} ${joined.skipped === 1 ? 'plek ligt' : 'plekken liggen'} al achter je; er ${remaining === 1 ? 'komt' : 'komen'} er nog ${remaining}.`
+        : `Joining ${route.name.en} partway. ${joined.skipped} ${joined.skipped === 1 ? 'place is' : 'places are'} already behind you; ${remaining} still ${remaining === 1 ? 'lies' : 'lie'} ahead.`;
+    } else {
+      opening = lang === 'nl'
+        ? `Route gestart: ${route.name.nl}. ${route.summary.nl}`
+        : `Route started: ${route.name.en}. ${route.summary.en}`;
+    }
     this.speech.speakNow({ title: route.name[lang], body: opening, source: 'system' });
 
     this._idleTimer = setInterval(() => this._considerFact(), IDLE_CHECK_MS);
+    // If there was no fix yet, do the same work on the first one that
+    // arrives rather than assuming you're at the start line.
+    this._needsJoin = !position;
+    if (position) this._recomputeNext(position);
+    return joined;
+  }
+
+  /**
+   * Figures out where on the route you currently are and writes off
+   * everything behind you.
+   *
+   * Without this, joining a route halfway means the guide sits waiting
+   * for a highlight you passed twenty minutes ago, and stays silent the
+   * whole way.
+   */
+  _joinRoute(position) {
+    if (!position || this.geometry.length < 2) {
+      this.progressIndex = 0;
+      return { midRoute: false, skipped: 0 };
+    }
+
+    const { index, distance } = nearestIndex(position, this.geometry);
+    // If you're nowhere near the route, don't skip anything — you're
+    // presumably driving to the start.
+    if (distance > JOIN_CORRIDOR_M) {
+      this.progressIndex = 0;
+      return { midRoute: false, skipped: 0 };
+    }
+
+    this.progressIndex = index;
+
+    let skipped = 0;
+    for (const h of this.route.highlights) {
+      const at = this.highlightIndex.get(h.id) ?? 0;
+      // A small tolerance so a highlight you're standing right next to
+      // still gets told rather than written off by a metre or two.
+      if (at + JOIN_TOLERANCE_VERTICES < index) {
+        this.skippedHighlightIds.add(h.id);
+        skipped++;
+      }
+    }
+
+    const fraction = index / (this.geometry.length - 1);
+    return { midRoute: fraction > 0.02 && skipped > 0, skipped, fraction };
+  }
+
+  /**
+   * Swaps in a better route line mid-drive.
+   *
+   * Routing usually lands a few seconds after you set off, replacing the
+   * coarse skeleton with real roads. Everything positional is derived
+   * from that line, so it all has to be recomputed — assigning the new
+   * geometry alone would leave every highlight pointing at a vertex
+   * number from the old one.
+   */
+  setGeometry(geometry) {
+    if (!geometry || geometry.length < 2 || !this.route) return;
+
+    // Remember where we were in real terms before the indices change.
+    const wasAt = this.geometry.length > 1 && this.progressIndex > 0
+      ? this.geometry[Math.min(this.progressIndex, this.geometry.length - 1)]
+      : null;
+
+    this.geometry = geometry;
+    this.highlightIndex.clear();
+    for (const h of this.route.highlights) {
+      const { index } = nearestIndex({ lat: h.lat, lon: h.lon }, geometry);
+      this.highlightIndex.set(h.id, index);
+    }
+    this.progressIndex = wasAt ? nearestIndex(wasAt, geometry).index : 0;
   }
 
   stop() {
@@ -59,16 +169,69 @@ export class TourEngine extends EventTarget {
 
   handlePosition(pos) {
     if (!this.isRunning || !this.route) return;
+    this._lastPosition = pos;
     const lang = this.settings.language;
 
-    const hits = this.route.highlights
-      .filter((h) => !this.playedHighlightIds.has(h.id))
-      .map((h) => ({ h, d: distanceMetres(pos, { lat: h.lat, lon: h.lon }) }))
-      .filter((x) => x.d <= x.h.radius)
-      .sort((a, b) => a.d - b.d);
+    // First fix after starting: work out where we joined before deciding
+    // anything is due, otherwise every highlight behind us fires at once.
+    if (this._needsJoin) {
+      this._needsJoin = false;
+      const joined = this._joinRoute(pos);
+      if (joined.midRoute) {
+        const remaining = this.route.highlights.length - joined.skipped;
+        this.speech.enqueue({
+          title: this.route.name[lang],
+          body: lang === 'nl'
+            ? `Je zit al op de route. ${joined.skipped} ${joined.skipped === 1 ? 'plek ligt' : 'plekken liggen'} achter je; er ${remaining === 1 ? 'komt' : 'komen'} er nog ${remaining}.`
+            : `You're already on the route. ${joined.skipped} ${joined.skipped === 1 ? 'place is' : 'places are'} behind you; ${remaining} still to come.`,
+          source: 'system'
+        });
+        this.dispatchEvent(new CustomEvent('joined', { detail: joined }));
+      }
+      this._recomputeNext(pos);
+      return;
+    }
 
-    if (hits.length > 0) {
-      const { h } = hits[0];
+    // How far along the route we now are, and how far off it.
+    if (this.geometry.length > 1) {
+      const { index } = nearestIndex(pos, this.geometry);
+      // Only ever move forwards. A GPS wobble near a hairpin can snap to
+      // a vertex from the other side of the bend; letting that rewind
+      // progress would replay stories you already heard.
+      if (index > this.progressIndex) this.progressIndex = index;
+    }
+    const offRoute = this.geometry.length > 1
+      ? distanceToPolyline(pos, this.geometry)
+      : 0;
+
+    const pending = this.route.highlights.filter(
+      (h) => !this.playedHighlightIds.has(h.id) && !this.skippedHighlightIds.has(h.id)
+    );
+
+    const due = pending
+      .map((h) => {
+        const straightLine = distanceMetres(pos, { lat: h.lat, lon: h.lon });
+        const at = this.highlightIndex.get(h.id) ?? 0;
+        return {
+          h,
+          d: straightLine,
+          // Two independent reasons to tell a story:
+          //  1. you came close to the place itself, or
+          //  2. you've driven past its point on the route while still
+          //     following that route. The second is what rescues the case
+          //     where you're a few hundred metres off, or took a slightly
+          //     different line through a village.
+          near: straightLine <= h.radius,
+          passed: this.progressIndex >= at && offRoute <= STORY_CORRIDOR_M
+        };
+      })
+      .filter((x) => x.near || x.passed)
+      .sort((a, b) => (this.highlightIndex.get(a.h.id) ?? 0) - (this.highlightIndex.get(b.h.id) ?? 0));
+
+    // Queue everything that's become due, in route order. Normally that's
+    // one; after a tunnel or a signal gap it can be a couple, and they'll
+    // play back to back rather than being lost.
+    for (const { h } of due) {
       this.playedHighlightIds.add(h.id);
       this.speech.enqueue({ title: h.name[lang], body: h.script[lang], source: `highlight:${h.id}` });
       this._scheduleEnrichment(h);
@@ -76,6 +239,31 @@ export class TourEngine extends EventTarget {
     }
 
     this._recomputeNext(pos);
+  }
+
+  /**
+   * Writes off a highlight on purpose.
+   *
+   * Returns the one that was dropped, so the caller can go and find a
+   * quicker way onward. If a story is playing, that's the one you mean;
+   * otherwise it's the one coming up.
+   */
+  skipHighlight(current = null) {
+    if (!this.route) return null;
+
+    let target = null;
+    if (current && typeof current.source === 'string' && current.source.startsWith('highlight:')) {
+      const id = current.source.slice('highlight:'.length);
+      target = this.route.highlights.find((h) => h.id === id) || null;
+    }
+    if (!target) target = this.nextHighlight;
+    if (!target) return null;
+
+    this.skippedHighlightIds.add(target.id);
+    this.playedHighlightIds.delete(target.id);
+    this._recomputeNext(this._lastPosition);
+    this.dispatchEvent(new CustomEvent('highlightskipped', { detail: target }));
+    return target;
   }
 
   playHighlight(highlight) {
@@ -96,7 +284,10 @@ export class TourEngine extends EventTarget {
   }
 
   _recomputeNext(pos) {
-    const remaining = this.route.highlights.filter((h) => !this.playedHighlightIds.has(h.id));
+    if (!pos || !this.route) return;
+    const remaining = this.route.highlights.filter(
+      (h) => !this.playedHighlightIds.has(h.id) && !this.skippedHighlightIds.has(h.id)
+    );
     if (remaining.length === 0) {
       this.nextHighlight = null;
       this.distanceToNext = null;

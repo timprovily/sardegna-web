@@ -67,20 +67,41 @@ export class SpeechService extends EventTarget {
     this._token++;
     this.normalQueue = [];
     this._pendingChunks = [];
-    if (this.synth.speaking || this.synth.pending) {
-      this.synth.cancel();
-    }
+    const wasSpeaking = this.synth.speaking || this.synth.pending;
+    if (wasSpeaking) this.synth.cancel();
     this.normalQueue.unshift(item);
-    this._pump();
+    if (wasSpeaking) this._pumpAfterCancel();
+    else this._pump();
   }
 
   skip() {
     this._token++;
-    if (this.synth.speaking) this.synth.cancel();
+    this.synth.cancel();
     this.isSpeaking = false;
     this.current = null;
     this._pendingChunks = [];
-    this._pump();
+    this.dispatchEvent(new Event('itemend'));
+    this._pumpAfterCancel();
+  }
+
+  /**
+   * Starts the next item once the engine has actually gone quiet.
+   *
+   * cancel() is not synchronous: for a short while afterwards
+   * speechSynthesis.speaking still reports true. _pump() bails out while
+   * that's the case, so calling it straight after cancel() silently did
+   * nothing — which is exactly why the skip button appeared dead, and why
+   * a navigation prompt would occasionally swallow itself.
+   */
+  _pumpAfterCancel(attempt = 0) {
+    if (attempt > 25) { this._pump(); return; }   // give up waiting, try anyway
+    setTimeout(() => {
+      if (this.synth.speaking || this.synth.pending) {
+        this._pumpAfterCancel(attempt + 1);
+      } else {
+        this._pump();
+      }
+    }, 60);
   }
 
   stopAll() {
