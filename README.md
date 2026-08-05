@@ -248,6 +248,32 @@ elkaar:
 
 ---
 
+## Naar het startpunt navigeren
+
+De knop **Open in kaarten-app** op elke routepagina kiest zelf het juiste
+doel en zegt in het label waar hij je heen stuurt.
+
+De test is niet "hoe ver ben ik van het startpunt", maar "zit ik op de
+route". Dat verschil is belangrijk: sta je halverwege de rit, dan wil je naar
+het eind, niet terug naar het begin.
+
+- **Meer dan 1,5 km van de routelijn** — bijvoorbeeld in je hotel, bij de
+  veerboot in Olbia of op het vliegveld — dan stuurt hij je naar het
+  **startpunt**, met de afstand erbij.
+- **Op of vlak bij de route** dan stuurt hij je naar het **eindpunt**.
+- **Nog geen locatie bekend** dan het startpunt, want dat is wat je nodig
+  hebt voor je vertrekt.
+
+Onder de knop staat altijd een tekstlink naar de andere kant, dus de keuze
+wordt je nooit uit handen genomen.
+
+De app vraagt hiervoor geen extra toestemming. Pas nadat je één keer een rit
+hebt gestart en locatie hebt toegestaan, haalt hij op de routepagina stilletjes
+één positie op om de afstand te kunnen tonen. Wie alleen wat routes zit te
+lezen, krijgt geen enkele pop-up.
+
+---
+
 ## Muziek bedienen tijdens het rijden
 
 Op het rijscherm staat een muziekbalk boven de drie gidsknoppen: titel,

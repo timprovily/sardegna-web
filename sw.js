@@ -5,7 +5,7 @@
 //
 // Bump CACHE_NAME whenever you change a bundled file, so returning users
 // get the update instead of a stale cached copy.
-const CACHE_NAME = 'sardegna-v6';
+const CACHE_NAME = 'sardegna-v7';
 
 const SHELL_FILES = [
   './',
