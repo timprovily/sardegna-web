@@ -163,6 +163,23 @@
     <div class="ribbon" id="ribbon"></div>
     <div id="now-content"></div>
     <div class="off-route-notice" id="off-route-notice" style="display:none"></div>
+    <div class="music-bar" id="music-bar" style="display:none">
+      <img class="music-art" id="music-art" alt="">
+      <div class="music-meta">
+        <div class="music-title" id="music-title">—</div>
+        <div class="music-sub" id="music-sub"></div>
+      </div>
+      <div class="music-controls">
+        <button id="music-prev" aria-label="Vorige">⏮</button>
+        <button id="music-toggle" aria-label="Afspelen of pauzeren">▶</button>
+        <button id="music-next" aria-label="Volgende">⏭</button>
+      </div>
+    </div>
+    <div class="music-source" id="music-source" style="display:none">
+      <button data-source="spotify">Spotify</button>
+      <button data-source="radio">Radio</button>
+    </div>
+
     <div class="controls">
       <button class="ctrl-btn" id="ctrl-repeat"><span class="icon">↺</span><span class="label" data-i18n="drive.repeat">Opnieuw</span></button>
       <button class="ctrl-btn" id="ctrl-skip"><span class="icon">⏭</span><span class="label" data-i18n="drive.skip">Overslaan</span></button>
@@ -226,6 +243,43 @@
         <span class="value" id="interval-value">7 min</span>
       </div>
       <input type="range" id="interval-slider" min="3" max="20" step="1">
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title" data-i18n="settings.music">Muziek</div>
+
+      <div class="setting-row">
+        <label data-i18n="settings.duck">Muziek zachter tijdens een verhaal</label>
+        <div class="toggle" id="duck-toggle"></div>
+      </div>
+      <div class="setting-row" style="margin-top:6px">
+        <label data-i18n="settings.duckLevel">Hoe zacht</label>
+        <span class="value" id="duck-value">25%</span>
+      </div>
+      <input type="range" id="duck-slider" min="5" max="70" step="5">
+
+      <div class="music-setup">
+        <div class="setup-title">Spotify</div>
+        <p class="import-hint" id="spotify-status"></p>
+        <input type="text" id="spotify-client-id" class="text-input" placeholder="Spotify Client ID" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <p class="import-hint" id="spotify-redirect-note"></p>
+        <button class="btn-secondary" id="spotify-login">Koppel Spotify</button>
+        <button class="btn-secondary" id="spotify-logout" style="display:none">Ontkoppel Spotify</button>
+      </div>
+
+      <div class="music-setup">
+        <div class="setup-title" data-i18n="settings.radio">Radio</div>
+        <div class="setting-row">
+          <label data-i18n="settings.radioVolume">Radiovolume</label>
+          <span class="value" id="radio-volume-value">80%</span>
+        </div>
+        <input type="range" id="radio-volume" min="0" max="100" step="5">
+        <div class="station-search">
+          <input type="text" id="station-query" class="text-input" placeholder="Zoek een zender, bv. Qmusic">
+          <button class="btn-secondary" id="station-search-btn" style="margin-top:8px">Zoeken</button>
+        </div>
+        <div id="station-list" class="station-list"></div>
+      </div>
     </div>
 
     <div class="sheet-section">

@@ -248,6 +248,73 @@ elkaar:
 
 ---
 
+## Muziek bedienen tijdens het rijden
+
+Op het rijscherm staat een muziekbalk boven de drie gidsknoppen: titel,
+artiest, hoesje, en knoppen voor vorige, pauze en volgende.
+
+### Spotify
+
+Werkt, maar er zijn voorwaarden — en die komen van Spotify, niet van deze app:
+
+- **Je hebt Spotify Premium nodig.** De bedieningsendpoints zijn Premium-only.
+- Sinds februari 2026 moet ook de *eigenaar* van de gekoppelde app Premium
+  hebben, mag je één Client ID per account, en maximaal vijf gebruikers. Voor
+  persoonlijk gebruik ruim voldoende.
+- Bediening loopt via de servers van Spotify, dus het heeft internet nodig en
+  reageert met een halve tot twee seconden vertraging. In de dode zones op de
+  SS125 en in de Barbagia werkt het niet.
+
+**Eenmalig instellen (5 minuten):**
+
+1. Ga naar `developer.spotify.com/dashboard` → **Create app**
+2. Naam: `Sardegna`. Redirect URI: **exact** het adres dat in de instellingen
+   van de app onder het Client ID-veld staat — kopieer het daarvandaan, een
+   afwijkende schuine streep is al genoeg om het te laten mislukken
+3. Vink **Web API** aan → **Save**
+4. Kopieer de **Client ID**. Het Client Secret heb je níét nodig: de app
+   gebruikt PKCE, zodat er geen geheim in publieke code hoeft te staan
+5. In het dashboard: **User Management** → voeg je eigen Spotify-mailadres toe
+6. Plak de Client ID in de app onder Instellingen → Muziek → **Koppel Spotify**
+
+Start daarna één nummer in de Spotify-app zelf. De Web API bestuurt een
+*actief apparaat*; zonder iets dat speelt is er niets om te besturen.
+
+### Radio
+
+TuneIn kan niet bediend worden: hun Platform API is partner-gericht en zit
+achter een evaluatieovereenkomst en certificering, bedoeld voor Sonos en
+autofabrikanten.
+
+In plaats daarvan speelt de radio in de app zelf. NPO Radio 1 tot en met 5
+staan er standaard in, en via het zoekveld vind je elke andere zender —
+Qmusic, 538, Sky, Veronica — in de open zenderdatabase van Radio Browser
+(gratis, geen sleutel, geen login).
+
+Eén technisch detail dat je kan opvallen: alleen zenders met een
+HTTPS-stream verschijnen in de lijst. De app draait zelf op HTTPS en browsers
+blokkeren onbeveiligde audio daarbinnen. Een aantal oudere zenders valt
+daardoor af. Streamadressen verouderen ook; werkt een zender niet meer, zoek
+hem dan opnieuw op.
+
+### Automatisch dimmen
+
+Aan, en instelbaar tussen 5% en 70%. Zodra de gids begint te praten gaat je
+muziek zachter, daarna weer terug.
+
+Voor de radio is dat exact en direct — een korte fade omlaag en omhoog,
+omdat een harde volumesprong klinkt als een storing. Voor Spotify gaat het
+via een volumeopdracht over het netwerk, dus daar zit ongeveer een seconde
+vertraging in.
+
+Dit is meteen de oplossing voor iets wat eerder niet kon: zonder deze
+koppeling pauzeert iOS je muziek bij elk verhaal in plaats van hem te dimmen.
+
+Stop je de rit, dan blijft de radio bewust doorspelen — je rit beëindigen
+hoort je muziek niet af te kappen.
+
+---
+
 ## Een route toevoegen aan de app zelf (voor ingebouwde routes)
 
 Wil je een route meeleveren in plaats van importeren: kopieer een bestand in `data/`, hernoem het
@@ -277,6 +344,8 @@ js/
   theme.js               licht/donker + zonsopkomst-berekening
   gpxImport.js           GPX inlezen + highlights zoeken via Wikipedia
   weather.js             weer + gouden-uur vertrektijd (Open-Meteo)
+  spotify.js             Spotify-koppeling (PKCE) en bediening
+  radio.js               internetradio in de app + zender zoeken
   storage.js            instellingen + routecache in localStorage
   i18n.js                NL/EN teksten voor de interface
 data/                  dezelfde acht routes + weetjes als de native versie
