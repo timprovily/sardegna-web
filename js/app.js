@@ -186,6 +186,7 @@ function renderHighlightList(route) {
           <div class="highlight-row-title">${h.name[lang]}</div>
           <div class="highlight-row-meta">${t('detail.triggerAt', lang, { m: h.radius })}</div>
         </div>
+        <button class="highlight-row-share" aria-label="${t('share.send', lang)}">↗</button>
         <button class="highlight-row-play">🔊</button>
       </div>
       <div class="highlight-row-body">${h.script[lang]}</div>`;
@@ -193,6 +194,10 @@ function renderHighlightList(route) {
     row.querySelector('.highlight-row-play').addEventListener('click', (e) => {
       e.stopPropagation();
       tourEngine.playHighlight(h);
+    });
+    row.querySelector('.highlight-row-share').addEventListener('click', (e) => {
+      e.stopPropagation();
+      shareLocation(h.name[lang], h.lat, h.lon);
     });
     row.querySelector('.highlight-row-body').addEventListener('click', function () {
       this.classList.toggle('expanded');
@@ -560,10 +565,22 @@ function renderNowPlaying() {
       </div>`;
     showNowPhoto(current, container);
   } else if (tourEngine.nextHighlight) {
+    const next = tourEngine.nextHighlight;
     container.innerHTML = `
       <div class="eyebrow">${t('drive.nextUp', lang)}</div>
-      <div class="now-title">${escapeHTML(tourEngine.nextHighlight.name[lang])}</div>
-      <div class="now-distance">${formatDistance(tourEngine.distanceToNext)}</div>`;
+      <div class="next-row">
+        <div class="next-text">
+          <div class="now-title">${escapeHTML(next.name[lang])}</div>
+          <div class="now-distance">${formatDistance(tourEngine.distanceToNext)}</div>
+        </div>
+        <button class="send-btn" id="send-next" aria-label="${t('share.send', lang)}">
+          <span class="send-icon">↗</span>
+          <span class="send-label">${t('share.short', lang)}</span>
+        </button>
+      </div>`;
+    document.getElementById('send-next')?.addEventListener('click', () =>
+      shareLocation(next.name[lang], next.lat, next.lon)
+    );
   } else {
     container.innerHTML = `
       <div class="eyebrow">${t('drive.allTold', lang)}</div>
@@ -681,6 +698,62 @@ function buildViaPoints(route, fromHighlight) {
   const last = points[points.length - 1];
   if (!last || last.lat !== end.lat || last.lon !== end.lon) points.push({ lat: end.lat, lon: end.lon });
   return points;
+}
+
+// ─────────────────────────── Send a place to the car ───────────────────
+
+/**
+ * Hands a single place to whatever can navigate to it.
+ *
+ * On iPhone this opens the system share sheet, where the Tesla app
+ * appears alongside Messages and the rest — picking it drops the
+ * destination straight into the car's navigation, exactly as sharing from
+ * Apple or Google Maps does.
+ *
+ * The link deliberately is a proper Google Maps URL rather than bare
+ * coordinates: owners have long found the Tesla app refuses raw lat/lon,
+ * while a real maps link resolves fine.
+ *
+ * If the Tesla app isn't in the sheet, it has to be switched on once:
+ * scroll the row of apps to the end, tap More, and enable Tesla.
+ */
+async function shareLocation(name, lat, lon) {
+  const lang = settings.language;
+  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+  const label = `${name} — ${currentRoute ? currentRoute.name[lang] : 'Sardegna'}`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: name, text: label, url });
+      return;
+    } catch (err) {
+      // Tapping outside the sheet counts as an abort, and is not a failure.
+      if (err && err.name === 'AbortError') return;
+    }
+  }
+
+  // No share sheet (desktop, or an older browser): put it on the
+  // clipboard so it can still be pasted somewhere useful.
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast(lang === 'nl' ? 'Link gekopieerd' : 'Link copied');
+  } catch {
+    window.open(url, '_blank');
+  }
+}
+
+function showToast(message) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
 // ─────────────────────────── Music ───────────────────────────

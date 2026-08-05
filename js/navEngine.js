@@ -17,7 +17,17 @@ import { loadCachedGeometry, saveCachedGeometry } from './storage.js';
 
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving/';
 
-const ANNOUNCE_THRESHOLDS_M = [400, 150, 35]; // announce at each of these distances
+// Two announcements per turn, not three. The middle one at 150 m was
+// pure noise: on a road like the SS125 you'd still be hearing it as the
+// final one arrived.
+const ANNOUNCE_THRESHOLDS_M = [300, 40];
+// An advance warning only earns its place if the previous manoeuvre was
+// far enough back. In a string of bends the warnings pile onto each
+// other, so there we say it once, close in.
+const MIN_GAP_FOR_ADVANCE_M = 450;
+// Never two spoken instructions within this window, unless the second is
+// the immediate one.
+const NAV_COOLDOWN_MS = 7000;
 const ARRIVE_THRESHOLD_M = 25;                 // close enough to call a step "done"
 const OFF_ROUTE_THRESHOLD_M = 70;
 const OFF_ROUTE_PERSIST_MS = 12000;
@@ -98,6 +108,8 @@ export class NavEngine extends EventTarget {
     this.geometry = [];   // [{lat, lon}, ...] road-snapped line
     this.steps = [];      // [{ location:{lat,lon}, type, modifier, roadName, exit }]
     this.stepIndex = [];  // where each step sits along `geometry`
+    this.stepGap = [];    // metres from the previous manoeuvre to this one
+    this.lastNavAt = 0;
     this.quality = 'none'; // 'none' | 'skeleton' | 'routed'
     this.currentStepIndex = 0;
     this.announcedThisStep = new Set();
@@ -151,6 +163,9 @@ export class NavEngine extends EventTarget {
   _indexSteps() {
     this.stepIndex = this.steps.map(
       (step) => nearestIndex(step.location, this.geometry).index
+    );
+    this.stepGap = this.steps.map((step, i) =>
+      i === 0 ? Infinity : distanceMetres(this.steps[i - 1].location, step.location)
     );
   }
 
@@ -245,10 +260,24 @@ export class NavEngine extends EventTarget {
 
     for (const threshold of ANNOUNCE_THRESHOLDS_M) {
       const key = `${this.currentStepIndex}:${threshold}`;
-      if (distanceToStep <= threshold && !this.announcedThisStep.has(key)) {
-        this.announcedThisStep.add(key);
-        this._announce(step, distanceToStep <= ARRIVE_THRESHOLD_M ? null : threshold, lang);
+      if (distanceToStep > threshold || this.announcedThisStep.has(key)) continue;
+
+      const isImmediate = threshold === ANNOUNCE_THRESHOLDS_M[ANNOUNCE_THRESHOLDS_M.length - 1];
+
+      if (!isImmediate) {
+        // Bends coming thick and fast: skip the heads-up entirely rather
+        // than talking over the previous one.
+        if ((this.stepGap[this.currentStepIndex] ?? Infinity) < MIN_GAP_FOR_ADVANCE_M) {
+          this.announcedThisStep.add(key);
+          continue;
+        }
+        // Still inside the quiet window — leave the key unmarked so it
+        // can be reconsidered on the next fix.
+        if (Date.now() - this.lastNavAt < NAV_COOLDOWN_MS) continue;
       }
+
+      this.announcedThisStep.add(key);
+      this._announce(step, distanceToStep <= ARRIVE_THRESHOLD_M ? null : threshold, lang);
     }
 
     if (distanceToStep <= ARRIVE_THRESHOLD_M) {
@@ -298,7 +327,8 @@ export class NavEngine extends EventTarget {
     // than hearing about it a moment later. Anything closer takes
     // priority immediately — you need that one before the junction, not
     // after it.
-    const canWait = thresholdOrNull != null && thresholdOrNull >= 400;
+    this.lastNavAt = Date.now();
+    const canWait = thresholdOrNull != null && thresholdOrNull >= 300;
     if (canWait && this.speech.isSpeaking) {
       this.speech.enqueue(item);
     } else {
@@ -364,7 +394,37 @@ async function fetchOSRM(waypoints) {
     }
   }
 
-  return { geometry, steps };
+  return { geometry, steps: keepRealDecisions(steps) };
+}
+
+// Manoeuvre types that represent an actual decision. Everything else —
+// "continue", "new name", "notification" — is OSRM telling you the road
+// bent or changed name, which on a Sardinian coast road happens every few
+// hundred metres. Announcing those was the bulk of the chatter.
+const REAL_DECISIONS = new Set([
+  'turn', 'fork', 'merge', 'on ramp', 'off ramp',
+  'end of road', 'roundabout', 'rotary', 'arrive'
+]);
+
+/**
+ * Strips the step list down to things worth saying out loud.
+ *
+ * Also drops "turn straight" and "fork straight", which mean "carry on"
+ * dressed up as an instruction. The arrival step is always kept — you
+ * want to be told you're there.
+ */
+function keepRealDecisions(steps) {
+  const kept = steps.filter((step) => {
+    if (step.type === 'arrive') return true;
+    if (!REAL_DECISIONS.has(step.type)) return false;
+    if ((step.type === 'turn' || step.type === 'fork') &&
+        (!step.modifier || step.modifier === 'straight')) return false;
+    return true;
+  });
+
+  // If a route somehow has no junctions at all, fall back rather than
+  // leaving the driver with nothing.
+  return kept.length > 0 ? kept : steps.slice(-1);
 }
 
 /** Keeps `count` points spread evenly across a list. */

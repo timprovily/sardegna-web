@@ -75,6 +75,8 @@ export const STRINGS = {
     'detail.navToEnd': 'Navigeer naar het eindpunt',
     'detail.navToStartAlt': 'Of navigeer naar het startpunt',
     'detail.navToEndAlt': 'Of navigeer naar het eindpunt',
+    'share.send': 'Stuur naar navigatie',
+    'share.short': 'Stuur',
     'sample.text': 'Zo klinkt de gids. Rechts van je ligt een Spaanse wachttoren uit 1580.',
     'test.text': 'Zo klinkt de gids in je auto. Als je dit hoort, staat alles goed.'
   },
@@ -154,6 +156,8 @@ export const STRINGS = {
     'detail.navToEnd': 'Navigate to the finish',
     'detail.navToStartAlt': 'Or navigate to the start',
     'detail.navToEndAlt': 'Or navigate to the finish',
+    'share.send': 'Send to navigation',
+    'share.short': 'Send',
     'sample.text': 'This is how the guide sounds. On your right stands a Spanish watchtower from 1580.',
     'test.text': "This is how the guide will sound in your car. If you can hear this, you're set."
   }
