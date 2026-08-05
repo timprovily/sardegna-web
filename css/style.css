@@ -529,3 +529,76 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
 .now-head .now-text { min-width: 0; flex: 1; }
 
 .photo-credit { font-size: 10px; color: var(--ash); margin-top: 4px; }
+
+/* --- Music bar (drive screen) ---
+   Sits directly above the three guide buttons. Deliberately compact and
+   with oversized touch targets: this gets used at a glance, at speed. */
+
+.music-bar {
+  display: flex; align-items: center; gap: 11px;
+  margin-top: 12px; padding: 10px 12px;
+  background: var(--slate); border: 1px solid var(--seam); border-radius: 14px;
+}
+.music-art {
+  width: 40px; height: 40px; border-radius: 8px; object-fit: cover;
+  background: var(--seam); flex-shrink: 0;
+}
+.music-art:not([src]) { visibility: hidden; width: 0; }
+.music-meta { flex: 1; min-width: 0; }
+.music-title {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.music-sub {
+  font-size: 11px; color: var(--ash);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.music-controls { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+.music-controls button {
+  width: 42px; height: 42px; border-radius: 999px;
+  font-size: 16px; color: var(--quartz);
+  display: flex; align-items: center; justify-content: center;
+}
+.music-controls button:active { background: var(--seam); }
+#music-toggle { font-size: 19px; }
+
+.music-bar.ducked { border-color: var(--porphyry); }
+
+.music-source {
+  display: flex; gap: 8px; margin-top: 8px;
+}
+.music-source button {
+  flex: 1; padding: 8px; border-radius: 10px;
+  background: var(--slate); border: 1px solid var(--seam);
+  font-size: 12px; font-weight: 600; color: var(--ash);
+}
+.music-source button.active {
+  background: color-mix(in srgb, var(--sea) 20%, transparent);
+  border-color: var(--sea); color: var(--shallow);
+}
+
+/* --- Music settings --- */
+
+.music-setup { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--seam); }
+.setup-title {
+  font-family: var(--font-display); font-weight: 800; font-size: 13px;
+  margin-bottom: 8px;
+}
+.text-input {
+  width: 100%; padding: 11px 12px; margin-top: 6px;
+  background: var(--slate); border: 1px solid var(--seam); border-radius: 10px;
+  color: var(--quartz); font-size: 14px; font-family: var(--font-mono);
+}
+.text-input::placeholder { color: var(--ash); font-family: var(--font-body); }
+
+.station-search { margin-top: 12px; }
+.station-list { margin-top: 10px; max-height: 240px; overflow-y: auto; }
+.station-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 11px 12px; margin-bottom: 6px;
+  background: var(--slate); border: 1px solid var(--seam); border-radius: 10px;
+  text-align: left; color: var(--quartz); font-size: 14px;
+}
+.station-item.current { border-color: var(--sea); color: var(--shallow); }
+.station-item .st-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.station-item .st-meta { font-size: 10px; color: var(--ash); font-family: var(--font-mono); }
