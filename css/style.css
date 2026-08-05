@@ -602,3 +602,12 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
 .station-item.current { border-color: var(--sea); color: var(--shallow); }
 .station-item .st-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .station-item .st-meta { font-size: 10px; color: var(--ash); font-family: var(--font-mono); }
+
+/* A quiet text button for the secondary "or navigate to the other end"
+   choice — present, but never competing with the primary action. */
+.link-button {
+  display: block; width: 100%; padding: 10px 0 2px;
+  background: none; border: none;
+  color: var(--sea); font-size: 13px; font-weight: 600;
+  text-align: center;
+}
