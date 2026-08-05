@@ -248,6 +248,121 @@ elkaar:
 
 ---
 
+## Radiovolume — waarom de schuif niets deed
+
+Dit was geen slordigheidje maar een platformbeperking, en een venijnige:
+**iOS Safari negeert `audio.volume` volledig.** Het instellen ervan is
+letterlijk een lege opdracht; het volume van een audio-element is op een
+iPhone alleen met de hardwareknoppen te regelen. De schuif werkte dus wel op
+een desktop en deed op je telefoon niets. En om dezelfde reden werkte het
+automatisch dimmen van de radio ook nooit.
+
+De oplossing is de stream door de Web Audio API leiden, via een gain-node.
+Die wordt op iOS wél gehonoreerd. Dat is nu gebeurd, dus zowel de schuif als
+het dimmen doen het.
+
+Eén nuance: een stream kan alleen door Web Audio als de zender de juiste
+CORS-headers meestuurt, en dat doet lang niet elke radioserver. De app
+probeert het daarom eerst mét, en valt bij een weigering automatisch terug op
+gewoon afspelen — liever geen volumeregeling dan geen radio. Gebeurt dat, dan
+zegt de app het eerlijk onder de schuif en zul je de knoppen van je telefoon
+moeten gebruiken, of een andere zender kiezen.
+
+**Standaardwaarden verlaagd.** Het radiovolume stond op 80% en staat nu op
+55%, en tijdens een verhaal zakt hij naar 20% daarvan — zo'n 11% in plaats
+van de 20% van eerst. Had je de app al gebruikt, dan staat je oude instelling
+nog opgeslagen; die kun je nu simpelweg omlaag schuiven, want dat werkt weer.
+
+**Volume regelen tijdens het rijden.** Bij radio hebben vorige en volgende
+geen betekenis, dus die twee knoppen in de muziekbalk zijn nu 🔉 en 🔊, in
+stappen van 10%. Het percentage staat onder de zendernaam. Je hoeft dus niet
+meer naar de instellingen te tikken terwijl je rijdt.
+
+---
+
+## De knop Overslaan
+
+Overslaan betekent nu wat je verwacht: *deze wil ik niet*.
+
+De vertelling stopt, de plek wordt afgeschreven, en de app berekent een
+nieuwe route vanaf waar je nu bent rechtstreeks naar het volgende punt dat je
+wél wilt zien. Er is immers geen reden om je nog een omweg door te sturen
+naar iets wat je zojuist hebt weggetikt.
+
+Wat er precies gebeurt:
+
+- Speelt er een verhaal, dan is dát de plek die je overslaat. Speelt er
+  niets, dan de eerstvolgende.
+- De nieuwe route loopt via het volgende highlight en pakt daarna de
+  oorspronkelijke route weer op — je verliest dus alleen de omweg, niet de
+  mooie weg erna.
+- Hij eindigt altijd op het oorspronkelijke eindpunt.
+- Geen bereik? Dan zegt de gids dat en houdt hij de bestaande route aan.
+- Sla je het laatste punt over, dan is er niets meer om naartoe te rijden en
+  meldt hij dat gewoon.
+
+De omgeleide route wordt bewust niet opgeslagen. Het is een eenmalige,
+persoonlijke afsnijding; die over de opgeslagen route heen schrijven zou het
+kortere weggetje aan elke volgende rit opdringen.
+
+### En de bug die eronder zat
+
+De knop deed daarvoor helemaal niets, ook niet als pauzeknop. De oorzaak:
+`cancel()` in de spraakmodule is niet meteen klaar — Safari meldt daarna nog
+even dat er gesproken wordt, en de code die het volgende fragment start
+stapte daar precies op uit. Hij wacht nu tot de motor echt stil is.
+
+Diezelfde fout kon ook een navigatie-instructie laten verdwijnen als die
+precies tijdens een verhaal viel. Dat is nu mee opgelost.
+
+---
+
+## Onderweg instappen
+
+Je hoeft een route niet vanaf het begin te rijden.
+
+Bij het starten kijkt de app waar je bent, snapt je positie op de routelijn,
+en pakt de begeleiding vanaf dát punt op. Wat achter je ligt wordt
+overgeslagen — die verhalen komen niet meer — en de gids zegt bij aanvang
+hoeveel plekken je gemist hebt en hoeveel er nog komen. Ook de
+navigatie-instructies springen meteen naar de afslag die je daadwerkelijk
+nadert, in plaats van je te vertellen dat je linksaf moet bij een kruising
+van dertig kilometer terug.
+
+Zit je meer dan 3 km van de route, dan wordt er niets overgeslagen: dan rijd
+je kennelijk nog naar het startpunt toe.
+
+Is er bij het starten nog geen GPS-fix, dan gebeurt hetzelfde alsnog zodra de
+eerste positie binnenkomt.
+
+### Verhalen die je vroeger miste
+
+Een verhaal startte voorheen alleen als je binnen de straal van het punt
+kwam — 500 tot 1600 meter. Reed je een parallelweg, een omleiding, of net de
+andere kant van een dorp, dan bleef het stil en was dat verhaal voorgoed weg.
+
+Nu zijn er twee onafhankelijke redenen om een verhaal te vertellen:
+
+1. je komt dicht bij de plek zelf, of
+2. je bent zijn punt op de route gepasseerd terwijl je die route volgt
+
+De tweede regel is de vangnet. De corridor daarvoor is 3 km breed, dus een
+straatje verderop of een kleine omweg kost je de commentaar niet meer. Rijd je
+echt van de route af, dan zwijgt hij wel — anders zou hij verhalen afvuren
+over plekken die je nooit ziet.
+
+Kwam je na een tunnel of een gat in het signaal langs meerdere punten
+tegelijk, dan spelen die achter elkaar af in de volgorde waarin je ze
+passeerde, in plaats van dat er eentje overblijft.
+
+### Een verhaal wordt niet meer afgekapt
+
+De vroege waarschuwing op 400 meter voor een afslag wacht nu netjes tot een
+verhaal is afgelopen. De instructies op 150 en 35 meter onderbreken nog wél
+direct — die heb je nodig vóór de kruising, niet erna.
+
+---
+
 ## Naar het startpunt navigeren
 
 De knop **Open in kaarten-app** op elke routepagina kiest zelf het juiste
