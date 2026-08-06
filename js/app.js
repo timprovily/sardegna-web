@@ -4,6 +4,7 @@ import { SpeechService } from './speech.js';
 import { LocationService } from './geo.js';
 import { NavEngine, maneuverBanner } from './navEngine.js';
 import { maneuverIconSVG } from './maneuverIcons.js';
+import { reverseRoute, unreverseRoute } from './reverse.js';
 import { TourEngine } from './tourEngine.js';
 import { EnrichmentService } from './enrichment.js';
 import { RouteMap } from './map.js';
@@ -132,9 +133,12 @@ function openDetail(route) {
   currentRoute = route;
   const lang = settings.language;
 
-  document.getElementById('detail-region').textContent = route.region[lang];
+  document.getElementById('detail-region').innerHTML =
+    escapeHTML(route.region[lang]) +
+    (route.reversed ? `<span class="custom-badge">${t('reverse.badge', lang)}</span>` : '');
   document.getElementById('detail-name').textContent = route.name[lang];
-  document.getElementById('detail-summary').textContent = route.summary[lang];
+  document.getElementById('detail-summary').textContent =
+    route.summary[lang] + (route.reversed ? ' ' + t('reverse.note', lang) : '');
   document.getElementById('detail-distance').textContent = `${route.distanceKm} km`;
   document.getElementById('detail-duration').textContent = `${route.durationMinutes} min`;
   document.getElementById('detail-count').textContent = route.highlights.length;
@@ -145,6 +149,7 @@ function openDetail(route) {
   renderDining(route);
   renderCustomRouteControls(route);
   renderStoryBlock(route);
+  renderReverseButton(route);
   renderWeather(route);
   loadHighlightPhotos(route);
   updateMapsButton(route);
@@ -789,6 +794,37 @@ function renderManeuverBanner(detail) {
   if (wasHidden) syncMapInsets();
 }
 
+/**
+ * Flips the current route end for end.
+ *
+ * A new object rather than a mutation, so the original in the list stays
+ * untouched and you can flip back without anything having been lost. The
+ * cached road geometry is keyed off the id, and the reverse of a road is
+ * a genuinely different set of turns, so the reversed copy gets its own
+ * id and its own cache entry.
+ */
+function toggleReverse() {
+  if (!currentRoute) return;
+  const lang = settings.language;
+
+  currentRoute = currentRoute.reversed
+    ? unreverseRoute(currentRoute, routes)
+    : reverseRoute(currentRoute, lang);
+
+  // openDetail calls navEngine.load, which keys its cached geometry on the
+  // route id. The reversed copy carries its own id, so it fetches and
+  // stores its own line rather than reusing the outbound one.
+  openDetail(currentRoute);
+}
+
+function renderReverseButton(route) {
+  const lang = settings.language;
+  const label = document.getElementById('reverse-label');
+  if (label) {
+    label.textContent = route.reversed ? t('reverse.undo', lang) : t('reverse.do', lang);
+  }
+}
+
 // ─────────────────────────── Expanded stories ───────────────────────────
 
 function renderStoryBlock(route) {
@@ -1271,6 +1307,7 @@ function wireGlobalControls() {
   wireImport();
   document.getElementById('back-to-list').addEventListener('click', () => showScreen('list-screen'));
   document.getElementById('start-drive').addEventListener('click', startDrive);
+  document.getElementById('reverse-route').addEventListener('click', toggleReverse);
   document.getElementById('open-osm').addEventListener('click', () => openInMapsApp(mapsTarget));
   document.getElementById('open-osm-alt').addEventListener('click', () =>
     openInMapsApp(mapsTarget === 'start' ? 'end' : 'start'));

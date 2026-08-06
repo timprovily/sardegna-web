@@ -5,6 +5,7 @@
 // silence while you're actually moving.
 
 import { distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
+import { flipDirections } from './reverse.js';
 
 const IDLE_CHECK_MS = 20000;
 // How close to the route you must be for "joining partway" to make sense.
@@ -82,6 +83,15 @@ export class TourEngine extends EventTarget {
       opening = lang === 'nl'
         ? `Route gestart: ${route.name.nl}. ${route.summary.nl}`
         : `Route started: ${route.name.en}. ${route.summary.en}`;
+    }
+
+    if (route.reversed) {
+      // Links and rechts are corrected automatically; the opening and
+      // closing lines of each story are not, and pretending otherwise
+      // would be worse than admitting it.
+      opening += lang === 'nl'
+        ? ' Je rijdt deze route omgekeerd. Links en rechts worden meegedraaid, maar sommige verhalen zijn geschreven vanuit de andere richting, dus af en toe klopt een begin of een slot niet helemaal.'
+        : " You're driving this route in reverse. Left and right are corrected, but some stories were written for the other direction, so an opening or closing line may not quite fit.";
     }
     this.speech.speakNow({ title: route.name[lang], body: opening, source: 'system' });
 
@@ -246,10 +256,14 @@ export class TourEngine extends EventTarget {
    *  generated, otherwise the hand-written one that ships with the app. */
   scriptFor(highlight) {
     const lang = this.settings.language;
-    const expanded = this.storyteller && this.route
-      ? this.storyteller.get(this.route.id, highlight.id, lang)
+    // Long stories are written per place, not per direction, so a
+    // reversed route looks them up under the original id.
+    const key = this.route ? (this.route.baseId || this.route.id) : null;
+    const expanded = this.storyteller && key
+      ? this.storyteller.get(key, highlight.id, lang)
       : null;
-    return expanded || highlight.script[lang];
+    const text = expanded || highlight.script[lang];
+    return this.route?.reversed ? flipDirections(text, lang) : text;
   }
 
   /**

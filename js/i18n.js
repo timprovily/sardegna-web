@@ -93,6 +93,10 @@ export const STRINGS = {
     'ai.working': 'Bezig met schrijven…',
     'ai.doneMsg': 'Klaar: {done} geschreven, {failed} mislukt.',
     'ai.offlineNote': 'Deze verhalen staan op je telefoon en werken zonder bereik.',
+    'reverse.do': 'Rijd deze route omgekeerd',
+    'reverse.undo': 'Terug naar de oorspronkelijke richting',
+    'reverse.badge': 'OMGEKEERD',
+    'reverse.note': 'Links en rechts worden in de verhalen meegedraaid. Begin- en slotzinnen zijn geschreven voor de andere richting en kloppen soms niet.',
     'sample.text': 'Zo klinkt de gids. Rechts van je ligt een Spaanse wachttoren uit 1580.',
     'test.text': 'Zo klinkt de gids in je auto. Als je dit hoort, staat alles goed.'
   },
@@ -190,6 +194,10 @@ export const STRINGS = {
     'ai.working': 'Writing…',
     'ai.doneMsg': 'Done: {done} written, {failed} failed.',
     'ai.offlineNote': 'These stories live on your phone and work without a signal.',
+    'reverse.do': 'Drive this route in reverse',
+    'reverse.undo': 'Back to the original direction',
+    'reverse.badge': 'REVERSED',
+    'reverse.note': 'Left and right are flipped in the stories. Opening and closing lines were written for the other direction and may not fit.',
     'sample.text': 'This is how the guide sounds. On your right stands a Spanish watchtower from 1580.',
     'test.text': "This is how the guide will sound in your car. If you can hear this, you're set."
   }
