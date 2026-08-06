@@ -139,6 +139,22 @@
 
     <div class="highlight-list" id="highlight-list"></div>
 
+    <div class="story-block" id="story-block">
+      <div class="story-head">
+        <div>
+          <div class="eyebrow" style="color:var(--amber-soft)" id="story-eyebrow"></div>
+          <div class="story-status" id="story-status"></div>
+        </div>
+        <button class="btn-story" id="story-generate"></button>
+      </div>
+      <div class="import-progress" id="story-progress" style="display:none">
+        <div class="msg" id="story-msg"></div>
+        <div class="import-bar"><span id="story-bar-fill"></span></div>
+        <button class="link-button" id="story-cancel"></button>
+      </div>
+      <p class="import-error" id="story-error" style="display:none"></p>
+    </div>
+
     <div class="dining-section" id="dining-section" style="display:none">
       <div class="eyebrow" id="dining-eyebrow" style="color:var(--amber-soft)"></div>
       <p class="dining-intro" id="dining-intro"></p>
@@ -244,6 +260,17 @@
         <span class="value" id="interval-value">7 min</span>
       </div>
       <input type="range" id="interval-slider" min="3" max="20" step="1">
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title" data-i18n="settings.stories">Verhalen</div>
+      <p class="import-hint" id="ai-explain"></p>
+      <input type="password" id="ai-key" class="text-input" placeholder="sk-ant-..." autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="setting-row" style="margin-top:10px">
+        <label data-i18n="settings.model">Model</label>
+      </div>
+      <div class="segmented" id="ai-model"></div>
+      <p class="import-hint" id="ai-status"></p>
     </div>
 
     <div class="sheet-section">
