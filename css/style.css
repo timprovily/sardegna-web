@@ -648,3 +648,20 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
   opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* --- Expanded stories --- */
+
+.story-block {
+  margin-top: 22px; padding: 16px;
+  background: var(--slate); border: 1px solid var(--seam); border-radius: var(--corner);
+}
+.story-head { display: flex; align-items: flex-start; gap: 12px; }
+.story-status { font-size: 13px; color: var(--ash); line-height: 1.5; margin-top: 4px; }
+.btn-story {
+  flex-shrink: 0; padding: 10px 16px; border-radius: 12px;
+  background: color-mix(in srgb, var(--amber) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--amber) 50%, transparent);
+  color: var(--amber-soft);
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+}
+.btn-story:disabled { opacity: 0.5; }
