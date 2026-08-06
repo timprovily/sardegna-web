@@ -4,115 +4,178 @@
     "nl": "SS125: Dorgali → Santa Maria Navarrese",
     "en": "SS125: Dorgali → Santa Maria Navarrese"
   },
-  "region": { "nl": "Golfo di Orosei & Ogliastra", "en": "Golfo di Orosei & Ogliastra" },
+  "region": {
+    "nl": "Golfo di Orosei & Ogliastra",
+    "en": "Golfo di Orosei & Ogliastra"
+  },
   "summary": {
     "nl": "De legendarische Orientale Sarda: kalkstenen canyons, een bergpas op 1017 meter en een afdaling naar zee. Motorrijders komen hier van over heel Europa voor.",
     "en": "The legendary Orientale Sarda: limestone canyons, a pass at 1,017 metres and a descent to the sea. Motorcyclists come from all over Europe for this."
   },
   "distanceKm": 72,
   "durationMinutes": 110,
-  "character": { "nl": "Bergpas, brede bochten, veel hoogtemeters", "en": "Mountain pass, sweeping bends, big elevation" },
+  "character": {
+    "nl": "Bergpas, brede bochten, veel hoogtemeters",
+    "en": "Mountain pass, sweeping bends, big elevation"
+  },
   "bestTime": {
     "nl": "Vroeg in de ochtend — dan hangt er mist in de canyon onder de pas.",
     "en": "Early morning — mist sits in the canyon below the pass."
   },
   "waypoints": [
-    { "lat": 40.2900, "lon": 9.6100 },
-    { "lat": 40.2600, "lon": 9.5900 },
-    { "lat": 40.2200, "lon": 9.5700 },
-    { "lat": 40.1830, "lon": 9.5580 },
-    { "lat": 40.1590, "lon": 9.5860 },
-    { "lat": 40.1200, "lon": 9.6100 },
-    { "lat": 40.0800, "lon": 9.6400 },
-    { "lat": 40.0350, "lon": 9.6650 },
-    { "lat": 40.0100, "lon": 9.6800 },
-    { "lat": 39.9930, "lon": 9.6900 }
+    {
+      "lat": 40.29,
+      "lon": 9.61
+    },
+    {
+      "lat": 40.26,
+      "lon": 9.59
+    },
+    {
+      "lat": 40.22,
+      "lon": 9.57
+    },
+    {
+      "lat": 40.183,
+      "lon": 9.558
+    },
+    {
+      "lat": 40.159,
+      "lon": 9.586
+    },
+    {
+      "lat": 40.12,
+      "lon": 9.61
+    },
+    {
+      "lat": 40.08,
+      "lon": 9.64
+    },
+    {
+      "lat": 40.035,
+      "lon": 9.665
+    },
+    {
+      "lat": 40.01,
+      "lon": 9.68
+    },
+    {
+      "lat": 39.993,
+      "lon": 9.69
+    }
   ],
   "highlights": [
     {
       "id": "dorgali",
       "kind": "town",
-      "lat": 40.2900,
-      "lon": 9.6100,
+      "lat": 40.29,
+      "lon": 9.61,
       "radius": 1200,
-      "name": { "nl": "Dorgali", "en": "Dorgali" },
-      "wikipedia": { "nl": "Dorgali", "en": "Dorgali" },
+      "name": {
+        "nl": "Dorgali",
+        "en": "Dorgali"
+      },
+      "wikipedia": {
+        "nl": "Dorgali",
+        "en": "Dorgali"
+      },
       "script": {
-        "nl": "Dorgali ligt geklemd tussen de Monte Bardia en het kalksteenmassief van de Supramonte. Het is het dorp van het leerwerk en de filigraan, maar vooral van de Cannonau-wijn. Deze streek heeft een van de hoogste concentraties honderdjarigen ter wereld — Sardinië is een van de vijf zogeheten Blue Zones. De verklaring is waarschijnlijk saaier dan de wijn: veel lopen op steile hellingen, weinig vlees, en families die generaties bij elkaar blijven wonen.",
-        "en": "Dorgali sits wedged between Monte Bardia and the limestone mass of the Supramonte. It's a village of leatherwork and filigree, but above all of Cannonau wine. This district has one of the world's highest concentrations of centenarians — Sardinia is one of the five so-called Blue Zones. The explanation is probably duller than the wine: a lot of walking on steep ground, little meat, and families that stay together for generations."
+        "nl": "Dorgali ligt geklemd tussen de Monte Bardia en het kalksteenmassief van de Supramonte, en het is het laatste dorp met een normale bar voordat de weg de bergen in gaat.\n\nHet staat bekend om drie dingen. Het leerwerk, dat je in de werkplaatsen langs de hoofdstraat ziet. De filigraan, dat zilverdraadwerk waar Sardijnse bruidssieraden van worden gemaakt. En vooral de wijn: dit is het hart van de Cannonau di Sardegna.\n\nCannonau is dezelfde druif als de Spaanse garnacha en de Franse grenache, maar er zijn hier vondsten gedaan van druivenpitten die op ruim drieduizend jaar zijn gedateerd. Als die interpretatie klopt, werd hier al wijn gemaakt lang voordat de druif in Spanje bestond. De wijn zelf is stevig, aards, hoog in alcohol en met opvallend veel tannine — het gevolg van dikke schillen op arme, droge grond.\n\nEn dan is er iets waar deze streek beroemd om is geworden zonder dat er iets bijzonders aan de hand hoeft te zijn. Dit gebied heeft een van de hoogste concentraties honderdjarigen ter wereld. Sardinië was de eerste van de vijf zogeheten Blue Zones, de plekken waar opvallend veel mensen heel oud worden.\n\nEr wordt van alles beweerd over de reden. De wijn, de kaas, de kruiden. De nuchtere verklaringen zijn waarschijnlijk de juiste: mensen liepen hun leven lang steile hellingen op en af, aten weinig vlees en veel peulvruchten, en bleven met drie generaties onder één dak wonen. Ouderen hier hadden zelden een reden om zich overbodig te voelen. Dat blijkt keer op keer een van de sterkste voorspellers te zijn.",
+        "en": "Dorgali sits wedged between Monte Bardia and the limestone mass of the Supramonte, and it's the last village with an ordinary bar before the road climbs into the mountains.\n\nIt's known for three things. Leatherwork, which you'll see in workshops along the main street. Filigree, the silver wirework Sardinian bridal jewellery is made from. And above all wine: this is the heart of Cannonau di Sardegna.\n\nCannonau is the same grape as Spanish garnacha and French grenache, but grape pips found here have been dated to over three thousand years old. If that reading holds, wine was being made here long before the variety existed in Spain. The wine itself is firm, earthy, high in alcohol and strikingly tannic — the result of thick skins on poor, dry ground.\n\nAnd then there's the thing this district became famous for without anything necessarily being unusual about it. This area has one of the highest concentrations of centenarians in the world. Sardinia was the first of the five so-called Blue Zones, places where remarkable numbers of people live to a great age.\n\nAll sorts of reasons get claimed. The wine, the cheese, the herbs. The mundane explanations are probably the right ones: people walked steep ground all their lives, ate little meat and a great many beans, and lived three generations under one roof. Older people here rarely had reason to feel surplus to requirements. That turns out again and again to be one of the strongest predictors there is."
       }
     },
     {
       "id": "cala-gonone",
       "kind": "nature",
-      "lat": 40.2810,
-      "lon": 9.6300,
+      "lat": 40.281,
+      "lon": 9.63,
       "radius": 1000,
-      "name": { "nl": "Afslag Cala Gonone", "en": "Cala Gonone turn-off" },
+      "name": {
+        "nl": "Afslag Cala Gonone",
+        "en": "Cala Gonone turn-off"
+      },
       "script": {
-        "nl": "Links gaat de weg naar Cala Gonone, door een tunnel die in 1860 met de hand door de berg is gehakt — daarvoor was het dorp alleen per boot bereikbaar. Vanuit die haven vertrekken de boten naar Cala Luna en Cala Mariolu, stranden waar geen weg heen gaat. En naar de Grotta del Bue Marino, genoemd naar de monniksrob. Die is hier sinds de jaren tachtig niet meer gezien, maar de grot draagt nog zijn naam.",
-        "en": "To the left the road drops to Cala Gonone, through a tunnel hand-cut through the mountain in 1860 — before that the village could only be reached by boat. From that harbour the boats leave for Cala Luna and Cala Mariolu, beaches no road reaches. And for the Grotta del Bue Marino, named after the monk seal. None has been seen here since the nineteen-eighties, but the cave still carries its name."
+        "nl": "Links daalt de weg af naar Cala Gonone, en die afdaling is zelf een verhaal.\n\nTot in de negentiende eeuw was er geen weg. Cala Gonone lag aan de andere kant van de Monte Bardia en was alleen per boot bereikbaar. In 1860 hakten ze met de hand een tunnel dwars door de berg — een paar honderd meter, met houwelen en buskruit — en pas toen kwam er een verbinding over land.\n\nVanuit die haven vertrekken de boten naar de stranden van de Golfo di Orosei, en dat is een kust die je niet met de auto kunt zien. Twintig kilometer kalkstenen klifwand, tot vijfhonderd meter hoog, met daartussen inhammen waar geen weg naartoe gaat en die alleen per boot of te voet bereikbaar zijn. Cala Luna met zijn grotten in de wand. Cala Mariolu, waar het water zo helder is dat boten lijken te zweven. Cala Biriola, Cala Sisine.\n\nEn er is de Grotta del Bue Marino, de grot van de zeeos. Dat is de plaatselijke naam voor de monniksrob. Die leefde hier tot in de jaren tachtig; de laatste bevestigde waarneming is van 1992. Er zijn er wereldwijd nog een paar honderd over, vooral in Griekenland en bij Madeira, wat de monniksrob tot een van de zeldzaamste zeezoogdieren maakt. De grot draagt nog zijn naam, en er zijn neolithische rotstekeningen in gevonden die vermoedelijk zonnesymbolen voorstellen.\n\nAls je de afslag neemt, reken dan op een halve dag. Als je doorrijdt, weet dan dat je langs de rand van iets rijdt wat je van de weg af niet kunt zien.",
+        "en": "On your left the road drops down to Cala Gonone, and that descent is a story in itself.\n\nUntil the nineteenth century there was no road at all. Cala Gonone lay on the far side of Monte Bardia and could only be reached by boat. In 1860 a tunnel was cut by hand straight through the mountain — a few hundred metres, with picks and black powder — and only then was there a link overland.\n\nFrom that harbour the boats leave for the beaches of the Golfo di Orosei, and this is a coast you cannot see by car. Twenty kilometres of limestone cliff, up to five hundred metres high, with coves between them that no road reaches and that can only be got at by boat or on foot. Cala Luna with its caves in the wall. Cala Mariolu, where the water is so clear that boats appear to hover. Cala Biriola, Cala Sisine.\n\nAnd there is the Grotta del Bue Marino, the cave of the sea ox. That's the local name for the monk seal. It lived here into the nineteen-eighties; the last confirmed sighting was in 1992. A few hundred survive worldwide, mostly in Greece and around Madeira, which makes the monk seal one of the rarest marine mammals there is. The cave still carries its name, and neolithic rock carvings have been found inside it, thought to represent the sun.\n\nIf you take the turning, allow half a day. If you drive on, know that you're skirting the edge of something you can't see from the road."
       }
     },
     {
       "id": "gorropu",
       "kind": "nature",
-      "lat": 40.1830,
-      "lon": 9.5580,
+      "lat": 40.183,
+      "lon": 9.558,
       "radius": 1200,
-      "name": { "nl": "Gola su Gorropu", "en": "Gola su Gorropu" },
-      "wikipedia": { "nl": "Gorropu", "en": "Gorropu" },
+      "name": {
+        "nl": "Gola su Gorropu",
+        "en": "Gola su Gorropu"
+      },
+      "wikipedia": {
+        "nl": "Gorropu",
+        "en": "Gorropu"
+      },
       "script": {
-        "nl": "Diep onder je, aan het einde van dat dal rechts, ligt de Gola su Gorropu. De wanden zijn op de nauwste plek nog geen vier meter uit elkaar en lopen vijfhonderd meter recht omhoog — een van de diepste kloven van Europa. Er stroomt bijna nooit water doorheen, maar bij hevige regen wil je er absoluut niet in staan. Er groeit een plantje dat nergens anders ter wereld voorkomt: de Aquilegia nuragica, waarvan nog geen tien exemplaren bestaan.",
-        "en": "Far below you, at the end of that valley on the right, lies the Gola su Gorropu. At its narrowest the walls stand less than four metres apart and rise five hundred metres straight up — one of the deepest gorges in Europe. Water almost never runs through it, but in heavy rain it's the last place you want to be. One plant grows there and nowhere else on earth: Aquilegia nuragica, of which fewer than ten specimens survive."
+        "nl": "Diep onder je, aan het einde van dat dal rechts, ligt de Gola su Gorropu.\n\nHet is een kloof die door de Rio Flumineddu in miljoenen jaren uit het kalksteen is gesneden. Op de nauwste plek staan de wanden nog geen vier meter uit elkaar, en ze lopen daar vijfhonderd meter recht omhoog. Dat maakt hem tot een van de diepste kloven van Europa, en zeker een van de smalste in verhouding tot zijn diepte.\n\nEr stroomt bijna nooit water doorheen. Op de bodem liggen rotsblokken zo groot als huizen, waar je overheen moet klauteren, en tussen die blokken door verdwijnt het water in het karstsysteem eronder. Maar bij hevige regen verandert dat binnen een uur. Het hele stroomgebied loopt via deze trechter leeg, en er zijn wandelaars omgekomen doordat ze op het verkeerde moment beneden waren.\n\nEr groeit iets in die kloof wat nergens anders ter wereld voorkomt. In 1998 werd hier een akelei ontdekt die aan geen enkele bekende soort te koppelen was: de Aquilegia nuragica. Er zijn er minder dan tien van gevonden, allemaal op één plek, op een vochtige rotsrichel in de schaduw van de wand. Het is daarmee een van de zeldzaamste planten van Europa, en de hele soort zou door één instortende rots kunnen verdwijnen.\n\nJe komt er alleen te voet. Vanaf de brug beneden is het ruim een uur lopen naar de ingang, en de kloof zelf loopt je nog verder de berg in. Wie doorloopt tot voorbij het derde deel heeft een vergunning en een gids nodig.",
+        "en": "Far below you, at the end of that valley on the right, lies the Gola su Gorropu.\n\nIt's a gorge cut out of the limestone by the Rio Flumineddu over millions of years. At its narrowest the walls stand less than four metres apart, and there they rise five hundred metres straight up. That makes it one of the deepest gorges in Europe, and certainly one of the narrowest relative to its depth.\n\nWater almost never runs through it. The floor is strewn with boulders the size of houses that you have to scramble over, and between them the water disappears into the karst system underneath. But heavy rain changes that within the hour. The entire catchment drains through this funnel, and walkers have died down there for being in the wrong place at the wrong time.\n\nSomething grows in that gorge that exists nowhere else on earth. In 1998 a columbine was found here that could not be matched to any known species: Aquilegia nuragica. Fewer than ten plants have ever been located, all in one place, on a damp ledge in the shade of the wall. That makes it one of the rarest plants in Europe, and the entire species could be lost to a single rockfall.\n\nYou can only reach it on foot. From the bridge below it's a good hour's walk to the entrance, and the gorge itself runs further into the mountain from there. Going beyond the third section requires a permit and a guide."
       }
     },
     {
       "id": "genna-silana",
       "kind": "pass",
-      "lat": 40.1590,
-      "lon": 9.5860,
+      "lat": 40.159,
+      "lon": 9.586,
       "radius": 900,
-      "name": { "nl": "Passo Genna 'e Silana", "en": "Genna 'e Silana pass" },
+      "name": {
+        "nl": "Passo Genna 'e Silana",
+        "en": "Genna 'e Silana pass"
+      },
       "script": {
-        "nl": "Je bent nu op het hoogste punt van deze weg: Genna 'e Silana, 1017 meter. Dit is het klassieke fotomoment van Sardinië. De weg die je zo afdaalt richting Baunei is in de jaren zeventig aangelegd; daarvoor duurde de reis van Dorgali naar Baunei een halve dag. Kijk vooruit — bij helder weer zie je vanaf hier de zee bij Arbatax, dertig kilometer verderop en een kilometer lager.",
-        "en": "You're at the highest point of this road: Genna 'e Silana, 1,017 metres. This is the classic Sardinian photo stop. The road you're about to descend towards Baunei was built in the nineteen-seventies; before that the journey from Dorgali to Baunei took half a day. Look ahead — on a clear day you can see the sea at Arbatax from here, thirty kilometres on and a kilometre below."
+        "nl": "Je bent nu op het hoogste punt van deze weg. Genna 'e Silana, duizendzeventien meter, en dit is het beeld dat je op elke poster van Sardinië tegenkomt.\n\nNeem even de tijd. Vooruit en beneden zie je de kalkstenen tafelbergen van de Ogliastra liggen, die hier tacchi heten — hakken — omdat ze eruitzien als afgesleten schoenhakken die uit het landschap steken. Bij helder weer zie je vanaf hier de zee bij Arbatax, dertig kilometer verderop en een kilometer lager.\n\nDe weg die je zo afdaalt is jonger dan je zou denken. Tot in de jaren zeventig was er alleen een slechte bergweg, en de reis van Dorgali naar Baunei duurde een halve dag. Dat isolement heeft dit deel van het eiland gevormd. De Ogliastra was tot ver in de twintigste eeuw praktisch onbereikbaar over land, en de dorpen hier keken naar elkaar en niet naar de rest van Sardinië.\n\nDe afdaling die volgt is de reden dat motorrijders hierheen komen. Ongeveer twintig kilometer aaneengesloten bochten, met uitzicht dat elke haarspeldbocht verandert. Het asfalt is goed en er is nauwelijks verkeer, maar er staan wel losse geiten op de weg en er komen bussen die de hele breedte nodig hebben.\n\nEén praktisch punt: dit is een van de weinige plekken op de route waar je kunt stoppen met genoeg ruimte. Er is een parkeerplaats en een rifugio. Verderop wordt het smal.",
+        "en": "You're at the highest point of this road. Genna 'e Silana, one thousand and seventeen metres, and this is the view that turns up on every poster of Sardinia.\n\nTake a moment. Ahead and below lie the limestone table mountains of the Ogliastra, known here as tacchi — heels — because they look like worn shoe heels sticking out of the landscape. On a clear day you can see the sea at Arbatax from here, thirty kilometres on and a kilometre below.\n\nThe road you're about to descend is younger than you'd think. Until the nineteen-seventies there was only a poor mountain track, and the journey from Dorgali to Baunei took half a day. That isolation shaped this part of the island. The Ogliastra was practically unreachable overland well into the twentieth century, and the villages here looked at each other rather than at the rest of Sardinia.\n\nThe descent that follows is why motorcyclists come. Roughly twenty kilometres of continuous bends, with a view that changes at every hairpin. The tarmac is good and there's barely any traffic, but there are loose goats on the road and buses that need the full width.\n\nOne practical note: this is one of the few places on the route where you can stop with room to spare. There's a car park and a rifugio. Further down it gets narrow."
       }
     },
     {
       "id": "golgo",
       "kind": "nature",
-      "lat": 40.0900,
-      "lon": 9.6600,
+      "lat": 40.09,
+      "lon": 9.66,
       "radius": 1500,
-      "name": { "nl": "Altopiano del Golgo", "en": "Golgo plateau" },
+      "name": {
+        "nl": "Altopiano del Golgo",
+        "en": "Golgo plateau"
+      },
       "script": {
-        "nl": "Rechts boven je ligt het Altopiano del Golgo, een oude basaltvlakte waar ezels en varkens los rondlopen. Daar zit ook Su Sterru: een verticale schacht van 270 meter diep, ontstaan doordat het dak van een enorme grot instortte. Het is een van de diepste karstputten ter wereld en de rand is niet afgezet — je staat er zo bovenop. De weg erheen is smal en steil, maar het uitzicht over de Punta Giradili is de moeite waard.",
-        "en": "Above you on the right lies the Golgo plateau, an old basalt tableland where donkeys and pigs roam free. It also holds Su Sterru: a vertical shaft 270 metres deep, formed when the roof of an enormous cave collapsed. It's one of the deepest karst pits in the world, and the rim is unfenced — you simply walk up to it. The road there is narrow and steep, but the view over Punta Giradili repays it."
+        "nl": "Rechts boven je ligt het Altopiano del Golgo, en dat is een landschap dat niet bij de rest hoort.\n\nWaar alles hier kalksteen is, is dit plateau basalt: de resten van vulkanisme, een vlak, donker tafelland op ruim vierhonderd meter hoogte, begroeid met steeneik en jeneverbes. Er lopen ezels, varkens en geiten los rond. Hekken zijn er nauwelijks; het vee hoort bij families die het al generaties zo doen.\n\nEn er zit een gat in. Su Sterru is een verticale schacht van tweehonderdzeventig meter diep, ontstaan doordat het dak van een enorme ondergrondse holte is ingestort. Het is een van de diepste karstputten ter wereld, en het bijzondere is dat het geen trechter is maar een pijp: de wanden lopen recht naar beneden, met een opening van maar een paar tientallen meters breed. Onderin ligt puin van het ingestorte dak.\n\nDe rand is niet afgezet. Er staat een laag muurtje, meer niet, en je kunt er zo overheen kijken. Speleologen dalen er af aan een touw, en de eerste volledige verkenning dateert pas uit de twintigste eeuw.\n\nRondom het plateau lopen de paden naar de kust. Vanaf hier gaan de herderspaden naar Cala Goloritzé, Cala Mariolu en de Punta Giradili, met uitzichten over de golf die je met geen auto kunt bereiken. Die paden zijn niet aangelegd voor wandelaars; ze zijn uitgesleten door mannen die met hun geiten naar beneden gingen omdat daar in de winter gras stond.\n\nDe weg erheen is smal, steil en deels onverhard. De moeite waard, maar niet even tussendoor.",
+        "en": "Above you on the right lies the Golgo plateau, and it's a landscape that doesn't belong with the rest.\n\nWhere everything here is limestone, this tableland is basalt: the remains of volcanism, a flat dark plateau at over four hundred metres, grown over with holm oak and juniper. Donkeys, pigs and goats roam free. There are hardly any fences; the animals belong to families who have done it this way for generations.\n\nAnd there's a hole in it. Su Sterru is a vertical shaft two hundred and seventy metres deep, formed when the roof of an enormous underground chamber collapsed. It's one of the deepest karst pits in the world, and what's unusual is that it isn't a funnel but a pipe: the walls run straight down, with an opening only tens of metres across. At the bottom lies the rubble of the fallen roof.\n\nThe rim is unfenced. There's a low wall, no more, and you can look straight over it. Cavers descend on ropes, and the first complete exploration dates only from the twentieth century.\n\nFrom the plateau the paths run down to the coast. This is where the shepherd tracks to Cala Goloritzé, Cala Mariolu and Punta Giradili begin, with views over the gulf that no car can reach. Those paths weren't laid out for walkers; they were worn in by men taking goats down because there was grass there in winter.\n\nThe road up is narrow, steep and partly unpaved. Worth it, but not something to fit in on the way past."
       }
     },
     {
       "id": "baunei",
       "kind": "town",
-      "lat": 40.0350,
-      "lon": 9.6650,
+      "lat": 40.035,
+      "lon": 9.665,
       "radius": 900,
-      "name": { "nl": "Baunei", "en": "Baunei" },
+      "name": {
+        "nl": "Baunei",
+        "en": "Baunei"
+      },
       "script": {
-        "nl": "Baunei plakt tegen de rotswand op vierhonderd meter hoogte. Dit was tot ver in de twintigste eeuw herdersland, en de herders van Baunei liepen met hun geiten helemaal tot aan de zee. Zij ontdekten Cala Goloritzé, dat inmiddels op de werelderfgoedlijst staat en waar dagelijks maar tweehonderdvijftig mensen mogen komen. Je herkent het aan de kalkstenen naald van 143 meter die pal naast het strand omhoog steekt.",
-        "en": "Baunei clings to the rock wall at four hundred metres. This was shepherd country well into the twentieth century, and Baunei's shepherds walked their goats all the way down to the sea. They were the ones who found Cala Goloritzé, now a UNESCO monument where only two hundred and fifty people a day are allowed. You'll know it by the 143-metre limestone spire standing right beside the beach."
+        "nl": "Baunei plakt tegen de rotswand op vierhonderd meter hoogte, met huizen die op elkaar gestapeld lijken.\n\nDit was tot ver in de twintigste eeuw herdersland, en dat is geen romantische beschrijving. De mannen van Baunei trokken met hun geiten van het plateau naar de kust en weer terug, sliepen in stenen hutten of onder overhangende rotsen, en waren weken achtereen weg. Hun vrouwen hielden het dorp draaiende. Het is een samenleving geweest die zichzelf grotendeels alleen redde.\n\nEn zij hebben iets ontdekt wat nu op elke lijst van mooiste stranden van Europa staat. Cala Goloritzé ontstond in 1962 door een aardverschuiving; daarvoor bestond het strand niet. De herders van Baunei kwamen er als eersten. Nu is het een nationaal monument, mogen er per dag maar tweehonderdvijftig mensen komen, en moet je vooraf reserveren.\n\nJe herkent het onmiddellijk aan de Aguglia: een kalkstenen naald van honderddrieënveertig meter die pal naast het strand loodrecht uit de rotsen omhoog steekt. Klimmers komen er van over de wereld voor.\n\nDe gemeente Baunei doet iets wat je zelden ziet. Het dorp beheert de toegang tot die kust zelf, met eigen regels, eigen quota en eigen bewaking, en de opbrengst gaat terug naar de gemeenschap. Dat is er niet zonder slag om slag gekomen — er is jarenlang geruzied over wie er zeggenschap heeft. Maar het is de reden dat je hier geen strandtenten en parasols aantreft en op Sardinië's beroemdste strand alleen kunt komen als je er moeite voor doet.",
+        "en": "Baunei clings to the rock wall at four hundred metres, its houses looking stacked on top of one another.\n\nThis was shepherd country well into the twentieth century, and that's not a romantic description. The men of Baunei moved their goats from the plateau down to the coast and back, slept in stone huts or under overhangs, and were gone for weeks at a time. Their wives kept the village running. It was a society that largely got by on its own.\n\nAnd they found something that now appears on every list of Europe's finest beaches. Cala Goloritzé was created by a landslide in 1962; before that the beach didn't exist. Baunei's shepherds got there first. Today it's a national monument, only two hundred and fifty people a day are admitted, and you have to book ahead.\n\nYou'll know it at once by the Aguglia: a limestone spire a hundred and forty-three metres tall standing vertically out of the rock right beside the beach. Climbers come from all over the world for it.\n\nThe commune of Baunei does something you rarely see. The village manages access to that coast itself, with its own rules, its own quotas and its own wardens, and the proceeds go back to the community. It didn't happen without a fight — there were years of argument about who had authority. But it's the reason you'll find no beach bars and no rows of parasols here, and why Sardinia's most famous beach can only be reached if you make an effort."
       }
     },
     {
       "id": "santa-maria-navarrese",
       "kind": "town",
-      "lat": 39.9930,
-      "lon": 9.6900,
+      "lat": 39.993,
+      "lon": 9.69,
       "radius": 900,
-      "name": { "nl": "Santa Maria Navarrese", "en": "Santa Maria Navarrese" },
+      "name": {
+        "nl": "Santa Maria Navarrese",
+        "en": "Santa Maria Navarrese"
+      },
       "script": {
-        "nl": "Je rolt de kust op bij Santa Maria Navarrese. Het verhaal gaat dat een Navarrese prinses hier in 1052 schipbreuk leed en uit dankbaarheid het kerkje liet bouwen — vandaar de naam. Voor dat kerkje staan olijfbomen die volgens metingen ruim duizend jaar oud zijn, dus die stonden er al toen zij aanspoelde. Einde van de route. Ga even naar het strand kijken; het zwarte silhouet voor de kust is het eilandje Ogliastra.",
-        "en": "You roll out onto the coast at Santa Maria Navarrese. The story goes that a Navarrese princess was shipwrecked here in 1052 and had the little church built in gratitude — hence the name. In front of it stand olive trees measured at over a thousand years old, so they were already there when she washed ashore. End of the route. Go and look at the beach; the dark silhouette offshore is the islet of Ogliastra."
+        "nl": "Je rolt de kust op bij Santa Maria Navarrese, en na tachtig kilometer bergen is de zee opeens weer heel dichtbij.\n\nHet verhaal achter de naam gaat zo. In 1052 leed een prinses uit Navarra, een dochter van koning García Sánchez de Derde, hier schipbreuk. Uit dankbaarheid voor haar redding liet ze een kerkje bouwen, gewijd aan Maria. Of het waar is weet niemand; het kerkje bestaat in elk geval en de kern ervan is inderdaad elfde-eeuws, gebouwd in een sobere romaanse stijl met muren van lokaal gesteente.\n\nWat er zeker staat, staat ervoor. Voor de kerk groeien olijfbomen waarvan de stamomvang op ruim duizend jaar wordt geschat. Die stonden er dus al toen zij, volgens het verhaal, aanspoelde. Olijfbomen worden zo oud dat leeftijd bij benadering moet worden bepaald — de kern rot weg en er zijn geen jaarringen meer te tellen — maar deze horen tot de oudste van Sardinië.\n\nVoor de kust ligt een zwart silhouet in het water: het eilandje Ogliastra, een rots van rood porfier waar de hele provincie naar genoemd is. Aan de zuidkant, bij Arbatax, vind je datzelfde gesteente terug in de Rocce Rosse, rotsformaties die bij zonsondergang oplichten.\n\nEinde van de route. Je hebt in twee uur een bergpas van boven de duizend meter, een van de diepste kloven van Europa en een basaltplateau met een gat van tweehonderdzeventig meter gepasseerd, en dat allemaal op één eiland in de Middellandse Zee. Ga even naar het strand kijken.",
+        "en": "You roll out onto the coast at Santa Maria Navarrese, and after eighty kilometres of mountains the sea is suddenly very close again.\n\nThe story behind the name goes like this. In 1052 a princess of Navarre, a daughter of King García Sánchez the Third, was shipwrecked here. In gratitude for her rescue she had a small church built, dedicated to Mary. Whether it's true nobody knows; the church certainly exists and its core really is eleventh-century, built in a plain Romanesque style from local stone.\n\nWhat is definitely there stands in front of it. Before the church grow olive trees whose girth puts them at over a thousand years old. So they were already standing when she, according to the story, washed ashore. Olive trees live so long that age can only be estimated — the heartwood rots away and there are no rings left to count — but these are among the oldest on Sardinia.\n\nOffshore a dark silhouette sits in the water: the islet of Ogliastra, a rock of red porphyry that gave the whole province its name. To the south, at Arbatax, you'll find the same stone again in the Rocce Rosse, formations that catch fire at sunset.\n\nEnd of the route. In two hours you've crossed a pass above a thousand metres, skirted one of Europe's deepest gorges and passed a basalt plateau with a two-hundred-and-seventy-metre hole in it, all on one Mediterranean island. Go and look at the beach."
       }
     }
   ],
@@ -120,40 +183,70 @@
     {
       "id": "dorgali-breakfast",
       "meal": "breakfast",
-      "town": { "nl": "Dorgali", "en": "Dorgali" },
-      "lat": 40.2900, "lon": 9.6100,
-      "name": { "nl": "Barcultuur in Dorgali", "en": "Bar culture in Dorgali" },
+      "town": {
+        "nl": "Dorgali",
+        "en": "Dorgali"
+      },
+      "lat": 40.29,
+      "lon": 9.61,
+      "name": {
+        "nl": "Barcultuur in Dorgali",
+        "en": "Bar culture in Dorgali"
+      },
       "tip": {
         "nl": "Voor de bergpas begint: koffie en iets zoets aan de bar op het plein. Boven is er tot Baunei geen enkele gelegenheid meer.",
         "en": "Before the mountain pass starts: coffee and something sweet at the bar on the square. Above it there's nowhere else until Baunei."
       },
-      "specialty": { "nl": "Copulettas — zoete Dorgalese kaastaartjes", "en": "Copulettas — Dorgali's sweet cheese-filled pastries" },
+      "specialty": {
+        "nl": "Copulettas — zoete Dorgalese kaastaartjes",
+        "en": "Copulettas — Dorgali's sweet cheese-filled pastries"
+      },
       "price": "€"
     },
     {
       "id": "cala-gonone-lunch",
       "meal": "lunch",
-      "town": { "nl": "Cala Gonone / Dorgali", "en": "Cala Gonone / Dorgali" },
-      "lat": 40.2810, "lon": 9.6300,
-      "name": { "nl": "Agriturismo Codula Fuili", "en": "Agriturismo Codula Fuili" },
+      "town": {
+        "nl": "Cala Gonone / Dorgali",
+        "en": "Cala Gonone / Dorgali"
+      },
+      "lat": 40.281,
+      "lon": 9.63,
+      "name": {
+        "nl": "Agriturismo Codula Fuili",
+        "en": "Agriturismo Codula Fuili"
+      },
       "tip": {
         "nl": "Kaas, worst, groente en olie komen van het eigen bedrijf — de keuken kookt letterlijk wat er op het erf groeit en loopt.",
         "en": "The cheese, cured meats, vegetables and oil all come from the farm itself — the kitchen cooks whatever is growing or grazing right outside."
       },
-      "specialty": { "nl": "Gegrild lamsvlees met wilde kruiden van de Supramonte", "en": "Grilled lamb with wild herbs from the Supramonte" },
+      "specialty": {
+        "nl": "Gegrild lamsvlees met wilde kruiden van de Supramonte",
+        "en": "Grilled lamb with wild herbs from the Supramonte"
+      },
       "price": "€€"
     },
     {
       "id": "golgo-dinner",
       "meal": "dinner",
-      "town": { "nl": "Altopiano del Golgo, Baunei", "en": "Golgo plateau, Baunei" },
-      "lat": 40.0900, "lon": 9.6600,
-      "name": { "nl": "Ristorante Golgo", "en": "Ristorante Golgo" },
+      "town": {
+        "nl": "Altopiano del Golgo, Baunei",
+        "en": "Golgo plateau, Baunei"
+      },
+      "lat": 40.09,
+      "lon": 9.66,
+      "name": {
+        "nl": "Ristorante Golgo",
+        "en": "Ristorante Golgo"
+      },
       "tip": {
         "nl": "Gebouwd in de jaren zeventig in de stijl van de traditionele herdershutten van het Supramonte, middenin het plateau dat je op deze route al bezoekt bij Su Sterru. Reserveer — het is de enige gelegenheid hier boven.",
         "en": "Built in the nineteen-seventies in the style of the traditional Supramonte shepherd huts, right on the plateau this route already visits at Su Sterru. Book ahead — it's the only place up here."
       },
-      "specialty": { "nl": "Maialetto arrosto, geroosterd speenvarken", "en": "Maialetto arrosto, roast suckling pig" },
+      "specialty": {
+        "nl": "Maialetto arrosto, geroosterd speenvarken",
+        "en": "Maialetto arrosto, roast suckling pig"
+      },
       "price": "€€"
     }
   ]
