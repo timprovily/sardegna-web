@@ -22,6 +22,33 @@ export class RouteMap {
     this.highlightMarkers = new Map();
     this.userMarker = null;
     this.follow = false;
+    // The drive screen puts a card over the bottom of the map and a bar
+    // across the top. Without accounting for those, "centred" means
+    // centred behind the card — your own position ends up hidden under
+    // the text. These insets shift the centre into the strip you can
+    // actually see.
+    this.insetTop = 0;
+    this.insetBottom = 0;
+  }
+
+  /** Pixels of the map covered by UI at the top and bottom. */
+  setInsets({ top = 0, bottom = 0 } = {}) {
+    const changed = top !== this.insetTop || bottom !== this.insetBottom;
+    this.insetTop = top;
+    this.insetBottom = bottom;
+    if (changed && this.follow && this.userMarker) {
+      this.map.panTo(this._centreFor(this.userMarker.getLatLng()), { animate: false });
+    }
+  }
+
+  /** Shifts a coordinate so it lands in the middle of the visible strip
+   *  rather than the middle of the container. */
+  _centreFor(latlng) {
+    const shift = (this.insetBottom - this.insetTop) / 2;
+    if (!shift) return latlng;
+    const zoom = this.map.getZoom();
+    const point = this.map.project(latlng, zoom).add([0, shift]);
+    return this.map.unproject(point, zoom);
   }
 
   showRoute(route, geometry) {
@@ -47,7 +74,10 @@ export class RouteMap {
       this.highlightMarkers.set(h.id, marker);
     }
 
-    this.map.fitBounds(this.polyline.getBounds(), { padding: [30, 30] });
+    this.map.fitBounds(this.polyline.getBounds(), {
+      paddingTopLeft: [24, 24 + this.insetTop],
+      paddingBottomRight: [24, 24 + this.insetBottom]
+    });
   }
 
   updateGeometry(geometry) {
@@ -75,13 +105,13 @@ export class RouteMap {
     } else {
       this.userMarker.setLatLng(latlng);
     }
-    if (this.follow) this.map.panTo(latlng, { animate: true, duration: 0.5 });
+    if (this.follow) this.map.panTo(this._centreFor(latlng), { animate: true, duration: 0.5 });
   }
 
   setFollow(enabled) {
     this.follow = enabled;
     if (enabled && this.userMarker) {
-      this.map.setView(this.userMarker.getLatLng(), 16);
+      this.map.setView(this._centreFor(this.userMarker.getLatLng()), 16);
     }
   }
 

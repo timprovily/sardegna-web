@@ -19,9 +19,10 @@ const STORY_CORRIDOR_M = 3000;
 const MIN_SPEED_FOR_FACTS_KMH = 12;
 
 export class TourEngine extends EventTarget {
-  constructor({ speech, facts, settings, enrichment }) {
+  constructor({ speech, facts, settings, enrichment, storyteller = null }) {
     super();
     this.speech = speech;
+    this.storyteller = storyteller;
     this.facts = facts;
     this.settings = settings;
     this.enrichment = enrichment;
@@ -233,12 +234,22 @@ export class TourEngine extends EventTarget {
     // play back to back rather than being lost.
     for (const { h } of due) {
       this.playedHighlightIds.add(h.id);
-      this.speech.enqueue({ title: h.name[lang], body: h.script[lang], source: `highlight:${h.id}` });
+      this.speech.enqueue({ title: h.name[lang], body: this.scriptFor(h), source: `highlight:${h.id}` });
       this._scheduleEnrichment(h);
       this.dispatchEvent(new CustomEvent('highlightplayed', { detail: h }));
     }
 
     this._recomputeNext(pos);
+  }
+
+  /** The text to speak for a place: the long version if one has been
+   *  generated, otherwise the hand-written one that ships with the app. */
+  scriptFor(highlight) {
+    const lang = this.settings.language;
+    const expanded = this.storyteller && this.route
+      ? this.storyteller.get(this.route.id, highlight.id, lang)
+      : null;
+    return expanded || highlight.script[lang];
   }
 
   /**
@@ -268,7 +279,7 @@ export class TourEngine extends EventTarget {
 
   playHighlight(highlight) {
     const lang = this.settings.language;
-    this.speech.enqueue({ title: highlight.name[lang], body: highlight.script[lang], source: `highlight:${highlight.id}` });
+    this.speech.enqueue({ title: highlight.name[lang], body: this.scriptFor(highlight), source: `highlight:${highlight.id}` });
     this.playedHighlightIds.add(highlight.id);
     this._scheduleEnrichment(highlight);
     this.dispatchEvent(new CustomEvent('highlightplayed', { detail: highlight }));

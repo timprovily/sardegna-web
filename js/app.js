@@ -14,6 +14,7 @@ import { buildRouteFromGPX } from './gpxImport.js';
 import { fetchWeather, describeCode, goldenHourDeparture, formatTime } from './weather.js';
 import { SpotifyController, redirectURI } from './spotify.js';
 import { RadioController, searchStations, BUILTIN_STATIONS } from './radio.js';
+import { Storyteller, MODELS } from './storyteller.js';
 
 // ─────────────────────────── State ───────────────────────────
 
@@ -21,7 +22,8 @@ const settings = loadSettings();
 const speech = new SpeechService();
 const location = new LocationService();
 const enrichment = new EnrichmentService();
-const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment });
+const storyteller = new Storyteller(enrichment);
+const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment, storyteller });
 const navEngine = new NavEngine(speech);
 const wakeLock = new WakeLockManager();
 const theme = new ThemeManager(settings);
@@ -141,6 +143,7 @@ function openDetail(route) {
   renderHighlightList(route);
   renderDining(route);
   renderCustomRouteControls(route);
+  renderStoryBlock(route);
   renderWeather(route);
   loadHighlightPhotos(route);
   updateMapsButton(route);
@@ -435,6 +438,8 @@ function startDrive() {
     renderNowPlaying();
     spotify.startPolling();
     renderMusicBar();
+    // Measure after the card has been laid out with its real content.
+    requestAnimationFrame(watchMapInsets);
   });
 }
 
@@ -698,6 +703,152 @@ function buildViaPoints(route, fromHighlight) {
   const last = points[points.length - 1];
   if (!last || last.lat !== end.lat || last.lon !== end.lon) points.push({ lat: end.lat, lon: end.lon });
   return points;
+}
+
+/**
+ * Keeps the map centred on the strip you can actually see.
+ *
+ * The card at the bottom changes height constantly — a music bar appears,
+ * a place name wraps to two lines, an off-route warning shows up. Rather
+ * than guessing at a fixed number, this measures the real panels and
+ * re-measures whenever they change size.
+ */
+function syncMapInsets() {
+  if (!driveMap) return;
+  const card = document.querySelector('#drive-screen .now-playing');
+  const topBar = document.querySelector('#drive-screen .drive-top');
+  driveMap.setInsets({
+    top: topBar ? topBar.offsetHeight + 12 : 0,
+    bottom: card ? card.offsetHeight + 12 : 0
+  });
+}
+
+let mapInsetObserver = null;
+
+function watchMapInsets() {
+  if (mapInsetObserver || typeof ResizeObserver === 'undefined') {
+    syncMapInsets();
+    return;
+  }
+  const card = document.querySelector('#drive-screen .now-playing');
+  if (!card) return;
+  mapInsetObserver = new ResizeObserver(() => syncMapInsets());
+  mapInsetObserver.observe(card);
+  syncMapInsets();
+}
+
+// ─────────────────────────── Expanded stories ───────────────────────────
+
+function renderStoryBlock(route) {
+  const lang = settings.language;
+  const block = document.getElementById('story-block');
+  if (!block) return;
+
+  const total = route.highlights.length;
+  const have = storyteller.countFor(route, lang);
+
+  document.getElementById('story-eyebrow').textContent = t('ai.storiesTitle', lang);
+
+  const status = document.getElementById('story-status');
+  if (!storyteller.hasKey) {
+    status.textContent = t('ai.explain', lang);
+  } else if (have === 0) {
+    status.textContent = t('ai.none', lang);
+  } else if (have >= total) {
+    status.textContent = t('ai.all', lang, { total }) + ' ' + t('ai.offlineNote', lang);
+  } else {
+    status.textContent = t('ai.some', lang, { n: have, total });
+  }
+
+  const button = document.getElementById('story-generate');
+  button.textContent = !storyteller.hasKey
+    ? t('ai.needKey', lang)
+    : (have >= total ? t('ai.regenerate', lang) : t('ai.generate', lang));
+  button.disabled = false;
+
+  button.onclick = () => {
+    if (!storyteller.hasKey) {
+      document.getElementById('sheet-backdrop').classList.add('open');
+      document.getElementById('settings-sheet').classList.add('open');
+      document.getElementById('ai-key').focus();
+      return;
+    }
+    if (have >= total) storyteller.clearRoute(route, lang);
+    runStoryGeneration(route);
+  };
+
+  document.getElementById('story-cancel').textContent = t('ai.cancel', lang);
+}
+
+async function runStoryGeneration(route) {
+  const lang = settings.language;
+  const progress = document.getElementById('story-progress');
+  const msg = document.getElementById('story-msg');
+  const fill = document.getElementById('story-bar-fill');
+  const errorEl = document.getElementById('story-error');
+  const button = document.getElementById('story-generate');
+
+  errorEl.style.display = 'none';
+  progress.style.display = 'block';
+  button.disabled = true;
+  msg.textContent = t('ai.working', lang);
+  fill.style.width = '2%';
+
+  document.getElementById('story-cancel').onclick = () => storyteller.cancel();
+
+  try {
+    const result = await storyteller.generateRoute(route, {
+      language: lang,
+      model: settings.aiModel || MODELS[0].id,
+      onProgress: ({ done, total, message }) => {
+        msg.textContent = total ? `${done}/${total} — ${message}` : message;
+        if (total) fill.style.width = `${Math.max(2, (done / total) * 100)}%`;
+      }
+    });
+    msg.textContent = t('ai.doneMsg', lang, { done: result.done - result.failed, failed: result.failed });
+    setTimeout(() => { progress.style.display = 'none'; }, 4000);
+  } catch (err) {
+    progress.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.textContent = err.message || String(err);
+  } finally {
+    button.disabled = false;
+    if (currentRoute === route) renderStoryBlock(route);
+  }
+}
+
+function wireStorySettings() {
+  const lang = settings.language;
+  document.getElementById('ai-explain').textContent = t('ai.explain', lang);
+
+  const keyField = document.getElementById('ai-key');
+  keyField.value = storyteller.apiKey;
+  keyField.addEventListener('change', () => {
+    storyteller.apiKey = keyField.value;
+    updateAIStatus();
+    if (currentRoute) renderStoryBlock(currentRoute);
+  });
+
+  const modelRow = document.getElementById('ai-model');
+  modelRow.innerHTML = '';
+  for (const model of MODELS) {
+    const btn = document.createElement('button');
+    btn.textContent = model.label;
+    btn.classList.toggle('active', (settings.aiModel || MODELS[0].id) === model.id);
+    btn.addEventListener('click', () => {
+      settings.aiModel = model.id;
+      persist();
+      modelRow.querySelectorAll('button').forEach((b) => b.classList.toggle('active', b === btn));
+    });
+    modelRow.appendChild(btn);
+  }
+  updateAIStatus();
+}
+
+function updateAIStatus() {
+  const lang = settings.language;
+  document.getElementById('ai-status').textContent =
+    storyteller.hasKey ? t('ai.ready', lang) : t('ai.noKey', lang);
 }
 
 // ─────────────────────────── Send a place to the car ───────────────────
@@ -1334,6 +1485,7 @@ function wireSettingsSheet() {
   wireToggle('facts-toggle', 'factsEnabled');
   wireToggle('wiki-toggle', 'onlineExtras');
 
+  wireStorySettings();
   wireMusicSettings();
 
   document.getElementById('voice-sample').addEventListener('click', () => {
