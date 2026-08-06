@@ -313,10 +313,19 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 #drive-screen { position: fixed; inset: 0; }
 #drive-map { position: absolute; inset: 0; }
 
-.drive-top {
+/* One column at the top: status row, manoeuvre banner, screen-on pill.
+   Grouping them means the map inset can be measured from a single
+   element instead of adding up absolutely-positioned pieces. */
+.drive-top-stack {
   position: absolute; top: env(safe-area-inset-top); left: 0; right: 0;
+  z-index: 500; padding: 10px 12px 0;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}
+.drive-top-stack > * { pointer-events: auto; }
+
+.drive-top {
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; z-index: 500;
 }
 .pill {
   display: flex; align-items: center; gap: 6px;
@@ -334,7 +343,7 @@ hr.seam { border: none; border-top: 1px solid var(--seam); margin: 14px 0; }
 .speed-pill { margin-left: auto; font-family: var(--font-mono); font-weight: 700; font-size: 19px; }
 .speed-pill span { font-family: var(--font-body); font-weight: 400; font-size: 10px; color: var(--ash); margin-left: 3px; }
 
-.wakelock-row { position: absolute; top: calc(60px + env(safe-area-inset-top)); left: 12px; z-index: 500; }
+.wakelock-row { display: flex; }
 .wakelock-row .pill { font-size: 11px; font-weight: 500; color: var(--shallow); }
 .wakelock-row .pill.warn { color: var(--porphyry); }
 
@@ -665,3 +674,49 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
   font-family: var(--font-display); font-weight: 700; font-size: 13px;
 }
 .btn-story:disabled { opacity: 0.5; }
+
+/* --- Manoeuvre banner ---
+   Deliberately the loudest thing on the screen after the map itself: a
+   glyph you read before the words, and a distance in monospace so the
+   digits don't jitter as they count down. */
+
+.maneuver-banner {
+  display: flex; align-items: center; gap: 13px;
+  padding: 12px 14px;
+  background: var(--card-solid);
+  border: 1px solid var(--seam);
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+}
+.maneuver-banner.imminent {
+  border-color: var(--shallow);
+  background: color-mix(in srgb, var(--sea) 26%, var(--card-solid));
+}
+
+.mb-glyph {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+  color: var(--shallow);
+  display: flex; align-items: center; justify-content: center;
+}
+.mb-glyph svg { width: 100%; height: 100%; display: block; }
+.maneuver-banner.imminent .mb-glyph { color: var(--quartz); }
+
+.mb-text { flex: 1; min-width: 0; }
+.mb-instruction {
+  font-family: var(--font-display); font-weight: 800; font-size: 19px;
+  line-height: 1.15;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mb-road {
+  font-size: 12px; color: var(--ash); margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mb-road:empty { display: none; }
+
+.mb-distance {
+  font-family: var(--font-mono); font-weight: 700; font-size: 20px;
+  color: var(--shallow); flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.maneuver-banner.imminent .mb-distance { color: var(--quartz); }
