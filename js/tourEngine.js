@@ -9,7 +9,9 @@ import { flipDirections } from './reverse.js';
 
 const IDLE_CHECK_MS = 20000;
 // How close to the route you must be for "joining partway" to make sense.
-const JOIN_CORRIDOR_M = 3000;
+// Deliberately tight: three kilometres was loose enough that starting a
+// reversed route from a hotel near the finish wrote off every story on it.
+const JOIN_CORRIDOR_M = 1000;
 // Slack in vertices, so a highlight right where you're standing isn't
 // written off as already passed.
 const JOIN_TOLERANCE_VERTICES = 2;

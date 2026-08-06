@@ -28,6 +28,12 @@ const MIN_GAP_FOR_ADVANCE_M = 450;
 // Never two spoken instructions within this window, unless the second is
 // the immediate one.
 const NAV_COOLDOWN_MS = 7000;
+// Beyond this you are not "off the route", you are on your way to it.
+const NOT_STARTED_M = 2500;
+// To count as actually being on the route — and therefore to have
+// covered the part behind you — you have to be near enough that no other
+// road could plausibly be the one you're on.
+const ON_LINE_M = 600;
 const ARRIVE_THRESHOLD_M = 25;                 // close enough to call a step "done"
 const OFF_ROUTE_THRESHOLD_M = 70;
 const OFF_ROUTE_PERSIST_MS = 12000;
@@ -46,6 +52,7 @@ const PHRASES = {
     endOfRoad: (m) => `Aan het einde van de weg, ${turnVerbNl(m)}.`,
     roundabout: (exit) => exit ? `Bij de rotonde, neem de ${exit}e afslag.` : 'Bij de rotonde, blijf opletten.',
     recalculating: () => 'Je bent van de route af. Ik bereken een nieuwe route.',
+    toStart: () => 'Je bent nog niet op de route. Ik breng je eerst naar het startpunt.',
     distancePrefix: (m) => m >= 1000 ? `Over ${(m / 1000).toFixed(1)} kilometer, ` : `Over ${Math.round(m / 10) * 10} meter, `,
     now: 'Nu '
   },
@@ -62,6 +69,7 @@ const PHRASES = {
     endOfRoad: (m) => `At the end of the road, ${turnVerbEn(m)}.`,
     roundabout: (exit) => exit ? `At the roundabout, take the ${ordinalEn(exit)} exit.` : 'At the roundabout, stay alert.',
     recalculating: () => "You're off the route. Recalculating.",
+    toStart: () => "You're not on the route yet. Taking you to the start first.",
     distancePrefix: (m) => m >= 1000 ? `In ${(m / 1000).toFixed(1)} kilometres, ` : `In ${Math.round(m / 10) * 10} metres, `,
     now: 'Now '
   }
@@ -110,20 +118,26 @@ export class NavEngine extends EventTarget {
     this.stepIndex = [];  // where each step sits along `geometry`
     this.stepGap = [];    // metres from the previous manoeuvre to this one
     this.lastNavAt = 0;
+    // The furthest along the line you have genuinely been. Only ever
+    // moves forward, and only counts when you were close to the line.
+    this.maxReachedIndex = 0;
     this.quality = 'none'; // 'none' | 'skeleton' | 'routed'
     this.currentStepIndex = 0;
     this.announcedThisStep = new Set();
     this.offRouteSince = null;
+    this.route = null;
     this.destination = null;
     this.enabled = true;
   }
 
   /** Loads the best geometry available: cache, then a live OSRM call. */
   async load(route) {
+    this.route = route;
     this.destination = route.waypoints[route.waypoints.length - 1];
     this.currentStepIndex = 0;
     this.announcedThisStep.clear();
     this.offRouteSince = null;
+    this.maxReachedIndex = 0;
 
     const cached = loadCachedGeometry(route.id);
     if (cached && cached.geometry && cached.geometry.length > 2) {
@@ -185,6 +199,11 @@ export class NavEngine extends EventTarget {
     // next — leave it at the start and let rerouting handle it.
     if (distance > 3000) return;
 
+    // Only treat the part behind you as covered if you are genuinely on
+    // the road. Starting a reversed route from a hotel two kilometres
+    // from the finish would otherwise read as "almost done".
+    if (distance <= ON_LINE_M) this.maxReachedIndex = Math.max(this.maxReachedIndex, index);
+
     let next = this.stepIndex.findIndex((at) => at >= index);
     if (next === -1) next = this.steps.length - 1;
 
@@ -230,11 +249,22 @@ export class NavEngine extends EventTarget {
 
   /** Forces a fresh route from `from` to the original destination — used for rerouting. */
   async _reroute(from) {
+    if (!this.route) return;
+
+    // Route through everything still ahead of you, never straight to the
+    // finish. Aiming at the last waypoint looks reasonable until you try
+    // it: start a route from your hotel and the "new route" is a direct
+    // run to the far end, skipping the entire drive. On a reversed route
+    // that is even more obviously wrong — it hands you the original
+    // starting town as a destination.
+    const remaining = this._waypointsAhead(from);
+    const points = [{ lat: from.lat, lon: from.lon }, ...remaining];
+    const trimmed = points.length > 12
+      ? [points[0], ...thinEvenly(points.slice(1, -1), 9), points[points.length - 1]]
+      : points;
+
     try {
-      const routed = await fetchOSRM([
-        { lat: from.lat, lon: from.lon },
-        this.destination
-      ]);
+      const routed = await fetchOSRM(trimmed);
       this.geometry = routed.geometry;
       this.steps = routed.steps;
       this.currentStepIndex = 0;
@@ -244,6 +274,30 @@ export class NavEngine extends EventTarget {
     } catch (err) {
       console.warn('Reroute failed:', err);
     }
+  }
+
+  /**
+   * The route points you still have to cover.
+   *
+   * Far enough off the line and the honest reading is that you haven't
+   * begun yet — you're driving to the start — so the whole route counts
+   * as remaining. Closer in, only what lies beyond your current position
+   * does.
+   */
+  _waypointsAhead(from) {
+    const all = this.route.waypoints.map((w) => ({ lat: w.lat, lon: w.lon }));
+    if (this.geometry.length < 2) return all;
+
+    if (distanceToPolyline(from, this.geometry) > NOT_STARTED_M) return all;
+
+    // How far you have actually got, not how close you happen to be to
+    // some part of the line.
+    const here = this.maxReachedIndex;
+    const ahead = all.filter(
+      (w) => nearestIndex(w, this.geometry).index > here
+    );
+    // Always finish where the route finishes.
+    return ahead.length > 0 ? ahead : [all[all.length - 1]];
   }
 
   /** Called on every position update. */
@@ -293,15 +347,22 @@ export class NavEngine extends EventTarget {
 
   _trackOffRoute(pos, lang) {
     const distance = distanceToPolyline(pos, this.geometry);
+    if (distance <= ON_LINE_M && this.geometry.length > 1) {
+      this.maxReachedIndex = Math.max(
+        this.maxReachedIndex,
+        nearestIndex(pos, this.geometry).index
+      );
+    }
     this.dispatchEvent(new CustomEvent('offroute', { detail: distance }));
 
     if (distance > OFF_ROUTE_THRESHOLD_M) {
       if (this.offRouteSince == null) this.offRouteSince = Date.now();
       if (Date.now() - this.offRouteSince > OFF_ROUTE_PERSIST_MS) {
         this.offRouteSince = null;
+        const notStarted = distance > NOT_STARTED_M;
         this.speech.speakNow({
           title: lang === 'nl' ? 'Herberekenen' : 'Recalculating',
-          body: PHRASES[lang].recalculating(),
+          body: notStarted ? PHRASES[lang].toStart() : PHRASES[lang].recalculating(),
           source: 'nav'
         });
         this._reroute(pos);
