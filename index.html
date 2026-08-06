@@ -167,13 +167,25 @@
 <section id="drive-screen" class="screen">
   <div id="drive-map"></div>
 
-  <div class="drive-top">
-    <button class="close-btn" id="end-drive">✕</button>
-    <div class="pill" id="drive-audio-pill">🚗 <span id="drive-audio-name">—</span></div>
-    <div class="speed-pill"><span id="drive-speed">0</span><span data-i18n="drive.kmh">km/u</span></div>
-  </div>
-  <div class="wakelock-row">
-    <div class="pill" id="wakelock-pill"></div>
+  <div class="drive-top-stack" id="drive-top-stack">
+    <div class="drive-top">
+      <button class="close-btn" id="end-drive">✕</button>
+      <div class="pill" id="drive-audio-pill">🚗 <span id="drive-audio-name">—</span></div>
+      <div class="speed-pill"><span id="drive-speed">0</span><span data-i18n="drive.kmh">km/u</span></div>
+    </div>
+
+    <div class="maneuver-banner" id="maneuver-banner" style="display:none">
+      <div class="mb-glyph" id="mb-glyph">⬆</div>
+      <div class="mb-text">
+        <div class="mb-instruction" id="mb-instruction"></div>
+        <div class="mb-road" id="mb-road"></div>
+      </div>
+      <div class="mb-distance" id="mb-distance"></div>
+    </div>
+
+    <div class="wakelock-row">
+      <div class="pill" id="wakelock-pill"></div>
+    </div>
   </div>
 
   <div class="now-playing">
