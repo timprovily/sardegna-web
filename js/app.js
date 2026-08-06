@@ -2,7 +2,8 @@ import { loadRoutes, loadFacts, formatDistance, progressFraction, distanceMetres
 import { loadSettings, saveSettings, loadCustomRoutes, saveCustomRoute, deleteCustomRoute } from './storage.js';
 import { SpeechService } from './speech.js';
 import { LocationService } from './geo.js';
-import { NavEngine } from './navEngine.js';
+import { NavEngine, maneuverBanner } from './navEngine.js';
+import { maneuverIconSVG } from './maneuverIcons.js';
 import { TourEngine } from './tourEngine.js';
 import { EnrichmentService } from './enrichment.js';
 import { RouteMap } from './map.js';
@@ -448,6 +449,7 @@ function endDrive() {
   location.stop();
   wakeLock.disable();
   spotify.stopPolling();
+  renderManeuverBanner(null);
   // The radio keeps playing on purpose — ending the tour shouldn't cut
   // your music off mid-song.
   navEngine.currentStepIndex = 0;
@@ -523,6 +525,8 @@ tourEngine.addEventListener('joined', () => {
   renderRibbon();
   renderNowPlaying();
 });
+
+navEngine.addEventListener('progress', (e) => renderManeuverBanner(e.detail));
 
 navEngine.addEventListener('offroute', (e) => {
   const notice = document.getElementById('off-route-notice');
@@ -716,7 +720,7 @@ function buildViaPoints(route, fromHighlight) {
 function syncMapInsets() {
   if (!driveMap) return;
   const card = document.querySelector('#drive-screen .now-playing');
-  const topBar = document.querySelector('#drive-screen .drive-top');
+  const topBar = document.querySelector('#drive-screen .drive-top-stack');
   driveMap.setInsets({
     top: topBar ? topBar.offsetHeight + 12 : 0,
     bottom: card ? card.offsetHeight + 12 : 0
@@ -735,6 +739,54 @@ function watchMapInsets() {
   mapInsetObserver = new ResizeObserver(() => syncMapInsets());
   mapInsetObserver.observe(card);
   syncMapInsets();
+}
+
+/**
+ * The manoeuvre banner.
+ *
+ * Fed by the nav engine on every fix, so the distance counts down as you
+ * approach rather than jumping between announcements. Turns solid at
+ * 120 metres — that's the point where you should already be in the right
+ * lane and looking for the junction rather than reading a screen.
+ */
+function renderManeuverBanner(detail) {
+  const banner = document.getElementById('maneuver-banner');
+  if (!banner) return;
+
+  const usable =
+    settings.turnByTurnEnabled &&
+    navEngine.enabled &&
+    navEngine.steps.length > 0 &&
+    detail &&
+    isFinite(detail.distanceToStep);
+
+  if (!usable) {
+    if (banner.style.display !== 'none') {
+      banner.style.display = 'none';
+      syncMapInsets();
+    }
+    return;
+  }
+
+  const step = navEngine.steps[detail.stepIndex];
+  if (!step) return;
+
+  const lang = settings.language;
+  const info = maneuverBanner(step, lang);
+
+  const wasHidden = banner.style.display === 'none';
+  banner.style.display = 'flex';
+
+  document.getElementById('mb-glyph').innerHTML = maneuverIconSVG(step);
+  document.getElementById('mb-instruction').textContent = info.text;
+  document.getElementById('mb-road').textContent = info.road;
+  document.getElementById('mb-distance').textContent = formatDistance(detail.distanceToStep);
+
+  banner.classList.toggle('imminent', detail.distanceToStep <= 120);
+
+  // Appearing changes the height of the top column, which the map centre
+  // depends on.
+  if (wasHidden) syncMapInsets();
 }
 
 // ─────────────────────────── Expanded stories ───────────────────────────
@@ -1481,7 +1533,10 @@ function wireSettingsSheet() {
   });
 
   wireToggle('chime-toggle', 'chimeBeforeSpeech', () => syncSpeechFromSettings());
-  wireToggle('nav-toggle', 'turnByTurnEnabled', () => { navEngine.enabled = settings.turnByTurnEnabled; });
+  wireToggle('nav-toggle', 'turnByTurnEnabled', () => {
+    navEngine.enabled = settings.turnByTurnEnabled;
+    if (!settings.turnByTurnEnabled) renderManeuverBanner(null);
+  });
   wireToggle('facts-toggle', 'factsEnabled');
   wireToggle('wiki-toggle', 'onlineExtras');
 

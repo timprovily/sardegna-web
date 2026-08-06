@@ -433,3 +433,105 @@ function thinEvenly(points, count) {
   const step = points.length / count;
   return Array.from({ length: count }, (_, i) => points[Math.floor(i * step)]);
 }
+
+// ── Banner text ───────────────────────────────────────────────────────
+//
+// The spoken sentences above are written to be heard once, in passing.
+// A banner is read at a glance, repeatedly, so it needs the opposite:
+// two or three words and a symbol you recognise before you've read it.
+
+const GLYPHS = {
+  uturn: '⮌',
+  'sharp left': '⬉',
+  left: '⬅',
+  'slight left': '⬀',
+  straight: '⬆',
+  'slight right': '⬈',
+  right: '➡',
+  'sharp right': '⬊'
+};
+
+function glyphFor(step) {
+  const left = (step.modifier || '').includes('left');
+
+  if (step.type === 'arrive') return '⚑';
+  if (step.type === 'roundabout' || step.type === 'rotary') return '⟳';
+  if (step.type === 'merge') return left ? '⬀' : '⬈';
+  if (step.type === 'on ramp') return '⬈';
+  if (step.type === 'off ramp') return left ? '⬋' : '⬊';
+  // A fork is a lane choice, not a turn. OSRM labels it "left" or
+  // "right", but a full ninety-degree arrow there tells you to swing the
+  // wheel when all you need to do is stay left of the divider.
+  if (step.type === 'fork') return left ? '⬀' : '⬈';
+
+  return GLYPHS[step.modifier] || '⬆';
+}
+
+const BANNER = {
+  nl: {
+    uturn: 'Keren',
+    'sharp left': 'Scherp linksaf',
+    left: 'Linksaf',
+    'slight left': 'Links aanhouden',
+    straight: 'Rechtdoor',
+    'slight right': 'Rechts aanhouden',
+    right: 'Rechtsaf',
+    'sharp right': 'Scherp rechtsaf',
+    arrive: 'Bestemming',
+    merge: 'Invoegen',
+    onRamp: 'Oprit nemen',
+    offRamp: 'Afrit nemen',
+    endOfRoad: 'Einde weg',
+    roundabout: (n) => (n ? `Rotonde, ${n}e afslag` : 'Rotonde'),
+    fork: (left) => (left ? 'Links aanhouden' : 'Rechts aanhouden'),
+    onto: 'naar'
+  },
+  en: {
+    uturn: 'Make a U-turn',
+    'sharp left': 'Sharp left',
+    left: 'Turn left',
+    'slight left': 'Keep left',
+    straight: 'Straight on',
+    'slight right': 'Keep right',
+    right: 'Turn right',
+    'sharp right': 'Sharp right',
+    arrive: 'Destination',
+    merge: 'Merge',
+    onRamp: 'Take the ramp',
+    offRamp: 'Take the exit',
+    endOfRoad: 'End of road',
+    roundabout: (n) => (n ? `Roundabout, exit ${n}` : 'Roundabout'),
+    fork: (left) => (left ? 'Keep left' : 'Keep right'),
+    onto: 'onto'
+  }
+};
+
+/** Everything the banner needs for one manoeuvre. */
+export function maneuverBanner(step, lang) {
+  const b = BANNER[lang] || BANNER.nl;
+  const left = (step.modifier || '').includes('left');
+  let text;
+
+  switch (step.type) {
+    case 'arrive': text = b.arrive; break;
+    case 'roundabout':
+    case 'rotary': text = b.roundabout(step.exit); break;
+    case 'merge': text = b.merge; break;
+    case 'on ramp': text = b.onRamp; break;
+    case 'off ramp': text = b.offRamp; break;
+    case 'fork': text = b.fork(left); break;
+    case 'end of road': text = `${b.endOfRoad}, ${(b[step.modifier] || b.straight).toLowerCase()}`; break;
+    default: text = b[step.modifier] || b.straight;
+  }
+
+  return {
+    // The icon is drawn as SVG by maneuverIcons.js; the glyph stays only
+    // as a text fallback for anything that can't render inline SVG.
+    glyph: glyphFor(step),
+    step,
+    text,
+    // Only worth showing if the road actually has a name; OSRM leaves it
+    // blank on plenty of Sardinian back roads.
+    road: step.roadName ? `${b.onto} ${step.roadName}` : ''
+  };
+}
