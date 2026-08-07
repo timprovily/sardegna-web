@@ -127,6 +127,11 @@ export class NavEngine extends EventTarget {
     this.offRouteSince = null;
     this.route = null;
     this.destination = null;
+    // While guiding you to the start, the route's own line is parked here
+    // and restored on arrival.
+    this.approaching = false;
+    this.baseGeometry = null;
+    this.baseSteps = null;
     this.enabled = true;
   }
 
@@ -138,6 +143,10 @@ export class NavEngine extends EventTarget {
     this.announcedThisStep.clear();
     this.offRouteSince = null;
     this.maxReachedIndex = 0;
+    // A fresh route is never mid-approach, even if the last one was.
+    this.approaching = false;
+    this.baseGeometry = null;
+    this.baseSteps = null;
 
     const cached = loadCachedGeometry(route.id);
     if (cached && cached.geometry && cached.geometry.length > 2) {
@@ -145,6 +154,7 @@ export class NavEngine extends EventTarget {
       this.steps = cached.steps;
       this.quality = 'routed';
       this._indexSteps();
+      this._stashRouteLine();
       this._notifyGeometry();
       return;
     }
@@ -165,6 +175,7 @@ export class NavEngine extends EventTarget {
       this.steps = routed.steps;
       this.quality = 'routed';
       this._indexSteps();
+      this._stashRouteLine();
       saveCachedGeometry(route.id, routed);
       this._notifyGeometry();
     } catch (err) {
@@ -239,6 +250,8 @@ export class NavEngine extends EventTarget {
       this.currentStepIndex = 0;
       this.announcedThisStep.clear();
       this.offRouteSince = null;
+      // Same reasoning as in _reroute: this line begins under your wheels.
+      this.maxReachedIndex = 0;
       this._indexSteps();
       this._notifyGeometry();
       return true;
@@ -248,15 +261,42 @@ export class NavEngine extends EventTarget {
   }
 
   /** Forces a fresh route from `from` to the original destination — used for rerouting. */
+  _stashRouteLine() {
+    this.baseGeometry = this.geometry;
+    this.baseSteps = this.steps;
+  }
+
+  /**
+   * Recalculates, and decides first whether you are off the route or
+   * simply not on it yet.
+   *
+   * Those are different problems and they need different answers. Merging
+   * the drive to the start into one long line looks tidy but breaks
+   * badly on exactly the routes people reverse: from Olbia, the quickest
+   * way to Santa Maria Navarrese *is* the SS125, so the combined line
+   * runs south down the road and then north back up it. A line that
+   * doubles over itself has two nearby points for every position, and
+   * progress snaps to whichever is marginally closer — which is how the
+   * start ended up behind you on the second recalculation.
+   *
+   * So getting to the start is its own leg. The route's own line waits
+   * untouched until you arrive.
+   */
   async _reroute(from) {
     if (!this.route) return;
 
-    // Route through everything still ahead of you, never straight to the
-    // finish. Aiming at the last waypoint looks reasonable until you try
-    // it: start a route from your hotel and the "new route" is a direct
-    // run to the far end, skipping the entire drive. On a reversed route
-    // that is even more obviously wrong — it hands you the original
-    // starting town as a destination.
+    const routeLine = this.baseGeometry && this.baseGeometry.length > 1
+      ? this.baseGeometry
+      : this.geometry;
+    const notStarted =
+      this.maxReachedIndex === 0 &&
+      distanceToPolyline(from, routeLine) > NOT_STARTED_M;
+
+    if (notStarted || this.approaching) {
+      await this._approachStart(from);
+      return;
+    }
+
     const remaining = this._waypointsAhead(from);
     const points = [{ lat: from.lat, lon: from.lon }, ...remaining];
     const trimmed = points.length > 12
@@ -269,11 +309,58 @@ export class NavEngine extends EventTarget {
       this.steps = routed.steps;
       this.currentStepIndex = 0;
       this.announcedThisStep.clear();
+      // A rerouted line always starts where you are standing, so progress
+      // along it begins at zero. Carrying the old number over is
+      // meaningless — index 800 on the previous line points somewhere
+      // else entirely on this one.
+      this.maxReachedIndex = 0;
       this._indexSteps();
+      this._stashRouteLine();
       this._notifyGeometry();
     } catch (err) {
       console.warn('Reroute failed:', err);
     }
+  }
+
+  /** A single leg from where you are to the beginning of the route. */
+  async _approachStart(from) {
+    const start = this.route.waypoints[0];
+    try {
+      const routed = await fetchOSRM([{ lat: from.lat, lon: from.lon }, start]);
+      if (!this.approaching) this._stashRouteLine();
+      this.approaching = true;
+      this.geometry = routed.geometry;
+      this.steps = routed.steps;
+      this.currentStepIndex = 0;
+      this.announcedThisStep.clear();
+      this.maxReachedIndex = 0;
+      this._indexSteps();
+      this._notifyGeometry();
+    } catch (err) {
+      console.warn('Approach routing failed:', err);
+    }
+  }
+
+  /** Hands control back to the route once you reach its beginning. */
+  _finishApproach(lang) {
+    if (!this.approaching || !this.baseGeometry) return;
+    this.approaching = false;
+    this.geometry = this.baseGeometry;
+    this.steps = this.baseSteps || [];
+    this.currentStepIndex = 0;
+    this.announcedThisStep.clear();
+    this.maxReachedIndex = 0;
+    this.offRouteSince = null;
+    this._indexSteps();
+    this._notifyGeometry();
+
+    this.speech.speakNow({
+      title: lang === 'nl' ? 'Startpunt' : 'Start',
+      body: lang === 'nl'
+        ? 'Je bent bij het startpunt. De route begint hier.'
+        : "You've reached the start. The route begins here.",
+      source: 'nav'
+    });
   }
 
   /**
@@ -302,6 +389,12 @@ export class NavEngine extends EventTarget {
 
   /** Called on every position update. */
   handlePosition(pos, lang) {
+    // Reaching the start hands guidance back to the route itself.
+    if (this.approaching && this.route) {
+      const start = this.route.waypoints[0];
+      if (distanceMetres(pos, start) < 250) this._finishApproach(lang);
+    }
+
     if (!this.enabled || this.steps.length === 0) {
       this._trackOffRoute(pos, lang);
       return;
@@ -359,7 +452,7 @@ export class NavEngine extends EventTarget {
       if (this.offRouteSince == null) this.offRouteSince = Date.now();
       if (Date.now() - this.offRouteSince > OFF_ROUTE_PERSIST_MS) {
         this.offRouteSince = null;
-        const notStarted = distance > NOT_STARTED_M;
+        const notStarted = !this.approaching && distance > NOT_STARTED_M;
         this.speech.speakNow({
           title: lang === 'nl' ? 'Herberekenen' : 'Recalculating',
           body: notStarted ? PHRASES[lang].toStart() : PHRASES[lang].recalculating(),

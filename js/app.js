@@ -1,4 +1,4 @@
-import { loadRoutes, loadFacts, formatDistance, progressFraction, distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
+import { loadRoutes, loadFacts, formatDistance, distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 import { loadSettings, saveSettings, loadCustomRoutes, saveCustomRoute, deleteCustomRoute } from './storage.js';
 import { SpeechService } from './speech.js';
 import { LocationService } from './geo.js';
@@ -496,15 +496,13 @@ location.addEventListener('position', (e) => {
 
   tourEngine.handlePosition(pos);
   navEngine.handlePosition(pos, settings.language);
-  updateRibbonProgress(pos);
+  updateRibbonProgress();
 });
 
-function updateRibbonProgress(pos) {
+function updateRibbonProgress() {
   const bar = document.querySelector('.ribbon-progress');
-  if (!bar || !currentRoute) return;
-  const line = navEngine.geometry.length > 1 ? navEngine.geometry : currentRoute.waypoints;
-  const fraction = progressFraction(pos, line);
-  bar.style.width = `${Math.round(fraction * 100)}%`;
+  if (!bar) return;
+  bar.style.width = `${Math.round(routeProgressFraction() * 100)}%`;
 }
 
 tourEngine.addEventListener('highlightplayed', (e) => {
@@ -516,13 +514,19 @@ speech.addEventListener('itemstart', () => renderNowPlaying());
 speech.addEventListener('itemend', () => renderNowPlaying());
 
 navEngine.addEventListener('geometry', (e) => {
+  // The map always shows whatever you're being steered along, including
+  // the leg to the start.
   if (driveMap) driveMap.updateGeometry(e.detail.geometry);
-  // Routing often lands a few seconds after the drive starts. Re-anchor
-  // to the better line, otherwise progress was measured against the
-  // coarse skeleton and the next turn could be the wrong one.
-  if (tourEngine.isRunning && location.last) {
+
+  // The stories, though, belong to the route itself. Handing the tour
+  // engine the approach line would index every highlight against a road
+  // that doesn't contain any of them.
+  if (tourEngine.isRunning && location.last && !navEngine.approaching) {
     tourEngine.setGeometry(e.detail.geometry);
     navEngine.syncToPosition(location.last);
+    // Tick positions are measured against the line, so they move when a
+    // coarse skeleton is replaced by the real road.
+    renderRibbon();
   }
 });
 
@@ -545,19 +549,70 @@ navEngine.addEventListener('offroute', (e) => {
 
 function renderRibbon() {
   if (!currentRoute) return;
-  const lang = settings.language;
   const el = document.getElementById('ribbon');
   const highlights = currentRoute.highlights;
   const nextId = tourEngine.nextHighlight?.id;
 
+  const positions = ribbonPositions(highlights);
   const ticks = highlights.map((h, i) => {
-    const pos = highlights.length > 1 ? (i / (highlights.length - 1)) * 100 : 50;
     const played = tourEngine.playedHighlightIds.has(h.id) || tourEngine.skippedHighlightIds.has(h.id);
     const isNext = h.id === nextId;
-    return `<div class="ribbon-tick ${played ? 'played' : ''} ${isNext ? 'next' : ''}" style="left:${pos}%"></div>`;
+    return `<div class="ribbon-tick ${played ? 'played' : ''} ${isNext ? 'next' : ''}"
+                 style="left:${positions[i]}%"></div>`;
   }).join('');
 
-  el.innerHTML = `<div class="ribbon-track"></div><div class="ribbon-progress" style="width:0%"></div>${ticks}`;
+  el.innerHTML =
+    `<div class="ribbon-track"></div>` +
+    `<div class="ribbon-progress" style="width:${Math.round(routeProgressFraction() * 100)}%"></div>` +
+    ticks;
+}
+
+/**
+ * Where each place sits along the ribbon.
+ *
+ * Spacing the ticks evenly by their number was misleading: on the SS125,
+ * Dorgali and Cala Gonone are a few kilometres apart while the pass and
+ * Baunei are separated by half the drive, and evenly spaced dots imply
+ * the opposite. These sit at their real distance along the line.
+ */
+function ribbonPositions(highlights) {
+  const line = tourEngine.geometry;
+  const usable = line && line.length > 1 && tourEngine.highlightIndex?.size;
+
+  const raw = highlights.map((h, i) => {
+    if (usable) {
+      const at = tourEngine.highlightIndex.get(h.id);
+      if (at != null) return Math.max(0, Math.min(100, (at / (line.length - 1)) * 100));
+    }
+    // Before a drive starts there is no line to measure against.
+    return highlights.length > 1 ? (i / (highlights.length - 1)) * 100 : 50;
+  });
+
+  // Two places can genuinely sit at the same point — a village and the
+  // turning just outside it — and then one dot hides the other. Nudge
+  // them apart just enough to stay countable, first forwards and then
+  // backwards if that pushed the last one off the end.
+  const MIN_GAP = 4.5;
+  for (let i = 1; i < raw.length; i++) {
+    if (raw[i] - raw[i - 1] < MIN_GAP) raw[i] = raw[i - 1] + MIN_GAP;
+  }
+  const overflow = raw[raw.length - 1] - 100;
+  if (overflow > 0) {
+    for (let i = raw.length - 1; i >= 0; i--) {
+      raw[i] -= overflow;
+      if (i > 0 && raw[i] - raw[i - 1] >= MIN_GAP) break;
+    }
+  }
+  return raw.map((v) => Math.max(0, Math.min(100, Math.round(v * 10) / 10)));
+}
+
+/** Progress along the route, from the engine's own forward-only counter
+ *  rather than wherever the last fix happened to land. A GPS wobble at a
+ *  hairpin used to snap the bar backwards. */
+function routeProgressFraction() {
+  const line = tourEngine.geometry;
+  if (!tourEngine.isRunning || !line || line.length < 2) return 0;
+  return Math.max(0, Math.min(1, tourEngine.progressIndex / (line.length - 1)));
 }
 
 function renderNowPlaying() {
