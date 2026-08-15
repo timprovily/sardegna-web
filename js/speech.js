@@ -33,6 +33,7 @@ export class SpeechService extends EventTarget {
     // an item, that recording is played instead of synthesising locally.
     this.cloudVoice = null;
     this.cloudEnabled = false;
+    this.cloudVoiceId = null;
 
     this.normalQueue = [];
     this.current = null;      // the SpokenItem currently narrating
@@ -191,31 +192,39 @@ export class SpeechService extends EventTarget {
 
     const token = this._token;
 
-    // A pre-generated recording, if there is one for this item. Falls
-    // back to the built-in voice on any failure, so a missing clip is
-    // never the difference between hearing a story and silence.
-    if (this.cloudEnabled && this.cloudVoice && item.clipKey) {
+    // The cloud voice, if it's switched on. A pre-generated clip is used
+    // where one exists; anything else — the opening line, a fact, a turn
+    // instruction — is fetched on demand and cached if it's short enough
+    // to recur. Without that second path the drive alternated between two
+    // voices, which sounds like a fault rather than a saving.
+    if (this.cloudEnabled && this.cloudVoice) {
       this._active = true;
       const start = this.playChime ? 400 : 0;
       if (this.playChime) this._chime();
 
+      const finish = () => {
+        if (token !== this._token) return;
+        this._active = false;
+        this.isSpeaking = false;
+        this.current = null;
+        this.dispatchEvent(new Event('itemend'));
+        this._pump();
+      };
+      const fallBack = () => {
+        if (token !== this._token) return;
+        this._active = false;
+        this._pendingChunks = chunkText(item.body);
+        this._speakChunk(token);
+      };
+
       setTimeout(() => {
         if (token !== this._token) return;
-        this.cloudVoice.play(item.clipKey)
-          .then(() => {
-            if (token !== this._token) return;
-            this._active = false;
-            this.isSpeaking = false;
-            this.current = null;
-            this.dispatchEvent(new Event('itemend'));
-            this._pump();
-          })
-          .catch(() => {
-            if (token !== this._token) return;
-            this._active = false;
-            this._pendingChunks = chunkText(item.body);
-            this._speakChunk(token);
-          });
+
+        const attempt = item.clipKey
+          ? this.cloudVoice.play(item.clipKey).catch(() => this._cloudSpeak(item))
+          : this._cloudSpeak(item);
+
+        attempt.then(finish).catch(fallBack);
       }, start);
       return;
     }
@@ -227,6 +236,14 @@ export class SpeechService extends EventTarget {
     } else {
       this._speakChunk(token);
     }
+  }
+
+  /** Speaks arbitrary text with the cloud voice, if it's configured. */
+  _cloudSpeak(item) {
+    if (!this.cloudVoice || !this.cloudVoiceId) return Promise.reject(new Error('no cloud voice'));
+    // Offline, or the request fails: the caller falls back to the
+    // built-in voice, so a dead zone never means silence.
+    return this.cloudVoice.speakText(item.body, this.language, this.cloudVoiceId);
   }
 
   _speakChunk(token) {

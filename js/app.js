@@ -1147,8 +1147,10 @@ function wireCloudVoice() {
   toggle.addEventListener('click', () => {
     settings.cloudVoiceEnabled = !settings.cloudVoiceEnabled;
     toggle.classList.toggle('on', settings.cloudVoiceEnabled);
-    speech.cloudEnabled = settings.cloudVoiceEnabled;
     persist();
+    // Push it through immediately: having to restart the app after
+    // flipping a switch is the kind of thing nobody guesses.
+    syncSpeechFromSettings();
     if (currentRoute) renderAudioBlock(currentRoute);
   });
 
@@ -1156,6 +1158,7 @@ function wireCloudVoice() {
   keyField.value = cloudVoice.apiKey;
   keyField.addEventListener('change', () => {
     cloudVoice.apiKey = keyField.value;
+    syncSpeechFromSettings();
     updateCloudStatus();
     if (currentRoute) renderAudioBlock(currentRoute);
   });
@@ -1197,6 +1200,7 @@ function renderCloudVoiceList() {
     row.addEventListener('click', () => {
       settings.googleVoice = voice.id;
       persist();
+      syncSpeechFromSettings();
       renderCloudVoiceList();
       // Existing clips were made with the old voice, so they no longer
       // match — the app falls back to the built-in voice until you
@@ -1228,6 +1232,7 @@ async function renderAudioBlock(route) {
     return;
   }
   block.style.display = 'block';
+
 
   document.getElementById('audio-eyebrow').textContent = t('audio.title', lang);
   const total = route.highlights.length;
@@ -2315,6 +2320,7 @@ function syncSpeechFromSettings() {
   speech.preferredVoiceName = settings.voiceName || null;
   speech.preferredVoiceURI = settings.voiceURI || null;
   speech.cloudEnabled = !!settings.cloudVoiceEnabled;
+  speech.cloudVoiceId = settings.googleVoice || null;
   speech.rate = settings.speechRate;
   speech.playChime = settings.chimeBeforeSpeech;
 }

@@ -287,6 +287,44 @@ export class CloudVoice extends EventTarget {
     return !!this.playing && !this.playing.audio.paused;
   }
 
+  /**
+   * Speaks any text with the cloud voice, caching the result.
+   *
+   * Pre-generated route stories cover the long text, but they were never
+   * the whole of what the guide says: the opening line, island facts,
+   * navigation prompts and the messages about skipping or rerouting all
+   * go through here too. Without this, those fell back to the compact
+   * Apple voice, and a drive that switched between two different voices
+   * sounded broken rather than economical.
+   *
+   * Short lines are cached by a hash of the text, so a phrase like "turn
+   * left" is fetched once and then reused for the rest of the trip, in
+   * every route, at no further cost.
+   */
+  async speakText(text, lang, voiceId, { volume = 1, cache = true } = {}) {
+    const key = `adhoc|${lang}|${voiceId}|${hashText(text)}`;
+
+    let blob = cache ? await this.get(key) : null;
+    if (!blob) {
+      blob = await this.synthesize(text, lang, voiceId);
+      // Only worth storing if it's likely to recur. A unique story would
+      // just fill the database with something never played again.
+      if (cache && text.length < 400) await this.put(key, blob);
+    }
+
+    this.stop();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.volume = volume;
+    this.playing = { audio, url };
+
+    return new Promise((resolve, reject) => {
+      audio.onended = () => { this.stop(); resolve(); };
+      audio.onerror = () => { this.stop(); reject(new Error('playback failed')); };
+      audio.play().catch(reject);
+    });
+  }
+
   /** A short sample, not stored — just to hear what a voice sounds like. */
   async preview(text, lang, voiceId) {
     const blob = await this.synthesize(text, lang, voiceId);
@@ -354,4 +392,14 @@ export function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} kB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** A short, stable identifier for a piece of text. Not cryptographic —
+ *  it only has to distinguish one phrase from another. */
+function hashText(text) {
+  let hash = 5381;
+  for (let i = 0; i < text.length; i++) {
+    hash = ((hash << 5) + hash + text.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36) + '-' + text.length;
 }
