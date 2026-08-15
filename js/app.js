@@ -1,6 +1,6 @@
 import { loadRoutes, loadFacts, formatDistance, distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 import { loadSettings, saveSettings, loadCustomRoutes, saveCustomRoute, deleteCustomRoute } from './storage.js';
-import { SpeechService } from './speech.js';
+import { SpeechService, voiceQualityLabel, voiceGenderLabel } from './speech.js';
 import { LocationService } from './geo.js';
 import { NavEngine, maneuverBanner } from './navEngine.js';
 import { maneuverIconSVG } from './maneuverIcons.js';
@@ -8,6 +8,7 @@ import { reverseRoute, unreverseRoute } from './reverse.js';
 import { MODES, DEFAULT_MODE, getMode, modeOf } from './travelModes.js';
 import { groupRoutes, proximityLabel } from './regions.js';
 import { FactSource } from './regionFacts.js';
+import { PowerSaver, MapThrottle } from './powerSaver.js';
 import { TourEngine } from './tourEngine.js';
 import { EnrichmentService } from './enrichment.js';
 import { RouteMap } from './map.js';
@@ -29,6 +30,8 @@ const location = new LocationService();
 const enrichment = new EnrichmentService();
 const storyteller = new Storyteller(enrichment);
 const factSource = new FactSource(storyteller);
+const powerSaver = new PowerSaver(settings);
+const mapThrottle = new MapThrottle();
 const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment, storyteller, factSource });
 const navEngine = new NavEngine(speech);
 const wakeLock = new WakeLockManager();
@@ -502,6 +505,7 @@ function startDrive() {
     location.start();
     renderWakeLockPill(false);   // shown straight away, updated by the event
     wakeLock.enable();
+    powerSaver.start();
     renderRibbon();
     renderNowPlaying();
     spotify.startPolling();
@@ -515,6 +519,7 @@ function endDrive() {
   tourEngine.stop();
   location.stop();
   wakeLock.disable();
+  powerSaver.stop();
   spotify.stopPolling();
   renderManeuverBanner(null);
   // The radio keeps playing on purpose — ending the tour shouldn't cut
@@ -559,11 +564,35 @@ location.addEventListener('position', (e) => {
     updateMapsButton(currentRoute);
   }
 
-  if (driveMap) driveMap.updateUserPosition(pos);
+  // Redrawing the map is the most expensive thing on this screen, and on
+  // a long straight stretch almost none of it earns its keep.
+  if (driveMap) {
+    const toTurn = navEngine.steps.length
+      ? (navEngine.lastDistanceToStep ?? Infinity)
+      : Infinity;
+    if (mapThrottle.shouldDraw({
+      dimmed: powerSaver.dimmed,
+      speedKmh: pos.speedKmh,
+      distanceToTurn: toTurn
+    })) {
+      driveMap.updateUserPosition(pos);
+    }
+  }
 
   tourEngine.handlePosition(pos);
   navEngine.handlePosition(pos, settings.language);
   updateRibbonProgress();
+
+  // Something worth seeing is coming up: keep the screen readable rather
+  // than making you tap it as you arrive.
+  const next = tourEngine.distanceToNext;
+  const radius = tourEngine.mode?.highlightRadius ?? 900;
+  powerSaver.hold('highlight', next != null && next < radius * 2);
+
+  // Being stopped is deliberately *not* a reason to hold. Park at a
+  // viewpoint for an hour and a permanently lit screen is the one thing
+  // you don't want — that's exactly the case dimming is for. The idle
+  // timer handles it, and a touch brings it straight back.
 });
 
 function updateRibbonProgress() {
@@ -577,8 +606,16 @@ tourEngine.addEventListener('highlightplayed', (e) => {
   renderRibbon();
 });
 
-speech.addEventListener('itemstart', () => renderNowPlaying());
-speech.addEventListener('itemend', () => renderNowPlaying());
+speech.addEventListener('itemstart', () => {
+  renderNowPlaying();
+  // Held for the duration, so a two-minute story doesn't go dark
+  // halfway through.
+  powerSaver.hold('speech', true);
+});
+speech.addEventListener('itemend', () => {
+  renderNowPlaying();
+  powerSaver.hold('speech', false);
+});
 
 navEngine.addEventListener('geometry', (e) => {
   // The map always shows whatever you're being steered along, including
@@ -602,9 +639,19 @@ tourEngine.addEventListener('joined', () => {
   renderNowPlaying();
 });
 
-navEngine.addEventListener('progress', (e) => renderManeuverBanner(e.detail));
+navEngine.addEventListener('progress', (e) => {
+  renderManeuverBanner(e.detail);
+  // Stay lit for the whole approach to a junction, not just the moment
+  // it was announced. Fading out halfway to the turn was the old
+  // behaviour and it was exactly backwards.
+  const approaching = !!e.detail && e.detail.distanceToStep < 500;
+  powerSaver.hold('turn', approaching);
+});
 
 navEngine.addEventListener('offroute', (e) => {
+  // Off the route is the one moment the map is doing real work for you.
+  powerSaver.hold('offroute', e.detail > 200);
+
   const notice = document.getElementById('off-route-notice');
   if (e.detail > 3000) {
     notice.style.display = 'flex';
@@ -1061,6 +1108,19 @@ function updateAIStatus() {
     storyteller.hasKey ? t('ai.ready', lang) : t('ai.noKey', lang);
 }
 
+/** A faint line telling you the screen is only dimmed, not broken. */
+powerSaver.addEventListener('change', (e) => {
+  let hint = document.getElementById('dim-hint');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'dim-hint';
+    hint.className = 'dim-hint';
+    document.body.appendChild(hint);
+  }
+  hint.textContent = t('power.dimmed', settings.language);
+  hint.classList.toggle('show', e.detail.dimmed);
+});
+
 // ─────────────────────────── Regional facts ───────────────────────────
 
 async function renderFactsBlock(route) {
@@ -1378,6 +1438,30 @@ function renderMusicBar() {
   nextBtn.style.opacity = '1';
 }
 
+function wirePowerSettings() {
+  const lang = settings.language;
+  document.getElementById('power-hint').textContent = t('power.hint', lang);
+
+  const toggle = document.getElementById('power-toggle');
+  toggle.classList.toggle('on', settings.powerSaving !== false);
+  toggle.addEventListener('click', () => {
+    settings.powerSaving = settings.powerSaving === false;
+    toggle.classList.toggle('on', settings.powerSaving !== false);
+    persist();
+    // Turning it off should clear an active dim straight away.
+    if (settings.powerSaving === false) powerSaver.wake('setting');
+  });
+
+  const slider = document.getElementById('dim-slider');
+  slider.value = settings.dimLevel ?? 45;
+  document.getElementById('dim-value').textContent = `${slider.value}%`;
+  slider.addEventListener('input', () => {
+    settings.dimLevel = parseInt(slider.value, 10);
+    document.getElementById('dim-value').textContent = `${slider.value}%`;
+    persist();
+  });
+}
+
 function wireMusicSettings() {
   const lang = settings.language;
 
@@ -1463,6 +1547,89 @@ function updateVolumeNote() {
     note.style.display = 'none';
     if (slider) slider.style.opacity = '1';
   }
+}
+
+/**
+ * The voice picker.
+ *
+ * Gender and quality are inferred from the voice's name, because the Web
+ * Speech API exposes neither. That inference is imperfect, so every entry
+ * shows its real name and has its own play button — the labels are there
+ * to sort by, and your ear decides.
+ */
+function renderVoiceList() {
+  const lang = settings.language;
+  const list = document.getElementById('voice-list');
+  if (!list) return;
+
+  const voices = speech.voicesFor(lang);
+  document.getElementById('voice-hint').textContent = t('voice.hint', lang);
+
+  if (voices.length === 0) {
+    list.innerHTML = `<p class="import-hint">${t('voice.none', lang)}</p>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  list.appendChild(voiceRow({
+    name: null,
+    label: t('voice.auto', lang),
+    meta: voices[0].name
+  }));
+
+  for (const v of voices) {
+    const bits = [
+      voiceGenderLabel(v.gender, lang),
+      v.lang,
+      v.local ? '' : (lang === 'nl' ? 'online' : 'online')
+    ].filter(Boolean);
+    list.appendChild(voiceRow({
+      name: v.name,
+      label: cleanVoiceName(v.name),
+      meta: bits.join(' · '),
+      tag: voiceQualityLabel(v.quality, lang)
+    }));
+  }
+}
+
+function voiceRow({ name, label, meta, tag }) {
+  const lang = settings.language;
+  const row = document.createElement('div');
+  row.className = 'voice-item' + ((settings.voiceName || null) === name ? ' active' : '');
+  row.innerHTML = `
+    <div class="voice-main">
+      <div class="voice-name">${escapeHTML(label)}</div>
+      <div class="voice-meta">${escapeHTML(meta || '')}</div>
+    </div>
+    ${tag ? `<span class="voice-tag">${escapeHTML(tag)}</span>` : ''}
+    <button class="voice-play" aria-label="${t('voice.play', lang)}">▶</button>`;
+
+  row.addEventListener('click', () => {
+    settings.voiceName = name;
+    speech.preferredVoiceName = name;
+    persist();
+    renderVoiceList();
+  });
+
+  row.querySelector('.voice-play').addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Preview without committing: speak with this voice, leave the
+    // selection alone until you actually pick it.
+    const previous = speech.preferredVoiceName;
+    speech.preferredVoiceName = name;
+    speech.speakNow({ title: 'Sample', body: t('sample.text', lang), source: 'system' });
+    speech.preferredVoiceName = previous;
+  });
+
+  return row;
+}
+
+/** Strips the bracketed clutter iOS appends to voice names. */
+function cleanVoiceName(name) {
+  return name
+    .replace(/\((Enhanced|Premium|Compact|Verbeterd)\)/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 function refreshSpotifySettingsUI() {
@@ -1775,6 +1942,7 @@ function wireSettingsSheet() {
       document.getElementById('import-label').textContent = t('import.label', settings.language);
       document.getElementById('import-hint').textContent = t('import.hint', settings.language);
       refreshThemeUI();
+      renderVoiceList();
       renderRouteList();
       renderOverviewMap();
       if (currentRoute) openDetail(currentRoute);
@@ -1826,11 +1994,15 @@ function wireSettingsSheet() {
   wireToggle('wiki-toggle', 'onlineExtras');
 
   wireStorySettings();
+  wirePowerSettings();
   wireMusicSettings();
 
-  document.getElementById('voice-sample').addEventListener('click', () => {
-    speech.speakNow({ title: 'Sample', body: t('sample.text', settings.language), source: 'system' });
-  });
+  renderVoiceList();
+  // iOS populates the voice list asynchronously, so it is often empty on
+  // the first call and fills in a moment later.
+  if ('onvoiceschanged' in speech.synth) {
+    speech.synth.addEventListener('voiceschanged', () => renderVoiceList());
+  }
 }
 
 function wireToggle(id, key, onChange) {
@@ -1850,6 +2022,7 @@ function persist() {
 
 function syncSpeechFromSettings() {
   speech.language = settings.language;
+  speech.preferredVoiceName = settings.voiceName || null;
   speech.rate = settings.speechRate;
   speech.playChime = settings.chimeBeforeSpeech;
 }

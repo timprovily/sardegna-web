@@ -22,7 +22,11 @@ const DEFAULT_SETTINGS = {
   lastStationUrl: null,
   locationGranted: false,
   aiModel: 'claude-sonnet-5',
-  importMode: 'car'
+  importMode: 'car',
+  // Name of the chosen speech voice; null means pick the best available.
+  voiceName: null,
+  powerSaving: true,
+  dimLevel: 45
 };
 
 export function loadSettings() {

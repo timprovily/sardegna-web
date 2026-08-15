@@ -24,6 +24,8 @@ export class SpeechService extends EventTarget {
     this.language = 'nl';
     this.rate = 0.95;
     this.playChime = true;
+    // Name of the voice the user picked, or null for automatic.
+    this.preferredVoiceName = null;
 
     this.normalQueue = [];
     this.current = null;      // the SpokenItem currently narrating
@@ -47,14 +49,52 @@ export class SpeechService extends EventTarget {
   }
 
   /** Best available voice for a language, preferring an on-device voice. */
-  bestVoice(lang) {
+  /**
+   * Every voice installed for a language, best first.
+   *
+   * The ordering matters more than it looks. iOS ships a compact default
+   * that sounds distinctly synthetic, and hides much better voices behind
+   * a download in Settings. Enhanced and Premium voices don't announce
+   * themselves through this API, but they do carry distinguishing names,
+   * so those are recognised and floated to the top.
+   */
+  voicesFor(lang) {
     const prefix = lang.slice(0, 2);
-    const voices = this.synth.getVoices();
-    const candidates = voices.filter((v) => v.lang.toLowerCase().startsWith(prefix));
-    if (candidates.length === 0) return null;
-    candidates.sort((a, b) => (b.localService ? 1 : 0) - (a.localService ? 1 : 0));
-    const exact = candidates.find((v) => v.lang.toLowerCase() === (prefix === 'nl' ? 'nl-nl' : 'en-gb'));
-    return exact || candidates[0];
+    const preferredRegion = prefix === 'nl' ? 'nl-nl' : 'en-gb';
+
+    return this.synth.getVoices()
+      .filter((v) => v.lang.toLowerCase().startsWith(prefix))
+      .map((v) => ({
+        voice: v,
+        name: v.name,
+        lang: v.lang,
+        gender: guessGender(v.name, prefix),
+        quality: qualityRank(v.name),
+        local: !!v.localService,
+        exactRegion: v.lang.toLowerCase() === preferredRegion
+      }))
+      .sort((a, b) =>
+        b.quality - a.quality ||
+        (b.exactRegion ? 1 : 0) - (a.exactRegion ? 1 : 0) ||
+        (b.local ? 1 : 0) - (a.local ? 1 : 0) ||
+        a.name.localeCompare(b.name)
+      );
+  }
+
+  /** The voice to speak with: the chosen one if it's still installed,
+   *  otherwise the best available. */
+  bestVoice(lang) {
+    const list = this.voicesFor(lang);
+    if (list.length === 0) return null;
+
+    const wanted = this.preferredVoiceName;
+    if (wanted) {
+      const match = list.find((v) => v.name === wanted);
+      if (match) return match.voice;
+      // Chosen voice has been removed from the phone — fall through
+      // rather than going silent.
+    }
+    return list[0].voice;
   }
 
   /** Adds a story to the back of the normal queue. Never interrupts. */
@@ -226,4 +266,61 @@ function chunkText(text, maxLen = 200) {
   }
   if (buffer.trim()) chunks.push(buffer.trim());
   return chunks;
+}
+
+// ── Voice classification ──────────────────────────────────────────────
+//
+// The Web Speech API exposes no gender and no quality field, so both have
+// to be inferred from the name. That is unavoidably a heuristic, which is
+// why the settings screen shows the real name alongside and lets you play
+// each one — the label is a hint to sort by, not a promise.
+
+const KNOWN_FEMALE = new Set([
+  // Dutch
+  'ellen', 'claire', 'lotte', 'saskia', 'xander_female', 'femke',
+  // English
+  'kate', 'serena', 'moira', 'tessa', 'fiona', 'karen', 'samantha',
+  'susan', 'allison', 'ava', 'joanna', 'zoe', 'stephanie', 'martha',
+  'sonia', 'libby', 'hazel', 'amy', 'emma', 'nicky', 'siri female'
+]);
+
+const KNOWN_MALE = new Set([
+  'xander', 'frank', 'ruben', 'bram',
+  'daniel', 'oliver', 'alex', 'fred', 'tom', 'aaron', 'arthur',
+  'gordon', 'rishi', 'ryan', 'george', 'guy', 'brian', 'siri male'
+]);
+
+function guessGender(rawName, prefix) {
+  const name = rawName.toLowerCase();
+  if (/\bfemale\b|\(vrouw|\bvrouw\b/.test(name)) return 'female';
+  if (/\bmale\b|\(man|\bman\b/.test(name)) return 'male';
+
+  for (const known of KNOWN_FEMALE) if (name.includes(known)) return 'female';
+  for (const known of KNOWN_MALE) if (name.includes(known)) return 'male';
+  return 'unknown';
+}
+
+function qualityRank(rawName) {
+  const name = rawName.toLowerCase();
+  if (name.includes('premium')) return 3;
+  if (name.includes('enhanced') || name.includes('verbeterd')) return 2;
+  if (name.includes('siri')) return 2;
+  if (name.includes('compact')) return 0;
+  return 1;
+}
+
+export function voiceQualityLabel(rank, lang) {
+  const labels = {
+    nl: { 3: 'Premium', 2: 'Verbeterd', 1: '', 0: 'Compact' },
+    en: { 3: 'Premium', 2: 'Enhanced', 1: '', 0: 'Compact' }
+  };
+  return (labels[lang] || labels.nl)[rank] || '';
+}
+
+export function voiceGenderLabel(gender, lang) {
+  const labels = {
+    nl: { female: 'vrouw', male: 'man', unknown: '' },
+    en: { female: 'female', male: 'male', unknown: '' }
+  };
+  return (labels[lang] || labels.nl)[gender] || '';
 }

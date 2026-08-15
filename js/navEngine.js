@@ -434,6 +434,9 @@ export class NavEngine extends EventTarget {
       this.currentStepIndex = Math.min(this.currentStepIndex + 1, this.steps.length - 1);
     }
 
+    // Kept so other parts of the app can ask how close the next turn is
+    // without recomputing it.
+    this.lastDistanceToStep = distanceToStep;
     this.dispatchEvent(new CustomEvent('progress', {
       detail: { stepIndex: this.currentStepIndex, distanceToStep }
     }));
