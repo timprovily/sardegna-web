@@ -463,7 +463,19 @@ verbergt de goede achter een download:
 3. Sluit Sardegna daarna helemaal af en open hem opnieuw
 
 Die laatste stap is nodig: een draaiende pagina ziet nieuw geïnstalleerde
-stemmen pas na een herstart.
+stemmen niet vanzelf. De app kijkt nu opnieuw zodra hij weer op de voorgrond
+komt, dus wegschakelen en terugkomen is meestal al genoeg.
+
+**Werd je verbeterde stem niet herkend?** Dat lag aan de app en is opgelost.
+Ik bepaalde de kwaliteit uit de naam, maar iOS toont een gedownloade
+Enhanced-stem gewoon als "Claire", zonder achtervoegsel — dus die kreeg
+dezelfde rang als de basisstem. De app kijkt nu naar de interne stem-ID,
+waarin Apple de kwaliteit wél altijd vermeldt.
+
+Staat er alleen een basisstem op je toestel, dan zegt de app dat nu ook
+expliciet in plaats van je te laten raden. En download je een Enhanced-stem
+met dezelfde naam als de compacte, dan staan er twee "Claire" in de lijst;
+het label erachter laat zien welke welke is, en je kunt ze los kiezen.
 
 Kies je een stem en verwijder je hem later van je telefoon, dan valt de app
 terug op de beste beschikbare in plaats van stil te blijven. Hetzelfde
