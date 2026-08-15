@@ -1565,6 +1565,12 @@ function renderVoiceList() {
   const voices = speech.voicesFor(lang);
   document.getElementById('voice-hint').textContent = t('voice.hint', lang);
 
+  const diag = document.getElementById('voice-diagnostics');
+  if (diag) {
+    diag.textContent = t('voice.diagnostics', lang);
+    diag.onclick = showVoiceDiagnostics;
+  }
+
   if (voices.length === 0) {
     list.innerHTML = `<p class="import-hint">${t('voice.none', lang)}</p>`;
     return;
@@ -1641,6 +1647,56 @@ function voiceRow({ name, uri, label, meta, tag }) {
   });
 
   return row;
+}
+
+/**
+ * Shows the raw voice data.
+ *
+ * Quality has to be inferred, because the Web Speech API exposes no field
+ * for it — and I've now guessed wrong twice about what iOS actually puts
+ * in the name and the URI. Rather than guess a third time, this prints
+ * exactly what the browser reports so the real format is visible.
+ */
+function showVoiceDiagnostics() {
+  const lang = settings.language;
+  const raw = speech.synth.getVoices();
+  const mine = raw.filter((v) => v.lang.toLowerCase().startsWith(lang.slice(0, 2)));
+
+  const lines = [
+    `${raw.length} stemmen totaal, ${mine.length} voor "${lang}"`,
+    `userAgent: ${navigator.userAgent}`,
+    ''
+  ];
+
+  for (const v of (mine.length ? mine : raw)) {
+    const scored = speech.voicesFor(lang).find((x) => x.voice === v);
+    lines.push(
+      `name:      ${v.name}`,
+      `voiceURI:  ${v.voiceURI}`,
+      `lang:      ${v.lang}   local: ${v.localService}   default: ${v.default}`,
+      `rang:      ${scored ? scored.quality : '-'}  (0=compact 1=onbekend 2=verbeterd 3=premium)`,
+      ''
+    );
+  }
+
+  const text = lines.join('\n');
+  const box = document.createElement('div');
+  box.setAttribute('style',
+    'position:fixed;inset:12px;z-index:99999;background:#11161a;border:1px solid #343D45;' +
+    'border-radius:14px;padding:14px;overflow:auto;color:#EFEDE8;' +
+    'font:11px/1.5 ui-monospace,Menlo,monospace');
+  box.innerHTML =
+    '<div style="display:flex;gap:8px;margin-bottom:10px">' +
+    '<button id="vd-copy" style="flex:1;padding:9px;border:0;border-radius:8px;background:#1B93A8;color:#fff;font:600 12px system-ui">Kopieer</button>' +
+    '<button id="vd-close" style="flex:1;padding:9px;border:1px solid #343D45;border-radius:8px;background:none;color:#EFEDE8;font:600 12px system-ui">Sluit</button>' +
+    '</div><pre id="vd-text" style="margin:0;white-space:pre-wrap;word-break:break-all"></pre>';
+  document.body.appendChild(box);
+  box.querySelector('#vd-text').textContent = text;
+  box.querySelector('#vd-copy').onclick = function () {
+    navigator.clipboard?.writeText(text);
+    this.textContent = 'Gekopieerd';
+  };
+  box.querySelector('#vd-close').onclick = () => box.remove();
 }
 
 /** Strips the bracketed clutter iOS appends to voice names. */

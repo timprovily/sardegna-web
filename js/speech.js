@@ -65,9 +65,11 @@ export class SpeechService extends EventTarget {
     const prefix = lang.slice(0, 2);
     const preferredRegion = prefix === 'nl' ? 'nl-nl' : 'en-gb';
 
-    return this.synth.getVoices()
+    const all = this.synth.getVoices();
+    return all
       .filter((v) => v.lang.toLowerCase().startsWith(prefix))
       .map((v) => ({
+        order: all.indexOf(v),
         voice: v,
         name: v.name,
         lang: v.lang,
@@ -78,6 +80,7 @@ export class SpeechService extends EventTarget {
       }))
       .sort((a, b) =>
         b.quality - a.quality ||
+        tieBreak(b, b.order) - tieBreak(a, a.order) ||
         (b.exactRegion ? 1 : 0) - (a.exactRegion ? 1 : 0) ||
         (b.local ? 1 : 0) - (a.local ? 1 : 0) ||
         a.name.localeCompare(b.name)
@@ -312,18 +315,36 @@ function qualityRank(voice) {
   const name = (voice.name || '').toLowerCase();
   const both = `${uri} ${name}`;
 
-  if (/\bpremium\b|\.premium\b|voice\.premium/.test(both)) return 3;
-  if (/\benhanced\b|\.enhanced\b|voice\.enhanced|\bverbeterd\b/.test(both)) return 2;
-  // Siri voices are neural and sound at least as good as Enhanced.
-  if (/siri/.test(both)) return 2;
-  if (/\bcompact\b|\.compact\b|voice\.compact/.test(both)) return 0;
+  // Word boundaries were the mistake here. Apple's identifiers run the
+  // tier straight into surrounding text — "voice.enhanced.nl-NL" and
+  // "ttsbundle.siri_Martha_nl-NL_premium" — and older builds use
+  // "premium-compact" or a bare "-enhanced" suffix. A plain substring
+  // test matches all of those; \b did not.
+  if (both.includes('premium')) return 3;
+  if (both.includes('enhanced') || both.includes('verbeterd')) return 2;
+  if (both.includes('siri')) return 2;
+  if (both.includes('neural') || both.includes('natural') || both.includes('wavenet')) return 2;
+  if (both.includes('compact')) return 0;
 
-  // Cloud voices from Google and Microsoft are generally well ahead of a
-  // local compact voice, even when nothing in the name says so.
+  // Cloud voices are generally well ahead of a local compact voice, even
+  // when nothing in the name says so.
   if (!voice.localService) return 2;
-  if (/google|microsoft|natural|neural|wavenet/.test(both)) return 2;
+  if (both.includes('google') || both.includes('microsoft')) return 2;
 
   return 1;
+}
+
+/**
+ * Ranks by quality where it's known, and by installation order otherwise.
+ *
+ * On some iOS builds nothing distinguishes a downloaded voice from the
+ * built-in one in either field. But the phone lists voices in the order
+ * it prefers them, so a voice appearing later than the default is very
+ * often the one you installed. That's a weak signal, used only to break
+ * ties among voices that all scored "unknown".
+ */
+function tieBreak(entry, indexInList) {
+  return entry.quality === 1 ? indexInList : 0;
 }
 
 export function voiceQualityLabel(rank, lang) {
