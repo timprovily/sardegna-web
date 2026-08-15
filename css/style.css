@@ -778,3 +778,56 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
   background: var(--slate); border: 1px solid var(--seam);
   font-size: 10px; color: var(--ash); vertical-align: middle;
 }
+
+/* --- Voice picker --- */
+
+.voice-list { margin-top: 10px; max-height: 300px; overflow-y: auto; }
+.voice-item {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 11px 12px; margin-bottom: 6px;
+  background: var(--slate); border: 1px solid var(--seam); border-radius: 10px;
+  text-align: left; color: var(--quartz);
+}
+.voice-item.active { border-color: var(--sea); background: color-mix(in srgb, var(--sea) 14%, transparent); }
+.voice-main { flex: 1; min-width: 0; }
+.voice-name {
+  font-size: 14px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.voice-meta {
+  font-size: 10.5px; color: var(--ash); font-family: var(--font-mono);
+  margin-top: 2px;
+}
+.voice-item.active .voice-name { color: var(--shallow); }
+.voice-tag {
+  padding: 1px 7px; border-radius: 999px; font-size: 9.5px; font-weight: 700;
+  font-family: var(--font-display); letter-spacing: 0.3px;
+  background: color-mix(in srgb, var(--amber) 20%, transparent); color: var(--amber-soft);
+}
+.voice-play {
+  width: 34px; height: 34px; border-radius: 999px; flex-shrink: 0;
+  background: color-mix(in srgb, var(--sea) 15%, transparent);
+  color: var(--shallow); font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* --- Self-dimming overlay ---
+   Sits above everything, including the map. Pure black rather than a
+   tinted colour: on an OLED panel a black pixel is an unlit pixel, and
+   that is where the saving comes from. */
+.dim-overlay {
+  position: fixed; inset: 0; z-index: 3000;
+  background: #000;
+  opacity: 0; pointer-events: none;
+}
+
+.dim-hint {
+  position: fixed; left: 50%; bottom: calc(120px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 3001; pointer-events: none;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  font-family: var(--font-display); font-weight: 600;
+  letter-spacing: 0.4px;
+  opacity: 0; transition: opacity 0.4s;
+}
+.dim-hint.show { opacity: 1; }
