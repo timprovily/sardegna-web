@@ -392,6 +392,86 @@ precies tijdens een verhaal viel. Dat is hiermee mee opgelost.
 
 ---
 
+## Energiebesparing
+
+Onder Instellingen → Energie staat **Scherm dimmen bij rust**, standaard aan.
+
+**Eerst wat niet kan.** Een webpagina kan de helderheid van je iPhone niet
+regelen; die knop hoort bij het besturingssysteem en er is geen API voor in
+Safari. In plaats daarvan dimt de app zichzelf, met een zwarte laag over het
+scherm die oplicht bij een afslag, een verhaal of een aanraking.
+
+Op een OLED-scherm — iPhone X en nieuwer — is dat geen cosmetische truc:
+zwarte pixels staan daar letterlijk uit en verbruiken niets. Op een oudere
+LCD levert het niets op, dus verwacht daar geen wonderen.
+
+De standaard staat op 45 procent en het maximum is 70. Verder dimmen kan
+technisch wel, maar dan is de afslaginstructie niet meer te lezen zonder het
+scherm aan te raken, en dat is precies wat je tijdens het rijden niet wilt.
+
+**Hij dimt niet zolang er iets te doen is.** Alleen oplichten op het moment
+dat er iets gebeurt was te weinig: een afslag die op driehonderd meter wordt
+aangekondigd liet het scherm oplichten en weer doven terwijl je er nog
+naartoe reed. Nu blijft het scherm aan zolang een van deze dingen speelt:
+
+- je nadert een afslag, tot vijfhonderd meter ervoor
+- de gids is aan het praten, hoe lang het verhaal ook duurt
+- je bent van de route af
+- een bezienswaardigheid komt in beeld
+
+Wisselt de reden — de afslag is genomen maar het verhaal loopt nog — dan
+blijft hij gewoon aan. Pas als er niets meer speelt begint het aftellen
+opnieuw.
+
+Stilstaan telt bewust níét mee. Parkeer je een uur bij een uitzichtpunt, dan
+is een permanent brandend scherm juist het laatste wat je wilt; één aanraking
+brengt hem terug.
+
+**Wat meer scheelt dan de verlichting.** De kaart hertekende bij elke
+GPS-update, ook als je een half uur rechtdoor reed. Dat is nu afhankelijk van
+de situatie:
+
+| Situatie | Hertekeningen per minuut |
+|---|---|
+| Afslag binnen 400 m | 60 (elke fix) |
+| Rechtdoor, scherm aan | 29 |
+| Stilstaand | 11 |
+| Rechtdoor, scherm gedimd | 7 |
+
+Over een rit van tachtig minuten scheelt dat ruwweg de helft van al het
+tekenwerk, zonder dat je bij een afslag ook maar iets inlevert.
+
+---
+
+## Een andere stem kiezen
+
+Onder Instellingen → Stem staat nu een lijst met alle stemmen die op je
+telefoon staan, met een afspeelknop per stem. Tik op ▶ om te horen hoe hij
+klinkt zonder iets te veranderen; tik op de regel zelf om hem te kiezen.
+
+De lijst is gesorteerd op kwaliteit, en achter elke stem staat of het een
+mannen- of vrouwenstem is. Dat laatste is een gok op basis van de naam — de
+Web Speech API geeft geen geslacht door — dus de echte naam staat er altijd
+bij en je oor beslist.
+
+**Klinkt het blikkerig, dan ligt dat waarschijnlijk niet aan de app.** iOS
+levert standaard een compacte stem die duidelijk synthetisch klinkt, en
+verbergt de goede achter een download:
+
+1. Instellingen → Toegankelijkheid → Gesproken materiaal → Stemmen → Nederlands
+2. Kies er een met **Verbeterd** of **Premium** erachter en download hem
+3. Sluit Sardegna daarna helemaal af en open hem opnieuw
+
+Die laatste stap is nodig: een draaiende pagina ziet nieuw geïnstalleerde
+stemmen pas na een herstart.
+
+Kies je een stem en verwijder je hem later van je telefoon, dan valt de app
+terug op de beste beschikbare in plaats van stil te blijven. Hetzelfde
+gebeurt als je de app op Engels zet terwijl je een Nederlandse stem had
+gekozen.
+
+---
+
 ## Weetjes per streek
 
 De veertig ingebouwde weetjes gaan over Sardinië. Op een fietsroute door

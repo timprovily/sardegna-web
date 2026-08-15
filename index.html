@@ -272,7 +272,8 @@
         <label data-i18n="settings.chime">Toon vóór elk verhaal</label>
         <div class="toggle" id="chime-toggle"></div>
       </div>
-      <button class="btn-secondary" id="voice-sample" style="margin-top:10px" data-i18n="settings.sample">🔊 Beluister een voorbeeld</button>
+      <div class="voice-list" id="voice-list"></div>
+      <p class="import-hint" id="voice-hint"></p>
     </div>
 
     <div class="sheet-section">
@@ -301,6 +302,20 @@
       </div>
       <div class="segmented" id="ai-model"></div>
       <p class="import-hint" id="ai-status"></p>
+    </div>
+
+    <div class="sheet-section">
+      <div class="sheet-section-title" data-i18n="settings.power">Energie</div>
+      <div class="setting-row">
+        <label data-i18n="settings.powerSaving">Scherm dimmen bij rust</label>
+        <div class="toggle" id="power-toggle"></div>
+      </div>
+      <div class="setting-row" style="margin-top:6px">
+        <label data-i18n="settings.dimLevel">Hoe donker</label>
+        <span class="value" id="dim-value">45%</span>
+      </div>
+      <input type="range" id="dim-slider" min="20" max="70" step="5">
+      <p class="import-hint" id="power-hint"></p>
     </div>
 
     <div class="sheet-section">
