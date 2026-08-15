@@ -720,3 +720,61 @@ input[type="range"] { width: 100%; accent-color: var(--sea); }
   font-variant-numeric: tabular-nums;
 }
 .maneuver-banner.imminent .mb-distance { color: var(--quartz); }
+
+/* --- Travel mode picker --- */
+
+.mode-picker { display: flex; gap: 8px; margin-bottom: 10px; }
+.mode-picker button {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 11px 6px; border-radius: 12px;
+  background: var(--slate); border: 1px solid var(--seam);
+  color: var(--ash); font-size: 12px; font-weight: 600;
+}
+.mode-picker button .mp-icon { font-size: 19px; line-height: 1; }
+.mode-picker button.active {
+  background: color-mix(in srgb, var(--sea) 20%, transparent);
+  border-color: var(--sea); color: var(--shallow);
+}
+
+/* --- Grouped route list --- */
+
+.country-group { margin-top: 26px; }
+.country-group:first-child { margin-top: 12px; }
+.country-head {
+  display: flex; align-items: baseline; gap: 10px;
+  padding-bottom: 6px; margin-bottom: 4px;
+  border-bottom: 1px solid var(--seam);
+}
+.country-name {
+  font-family: var(--font-display); font-weight: 800; font-size: 21px;
+}
+.country-distance {
+  margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--ash);
+}
+.country-group.nearest .country-name { color: var(--shallow); }
+
+.region-group { margin-top: 14px; }
+.region-head {
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;
+}
+.region-name {
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  letter-spacing: 0.4px; text-transform: uppercase; color: var(--ash);
+}
+.region-count { font-size: 11px; color: var(--seam); font-family: var(--font-mono); }
+
+.nearby-flag {
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  background: color-mix(in srgb, var(--sea) 22%, transparent);
+  color: var(--shallow); font-size: 10px; font-weight: 800;
+  font-family: var(--font-display); letter-spacing: 0.5px;
+}
+.route-distance {
+  font-family: var(--font-mono); font-size: 11px; color: var(--ash); margin-left: auto;
+}
+.mode-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 999px; margin-left: 8px;
+  background: var(--slate); border: 1px solid var(--seam);
+  font-size: 10px; color: var(--ash); vertical-align: middle;
+}
