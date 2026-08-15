@@ -26,6 +26,9 @@ export class SpeechService extends EventTarget {
     this.playChime = true;
     // Name of the voice the user picked, or null for automatic.
     this.preferredVoiceName = null;
+    // Unique per voice, unlike the name — an Enhanced and a compact voice
+    // can both be called Claire.
+    this.preferredVoiceURI = null;
 
     this.normalQueue = [];
     this.current = null;      // the SpokenItem currently narrating
@@ -68,8 +71,8 @@ export class SpeechService extends EventTarget {
         voice: v,
         name: v.name,
         lang: v.lang,
-        gender: guessGender(v.name, prefix),
-        quality: qualityRank(v.name),
+        gender: guessGender(v, prefix),
+        quality: qualityRank(v),
         local: !!v.localService,
         exactRegion: v.lang.toLowerCase() === preferredRegion
       }))
@@ -87,12 +90,16 @@ export class SpeechService extends EventTarget {
     const list = this.voicesFor(lang);
     if (list.length === 0) return null;
 
-    const wanted = this.preferredVoiceName;
-    if (wanted) {
-      const match = list.find((v) => v.name === wanted);
-      if (match) return match.voice;
-      // Chosen voice has been removed from the phone — fall through
-      // rather than going silent.
+    if (this.preferredVoiceURI) {
+      const exact = list.find((v) => v.voice.voiceURI === this.preferredVoiceURI);
+      if (exact) return exact.voice;
+    }
+    if (this.preferredVoiceName) {
+      const byName = list.find((v) => v.name === this.preferredVoiceName);
+      if (byName) return byName.voice;
+      // Chosen voice has been removed from the phone, or we've switched
+      // to a language it doesn't cover — fall through rather than going
+      // silent.
     }
     return list[0].voice;
   }
@@ -290,8 +297,8 @@ const KNOWN_MALE = new Set([
   'gordon', 'rishi', 'ryan', 'george', 'guy', 'brian', 'siri male'
 ]);
 
-function guessGender(rawName, prefix) {
-  const name = rawName.toLowerCase();
+function guessGender(voice, prefix) {
+  const name = `${voice.name || ''} ${voice.voiceURI || ''}`.toLowerCase();
   if (/\bfemale\b|\(vrouw|\bvrouw\b/.test(name)) return 'female';
   if (/\bmale\b|\(man|\bman\b/.test(name)) return 'male';
 
@@ -300,12 +307,22 @@ function guessGender(rawName, prefix) {
   return 'unknown';
 }
 
-function qualityRank(rawName) {
-  const name = rawName.toLowerCase();
-  if (name.includes('premium')) return 3;
-  if (name.includes('enhanced') || name.includes('verbeterd')) return 2;
-  if (name.includes('siri')) return 2;
-  if (name.includes('compact')) return 0;
+function qualityRank(voice) {
+  const uri = (voice.voiceURI || '').toLowerCase();
+  const name = (voice.name || '').toLowerCase();
+  const both = `${uri} ${name}`;
+
+  if (/\bpremium\b|\.premium\b|voice\.premium/.test(both)) return 3;
+  if (/\benhanced\b|\.enhanced\b|voice\.enhanced|\bverbeterd\b/.test(both)) return 2;
+  // Siri voices are neural and sound at least as good as Enhanced.
+  if (/siri/.test(both)) return 2;
+  if (/\bcompact\b|\.compact\b|voice\.compact/.test(both)) return 0;
+
+  // Cloud voices from Google and Microsoft are generally well ahead of a
+  // local compact voice, even when nothing in the name says so.
+  if (!voice.localService) return 2;
+  if (/google|microsoft|natural|neural|wavenet/.test(both)) return 2;
+
   return 1;
 }
 

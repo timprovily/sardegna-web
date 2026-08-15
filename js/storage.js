@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS = {
   importMode: 'car',
   // Name of the chosen speech voice; null means pick the best available.
   voiceName: null,
+  voiceURI: null,
   powerSaving: true,
   dimLevel: 45
 };

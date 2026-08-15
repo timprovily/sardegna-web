@@ -1570,6 +1570,15 @@ function renderVoiceList() {
     return;
   }
 
+  // If nothing better than compact is installed, say so plainly — that's
+  // the case where downloading one actually changes something.
+  const best = voices[0].quality;
+  const notice = document.getElementById('voice-notice');
+  if (notice) {
+    notice.textContent = best <= 1 ? t('voice.onlyBasic', lang) : '';
+    notice.style.display = best <= 1 ? 'block' : 'none';
+  }
+
   list.innerHTML = '';
   list.appendChild(voiceRow({
     name: null,
@@ -1577,14 +1586,18 @@ function renderVoiceList() {
     meta: voices[0].name
   }));
 
+  // Two voices can share a name — downloading Enhanced Claire leaves the
+  // compact Claire in place — so the quality tag is what tells them
+  // apart, and the stored choice keys on voiceURI, which is unique.
   for (const v of voices) {
     const bits = [
       voiceGenderLabel(v.gender, lang),
       v.lang,
-      v.local ? '' : (lang === 'nl' ? 'online' : 'online')
+      v.local ? '' : 'online'
     ].filter(Boolean);
     list.appendChild(voiceRow({
       name: v.name,
+      uri: v.voice.voiceURI,
       label: cleanVoiceName(v.name),
       meta: bits.join(' · '),
       tag: voiceQualityLabel(v.quality, lang)
@@ -1592,10 +1605,11 @@ function renderVoiceList() {
   }
 }
 
-function voiceRow({ name, label, meta, tag }) {
+function voiceRow({ name, uri, label, meta, tag }) {
   const lang = settings.language;
   const row = document.createElement('div');
-  row.className = 'voice-item' + ((settings.voiceName || null) === name ? ' active' : '');
+  const selected = settings.voiceURI ? settings.voiceURI === uri : (settings.voiceName || null) === name;
+  row.className = 'voice-item' + (selected && (uri || !name) ? ' active' : '');
   row.innerHTML = `
     <div class="voice-main">
       <div class="voice-name">${escapeHTML(label)}</div>
@@ -1606,7 +1620,9 @@ function voiceRow({ name, label, meta, tag }) {
 
   row.addEventListener('click', () => {
     settings.voiceName = name;
+    settings.voiceURI = uri || null;
     speech.preferredVoiceName = name;
+    speech.preferredVoiceURI = uri || null;
     persist();
     renderVoiceList();
   });
@@ -1615,10 +1631,13 @@ function voiceRow({ name, label, meta, tag }) {
     e.stopPropagation();
     // Preview without committing: speak with this voice, leave the
     // selection alone until you actually pick it.
-    const previous = speech.preferredVoiceName;
+    const prevName = speech.preferredVoiceName;
+    const prevURI = speech.preferredVoiceURI;
     speech.preferredVoiceName = name;
+    speech.preferredVoiceURI = uri || null;
     speech.speakNow({ title: 'Sample', body: t('sample.text', lang), source: 'system' });
-    speech.preferredVoiceName = previous;
+    speech.preferredVoiceName = prevName;
+    speech.preferredVoiceURI = prevURI;
   });
 
   return row;
@@ -2003,6 +2022,16 @@ function wireSettingsSheet() {
   if ('onvoiceschanged' in speech.synth) {
     speech.synth.addEventListener('voiceschanged', () => renderVoiceList());
   }
+
+  // A voice downloaded in iOS Settings does not appear in a page that is
+  // already open, and no event fires for it either. Re-checking when the
+  // app comes back to the foreground catches it without a restart, which
+  // is otherwise the only way.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      setTimeout(() => renderVoiceList(), 400);
+    }
+  });
 }
 
 function wireToggle(id, key, onChange) {
@@ -2023,6 +2052,7 @@ function persist() {
 function syncSpeechFromSettings() {
   speech.language = settings.language;
   speech.preferredVoiceName = settings.voiceName || null;
+  speech.preferredVoiceURI = settings.voiceURI || null;
   speech.rate = settings.speechRate;
   speech.playChime = settings.chimeBeforeSpeech;
 }
