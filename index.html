@@ -157,6 +157,22 @@
       <p class="import-error" id="story-error" style="display:none"></p>
     </div>
 
+    <div class="story-block" id="audio-block" style="display:none">
+      <div class="story-head">
+        <div>
+          <div class="eyebrow" style="color:var(--shallow)" id="audio-eyebrow"></div>
+          <div class="story-status" id="audio-status"></div>
+        </div>
+        <button class="btn-story" id="audio-generate" style="background:color-mix(in srgb, var(--sea) 22%, transparent);border-color:color-mix(in srgb, var(--sea) 50%, transparent);color:var(--shallow)"></button>
+      </div>
+      <div class="import-progress" id="audio-progress" style="display:none">
+        <div class="msg" id="audio-msg"></div>
+        <div class="import-bar"><span id="audio-bar-fill"></span></div>
+        <button class="link-button" id="audio-cancel"></button>
+      </div>
+      <p class="import-error" id="audio-error" style="display:none"></p>
+    </div>
+
     <div class="story-block" id="facts-block" style="display:none">
       <div class="story-head">
         <div>
@@ -276,6 +292,18 @@
       <div class="voice-list" id="voice-list"></div>
       <p class="import-hint" id="voice-hint"></p>
       <button class="link-button" id="voice-diagnostics"></button>
+
+      <div class="music-setup">
+        <div class="setup-title" id="cloud-title"></div>
+        <p class="import-hint" id="cloud-explain"></p>
+        <div class="setting-row">
+          <label id="cloud-toggle-label"></label>
+          <div class="toggle" id="cloud-toggle"></div>
+        </div>
+        <input type="password" id="google-key" class="text-input" placeholder="Google API-sleutel" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <p class="import-hint" id="cloud-status"></p>
+        <div class="voice-list" id="cloud-voice-list"></div>
+      </div>
     </div>
 
     <div class="sheet-section">

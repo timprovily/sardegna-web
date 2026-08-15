@@ -443,6 +443,56 @@ tekenwerk, zonder dat je bij een afslag ook maar iets inlevert.
 
 ---
 
+## Een echte stem via Google
+
+**Eerst het probleem.** Safari geeft websites alleen Apple's compacte
+stemmen. De verbeterde Xander die je in je iOS-instellingen kunt kiezen, is
+gereserveerd voor VoiceOver en Gesproken materiaal — een webpagina krijgt
+hem niet te zien. Dat is een keuze van Apple en er is niets aan te
+programmeren.
+
+De enige weg naar een goede Nederlandse stem in een browser is dus een
+online stemdienst. De app gebruikt Google Cloud Text-to-Speech, gratis tot
+een miljoen tekens per maand voor de Wavenet-stemmen. Alle acht routes samen
+zijn ongeveer 85.000 tekens, dus je zit er twaalf keer in.
+
+### Instellen
+
+1. Ga naar `console.cloud.google.com` en maak een project
+2. Zoek in de bibliotheek naar **Cloud Text-to-Speech API** en zet hem aan
+3. Ga naar **Credentials** → **Create credentials** → **API key**
+4. Beperk de sleutel tot alleen de Text-to-Speech API — dat kost een minuut
+   en scheelt zorgen
+5. Plak hem in de app onder Instellingen → Stem → Echte stem via Google
+6. Zet de schakelaar **Gebruik Google-stem** aan
+7. Kies een stem en luister ze af met de ▶-knop
+
+Google vraagt eenmalig om een factureringsprofiel. Binnen het gratis quotum
+wordt er niets afgeschreven; stel eventueel een budgetwaarschuwing in als je
+je daar prettiger bij voelt.
+
+### Audio maken
+
+Op elke routepagina staat dan **Audio met echte stem** met een knop
+**Maken**. Die genereert de audio voor alle verhalen van die route en slaat
+ze op je telefoon op. Reken op een minuut per route.
+
+Doe dit thuis op wifi. Daarna werkt het volledig offline — dat is de hele
+reden dat het vooraf gebeurt en niet tijdens het rijden. De audio staat in
+IndexedDB, niet in de gewone opslag, want alle acht routes samen is zo'n 7
+megabyte en daar is de gewone opslag te klein voor.
+
+Heb je met de AI langere verhalen laten schrijven, dan wordt díé tekst
+ingesproken — wat je hoort komt overeen met wat je gelezen zou hebben.
+
+### Terugvallen
+
+Ontbreekt er audio voor een plek, is de opslag gewist, of kies je een andere
+stem, dan gebruikt de app gewoon de ingebouwde stem voor dat verhaal. Je
+raakt dus nooit een verhaal kwijt, hooguit de mooie stem ervan.
+
+---
+
 ## Een andere stem kiezen
 
 Onder Instellingen → Stem staat nu een lijst met alle stemmen die op je
