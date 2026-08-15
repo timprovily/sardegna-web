@@ -1,0 +1,6 @@
+{
+  "_comment": "Regions that ship with the app. Add a line here after exporting a facts file from the app, and drop the file alongside it in this folder.",
+  "regions": {
+    "it--sardegna": "facts.json"
+  }
+}
