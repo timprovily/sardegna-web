@@ -264,12 +264,23 @@ export class TourEngine extends EventTarget {
     // play back to back rather than being lost.
     for (const { h } of due) {
       this.playedHighlightIds.add(h.id);
-      this.speech.enqueue({ title: h.name[lang], body: this.scriptFor(h), source: `highlight:${h.id}` });
+      this.speech.enqueue(this._itemFor(h, lang));
       this._scheduleEnrichment(h);
       this.dispatchEvent(new CustomEvent('highlightplayed', { detail: h }));
     }
 
     this._recomputeNext(pos);
+  }
+
+  /** A spoken item for a place, carrying the key of its recording if one
+   *  has been generated. */
+  _itemFor(highlight, lang) {
+    return {
+      title: highlight.name[lang],
+      body: this.scriptFor(highlight),
+      source: `highlight:${highlight.id}`,
+      clipKey: this.clipKeyFor ? this.clipKeyFor(this.route, highlight, lang) : null
+    };
   }
 
   /** The text to speak for a place: the long version if one has been
@@ -313,7 +324,7 @@ export class TourEngine extends EventTarget {
 
   playHighlight(highlight) {
     const lang = this.settings.language;
-    this.speech.enqueue({ title: highlight.name[lang], body: this.scriptFor(highlight), source: `highlight:${highlight.id}` });
+    this.speech.enqueue(this._itemFor(highlight, lang));
     this.playedHighlightIds.add(highlight.id);
     this._scheduleEnrichment(highlight);
     this.dispatchEvent(new CustomEvent('highlightplayed', { detail: highlight }));

@@ -9,6 +9,7 @@ import { MODES, DEFAULT_MODE, getMode, modeOf } from './travelModes.js';
 import { groupRoutes, proximityLabel } from './regions.js';
 import { FactSource } from './regionFacts.js';
 import { PowerSaver, MapThrottle } from './powerSaver.js';
+import { CloudVoice, GOOGLE_VOICES, formatBytes } from './cloudVoice.js';
 import { TourEngine } from './tourEngine.js';
 import { EnrichmentService } from './enrichment.js';
 import { RouteMap } from './map.js';
@@ -30,6 +31,7 @@ const location = new LocationService();
 const enrichment = new EnrichmentService();
 const storyteller = new Storyteller(enrichment);
 const factSource = new FactSource(storyteller);
+const cloudVoice = new CloudVoice();
 const powerSaver = new PowerSaver(settings);
 const mapThrottle = new MapThrottle();
 const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment, storyteller, factSource });
@@ -45,6 +47,16 @@ let detailMap = null;
 let driveMap = null;
 let overviewMap = null;
 const appState = { listSortedByLocation: false };
+
+speech.cloudVoice = cloudVoice;
+// Recordings are keyed by route, place, language and voice, so switching
+// any of those simply misses and falls back to the built-in voice.
+tourEngine.clipKeyFor = (route, highlight, lang) => {
+  if (!settings.cloudVoiceEnabled || !settings.googleVoice) return null;
+  const routeId = route?.baseId || route?.id;
+  if (!routeId) return null;
+  return cloudVoice.clipKey(routeId, highlight.id, lang, settings.googleVoice);
+};
 
 syncSpeechFromSettings();
 
@@ -213,6 +225,7 @@ function openDetail(route) {
   renderDining(route);
   renderCustomRouteControls(route);
   renderStoryBlock(route);
+  renderAudioBlock(route);
   renderFactsBlock(route);
   renderReverseButton(route);
   renderWeather(route);
@@ -1121,6 +1134,186 @@ powerSaver.addEventListener('change', (e) => {
   hint.classList.toggle('show', e.detail.dimmed);
 });
 
+// ─────────────────────────── Cloud voice ───────────────────────────
+
+function wireCloudVoice() {
+  const lang = settings.language;
+  document.getElementById('cloud-title').textContent = t('cloud.title', lang);
+  document.getElementById('cloud-explain').textContent = t('cloud.explain', lang);
+  document.getElementById('cloud-toggle-label').textContent = t('cloud.use', lang);
+
+  const toggle = document.getElementById('cloud-toggle');
+  toggle.classList.toggle('on', !!settings.cloudVoiceEnabled);
+  toggle.addEventListener('click', () => {
+    settings.cloudVoiceEnabled = !settings.cloudVoiceEnabled;
+    toggle.classList.toggle('on', settings.cloudVoiceEnabled);
+    speech.cloudEnabled = settings.cloudVoiceEnabled;
+    persist();
+    if (currentRoute) renderAudioBlock(currentRoute);
+  });
+
+  const keyField = document.getElementById('google-key');
+  keyField.value = cloudVoice.apiKey;
+  keyField.addEventListener('change', () => {
+    cloudVoice.apiKey = keyField.value;
+    updateCloudStatus();
+    if (currentRoute) renderAudioBlock(currentRoute);
+  });
+
+  renderCloudVoiceList();
+  updateCloudStatus();
+}
+
+async function updateCloudStatus() {
+  const lang = settings.language;
+  const el = document.getElementById('cloud-status');
+  if (!el) return;
+  if (!cloudVoice.hasKey) {
+    el.textContent = t('cloud.noKey', lang);
+    return;
+  }
+  const bytes = await cloudVoice.storedBytes();
+  el.textContent = t('cloud.ready', lang, { size: formatBytes(bytes) });
+}
+
+function renderCloudVoiceList() {
+  const lang = settings.language;
+  const list = document.getElementById('cloud-voice-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  for (const voice of GOOGLE_VOICES[lang] || GOOGLE_VOICES.nl) {
+    const row = document.createElement('div');
+    const active = settings.googleVoice === voice.id;
+    row.className = 'voice-item' + (active ? ' active' : '');
+    row.innerHTML = `
+      <div class="voice-main">
+        <div class="voice-name">${escapeHTML(voice.label)}</div>
+        <div class="voice-meta">${voiceGenderLabel(voice.gender, lang)} · ${voice.id}</div>
+      </div>
+      ${voice.id.includes('Wavenet') ? '<span class="voice-tag">Wavenet</span>' : ''}
+      <button class="voice-play" aria-label="${t('voice.play', lang)}">▶</button>`;
+
+    row.addEventListener('click', () => {
+      settings.googleVoice = voice.id;
+      persist();
+      renderCloudVoiceList();
+      // Existing clips were made with the old voice, so they no longer
+      // match — the app falls back to the built-in voice until you
+      // regenerate, rather than mixing two voices in one drive.
+      if (currentRoute) renderAudioBlock(currentRoute);
+    });
+
+    row.querySelector('.voice-play').addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if (!cloudVoice.hasKey) { showToast(t('cloud.noKey', lang)); return; }
+      try {
+        await cloudVoice.preview(t('sample.text', lang), lang, voice.id);
+      } catch (err) {
+        showToast(err.message || 'Fout');
+      }
+    });
+
+    list.appendChild(row);
+  }
+}
+
+async function renderAudioBlock(route) {
+  const lang = settings.language;
+  const block = document.getElementById('audio-block');
+  if (!block) return;
+
+  if (!settings.cloudVoiceEnabled) {
+    block.style.display = 'none';
+    return;
+  }
+  block.style.display = 'block';
+
+  document.getElementById('audio-eyebrow').textContent = t('audio.title', lang);
+  const total = route.highlights.length;
+  const have = cloudVoice.hasKey
+    ? await cloudVoice.countFor(route.baseId || route.id, lang, settings.googleVoice)
+    : 0;
+
+  const status = document.getElementById('audio-status');
+  if (!cloudVoice.hasKey) {
+    status.textContent = t('cloud.noKey', lang);
+  } else if (have === 0) {
+    status.textContent = t('audio.none', lang) + ' ' + t('audio.wifi', lang);
+  } else if (have >= total) {
+    status.textContent = t('audio.all', lang, { total });
+  } else {
+    status.textContent = t('audio.some', lang, { n: have, total });
+  }
+
+  const button = document.getElementById('audio-generate');
+  button.textContent = !cloudVoice.hasKey
+    ? t('audio.needKey', lang)
+    : (have >= total ? t('audio.remake', lang) : t('audio.make', lang));
+  button.disabled = false;
+  button.onclick = () => {
+    if (!cloudVoice.hasKey) {
+      document.getElementById('sheet-backdrop').classList.add('open');
+      document.getElementById('settings-sheet').classList.add('open');
+      document.getElementById('google-key').focus();
+      return;
+    }
+    generateRouteAudio(route);
+  };
+
+  document.getElementById('audio-cancel').textContent = t('audio.cancel', lang);
+}
+
+async function generateRouteAudio(route) {
+  const lang = settings.language;
+  const progress = document.getElementById('audio-progress');
+  const msg = document.getElementById('audio-msg');
+  const fill = document.getElementById('audio-bar-fill');
+  const errorEl = document.getElementById('audio-error');
+  const button = document.getElementById('audio-generate');
+
+  errorEl.style.display = 'none';
+  progress.style.display = 'block';
+  button.disabled = true;
+  msg.textContent = t('audio.working', lang);
+  fill.style.width = '2%';
+  document.getElementById('audio-cancel').onclick = () => cloudVoice.cancel();
+
+  try {
+    const result = await cloudVoice.generateRoute(
+      { ...route, id: route.baseId || route.id },
+      {
+        language: lang,
+        voiceId: settings.googleVoice,
+        // Uses exactly the text the guide would speak, expanded stories
+        // included, so what you hear matches what you'd have heard.
+        scriptFor: (highlight) => {
+          const key = route.baseId || route.id;
+          const expanded = storyteller.get(key, highlight.id, lang);
+          return expanded || highlight.script[lang];
+        },
+        onProgress: ({ done, total, message }) => {
+          msg.textContent = total ? `${done}/${total} — ${message}` : message;
+          if (total) fill.style.width = `${Math.max(2, (done / total) * 100)}%`;
+        }
+      }
+    );
+    msg.textContent = t('audio.done', lang, {
+      n: result.done - result.failed,
+      size: formatBytes(result.bytes)
+    });
+    updateCloudStatus();
+    setTimeout(() => { progress.style.display = 'none'; }, 4000);
+  } catch (err) {
+    progress.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.textContent = err.message || String(err);
+  } finally {
+    button.disabled = false;
+    if (currentRoute === route) renderAudioBlock(route);
+  }
+}
+
 // ─────────────────────────── Regional facts ───────────────────────────
 
 async function renderFactsBlock(route) {
@@ -2018,6 +2211,7 @@ function wireSettingsSheet() {
       document.getElementById('import-hint').textContent = t('import.hint', settings.language);
       refreshThemeUI();
       renderVoiceList();
+      renderCloudVoiceList();
       renderRouteList();
       renderOverviewMap();
       if (currentRoute) openDetail(currentRoute);
@@ -2047,7 +2241,17 @@ function wireSettingsSheet() {
   rateSlider.addEventListener('input', () => {
     settings.speechRate = parseFloat(rateSlider.value);
     document.getElementById('rate-value').textContent = settings.speechRate.toFixed(2);
-    syncSpeechFromSettings();
+    speech.cloudVoice = cloudVoice;
+// Recordings are keyed by route, place, language and voice, so switching
+// any of those simply misses and falls back to the built-in voice.
+tourEngine.clipKeyFor = (route, highlight, lang) => {
+  if (!settings.cloudVoiceEnabled || !settings.googleVoice) return null;
+  const routeId = route?.baseId || route?.id;
+  if (!routeId) return null;
+  return cloudVoice.clipKey(routeId, highlight.id, lang, settings.googleVoice);
+};
+
+syncSpeechFromSettings();
     persist();
   });
 
@@ -2069,6 +2273,7 @@ function wireSettingsSheet() {
   wireToggle('wiki-toggle', 'onlineExtras');
 
   wireStorySettings();
+  wireCloudVoice();
   wirePowerSettings();
   wireMusicSettings();
 
@@ -2109,6 +2314,7 @@ function syncSpeechFromSettings() {
   speech.language = settings.language;
   speech.preferredVoiceName = settings.voiceName || null;
   speech.preferredVoiceURI = settings.voiceURI || null;
+  speech.cloudEnabled = !!settings.cloudVoiceEnabled;
   speech.rate = settings.speechRate;
   speech.playChime = settings.chimeBeforeSpeech;
 }

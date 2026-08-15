@@ -26,6 +26,8 @@ const DEFAULT_SETTINGS = {
   // Name of the chosen speech voice; null means pick the best available.
   voiceName: null,
   voiceURI: null,
+  cloudVoiceEnabled: false,
+  googleVoice: 'nl-NL-Wavenet-E',
   powerSaving: true,
   dimLevel: 45
 };

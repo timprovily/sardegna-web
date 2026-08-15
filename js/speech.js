@@ -29,6 +29,10 @@ export class SpeechService extends EventTarget {
     // Unique per voice, unlike the name — an Enhanced and a compact voice
     // can both be called Claire.
     this.preferredVoiceURI = null;
+    // Set by the app when cloud audio is available. Given a clip key on
+    // an item, that recording is played instead of synthesising locally.
+    this.cloudVoice = null;
+    this.cloudEnabled = false;
 
     this.normalQueue = [];
     this.current = null;      // the SpokenItem currently narrating
@@ -165,6 +169,7 @@ export class SpeechService extends EventTarget {
    */
   _hardStop() {
     this._active = false;
+    if (this.cloudVoice) this.cloudVoice.stop();
     try { this.synth.cancel(); } catch { /* nothing useful to do */ }
     try { this.synth.resume(); } catch { /* not paused; fine */ }
   }
@@ -184,8 +189,38 @@ export class SpeechService extends EventTarget {
     if (this.history.length > 60) this.history.shift();
     this.dispatchEvent(new CustomEvent('itemstart', { detail: item }));
 
-    this._pendingChunks = chunkText(item.body);
     const token = this._token;
+
+    // A pre-generated recording, if there is one for this item. Falls
+    // back to the built-in voice on any failure, so a missing clip is
+    // never the difference between hearing a story and silence.
+    if (this.cloudEnabled && this.cloudVoice && item.clipKey) {
+      this._active = true;
+      const start = this.playChime ? 400 : 0;
+      if (this.playChime) this._chime();
+
+      setTimeout(() => {
+        if (token !== this._token) return;
+        this.cloudVoice.play(item.clipKey)
+          .then(() => {
+            if (token !== this._token) return;
+            this._active = false;
+            this.isSpeaking = false;
+            this.current = null;
+            this.dispatchEvent(new Event('itemend'));
+            this._pump();
+          })
+          .catch(() => {
+            if (token !== this._token) return;
+            this._active = false;
+            this._pendingChunks = chunkText(item.body);
+            this._speakChunk(token);
+          });
+      }, start);
+      return;
+    }
+
+    this._pendingChunks = chunkText(item.body);
     if (this.playChime) {
       this._chime();
       setTimeout(() => this._speakChunk(token), 400);
