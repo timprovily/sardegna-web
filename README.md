@@ -392,6 +392,55 @@ precies tijdens een verhaal viel. Dat is hiermee mee opgelost.
 
 ---
 
+## Weetjes per streek
+
+De veertig ingebouwde weetjes gaan over Sardinië. Op een fietsroute door
+Friesland heb je daar niets aan, dus weetjes volgen nu de streek waar de
+route ligt.
+
+Op een routepagina buiten Sardinië staat een blok **Weetjes over deze
+streek** met een knop **Ophalen**. Eén keer indrukken, thuis op wifi, en
+daarna werken ze offline — net als de uitgebreide verhalen.
+
+Er zijn drie bronnen, in deze volgorde:
+
+1. **Meegeleverd** — alles in `data/facts-<streek>.json`. Werkt altijd, ook
+   zonder bereik, en is het best geschreven.
+2. **Zelf opgehaald met je API-sleutel** — Claude schrijft twintig weetjes
+   over de streek, met het Wikipedia-artikel als bronmateriaal zodat er niet
+   te veel bij verzonnen wordt.
+3. **Zonder sleutel** — de app maakt ze uit datzelfde Wikipedia-artikel.
+   Minder mooi geschreven, maar het werkt zonder account.
+
+Weet de app niets over een streek, dan zwijgt de gids erover. Dat is beter
+dan een weetje over Sardijnse kaas terwijl je langs de Friese meren fietst.
+
+### Waarom ze niet automatisch in GitHub worden opgeslagen
+
+Dat vroeg je, en het antwoord is dat het niet veilig kan. Schrijven naar een
+repository vereist een token, en die zou dan in een publieke webpagina op je
+telefoon staan — iedereen die de pagina opent, kan er dan mee in je
+repository schrijven.
+
+In plaats daarvan staat er onder het blok een knop **Exporteer als bestand
+voor GitHub**. Die geeft je precies het bestand dat de app zou meeleveren:
+
+1. Download het bestand, bijvoorbeeld `facts-nl--friesland.json`
+2. Zet het in de map `data/` van je repository
+3. Voeg in `data/facts-index.json` één regel toe:
+   `"nl--friesland": "facts-nl--friesland.json"`
+4. Commit
+
+Vanaf dat moment zitten die weetjes in de app zelf, voor elk apparaat en
+zonder dat er ooit nog iets opgehaald hoeft te worden. Zelfde resultaat als
+automatisch opslaan, alleen zonder token die kan uitlekken.
+
+---
+
+## Auto, fiets of wandelen
+
+---
+
 ## Onderweg instappen
 
 Je hoeft een route niet vanaf het begin te rijden.

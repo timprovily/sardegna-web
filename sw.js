@@ -5,7 +5,7 @@
 //
 // Bump CACHE_NAME whenever you change a bundled file, so returning users
 // get the update instead of a stale cached copy.
-const CACHE_NAME = 'sardegna-v20';
+const CACHE_NAME = 'sardegna-v22';
 
 const SHELL_FILES = [
   './',
@@ -19,6 +19,9 @@ const SHELL_FILES = [
   './js/navEngine.js',
   './js/maneuverIcons.js',
   './js/reverse.js',
+  './js/travelModes.js',
+  './js/regions.js',
+  './js/regionFacts.js',
   './js/tourEngine.js',
   './js/enrichment.js',
   './js/map.js',
@@ -37,6 +40,7 @@ const SHELL_FILES = [
   './icons/icon-512.png',
   './data/routes-manifest.json',
   './data/facts.json',
+  './data/facts-index.json',
   './data/route-alghero-bosa.json',
   './data/route-ss125-ogliastra.json',
   './data/route-costa-verde.json',
