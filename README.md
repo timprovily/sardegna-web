@@ -485,11 +485,26 @@ megabyte en daar is de gewone opslag te klein voor.
 Heb je met de AI langere verhalen laten schrijven, dan wordt díé tekst
 ingesproken — wat je hoort komt overeen met wat je gelezen zou hebben.
 
+### Wat er allemaal doorheen gaat
+
+Niet alleen de routeverhalen. Ook het openingsbericht, de weetjes over de
+streek, de navigatie-instructies en meldingen als "overgeslagen" krijgen de
+Google-stem. In de eerste versie was dat niet zo, en dan wisselde een rit
+tussen twee verschillende stemmen — dat klinkt als een storing, niet als
+zuinigheid.
+
+Korte, terugkerende zinnen worden bewaard zodra ze één keer zijn opgehaald.
+"Over driehonderd meter, sla linksaf" wordt dus eenmalig gemaakt en daarna
+eindeloos hergebruikt, in elke route, zonder verder verbruik van je quotum.
+Na een paar ritten heb je vrijwel alle navigatiezinnen offline staan.
+
 ### Terugvallen
 
-Ontbreekt er audio voor een plek, is de opslag gewist, of kies je een andere
-stem, dan gebruikt de app gewoon de ingebouwde stem voor dat verhaal. Je
-raakt dus nooit een verhaal kwijt, hooguit de mooie stem ervan.
+De opgeslagen routeverhalen werken altijd, ook zonder bereik. Alles wat live
+moet worden opgehaald heeft internet nodig; lukt dat niet, dan gebruikt de
+app de ingebouwde stem voor dat ene fragment. Datzelfde gebeurt als er geen
+audio is voor een plek, als je de opslag wist, of als je een andere stem
+kiest. Je raakt dus nooit een verhaal kwijt, hooguit de mooie stem ervan.
 
 ---
 
