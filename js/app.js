@@ -5,6 +5,9 @@ import { LocationService } from './geo.js';
 import { NavEngine, maneuverBanner } from './navEngine.js';
 import { maneuverIconSVG } from './maneuverIcons.js';
 import { reverseRoute, unreverseRoute } from './reverse.js';
+import { MODES, DEFAULT_MODE, getMode, modeOf } from './travelModes.js';
+import { groupRoutes, proximityLabel } from './regions.js';
+import { FactSource } from './regionFacts.js';
 import { TourEngine } from './tourEngine.js';
 import { EnrichmentService } from './enrichment.js';
 import { RouteMap } from './map.js';
@@ -25,7 +28,8 @@ const speech = new SpeechService();
 const location = new LocationService();
 const enrichment = new EnrichmentService();
 const storyteller = new Storyteller(enrichment);
-const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment, storyteller });
+const factSource = new FactSource(storyteller);
+const tourEngine = new TourEngine({ speech, facts: [], settings, enrichment, storyteller, factSource });
 const navEngine = new NavEngine(speech);
 const wakeLock = new WakeLockManager();
 const theme = new ThemeManager(settings);
@@ -37,6 +41,7 @@ let currentRoute = null;
 let detailMap = null;
 let driveMap = null;
 let overviewMap = null;
+const appState = { listSortedByLocation: false };
 
 syncSpeechFromSettings();
 
@@ -50,6 +55,7 @@ syncSpeechFromSettings();
   try {
     const [bundled, facts] = await Promise.all([loadRoutes(), loadFacts()]);
     tourEngine.facts = facts;
+    tourEngine.baseFacts = facts;
     routes = [...bundled, ...loadCustomRoutes()];
   } catch (err) {
     document.getElementById('route-list').innerHTML =
@@ -74,6 +80,16 @@ syncSpeechFromSettings();
     navigator.mediaSession.metadata = new MediaMetadata({ title: 'Sardegna' });
   }
 
+  // Order the list by distance right away, but only if permission was
+  // already granted on a previous drive — nobody should get a location
+  // prompt just for opening the app.
+  if (settings.locationGranted) {
+    location.once().then(() => {
+      appState.listSortedByLocation = true;
+      renderRouteList();
+    }).catch(() => {});
+  }
+
   registerServiceWorker();
 })();
 
@@ -84,24 +100,69 @@ function renderRouteList() {
   const container = document.getElementById('route-list');
   container.innerHTML = '';
 
-  for (const route of routes) {
-    const card = document.createElement('button');
-    card.className = 'panel route-card';
-    const badge = route.custom
-      ? `<span class="custom-badge">${t('import.custom', lang)}</span>` : '';
-    card.innerHTML = `
-      <div class="eyebrow">${route.region[lang]}${badge}</div>
-      <h2>${route.name[lang]}</h2>
-      <p class="summary">${route.summary[lang]}</p>
-      <div class="route-stats">
-        <div class="stat">${route.distanceKm}<span>km</span></div>
-        <div class="stat">${route.durationMinutes}<span>min</span></div>
-        <div class="stat">${route.highlights.length}<span>${lang === 'nl' ? 'verhalen' : 'stories'}</span></div>
-        <div class="chev">›</div>
-      </div>`;
-    card.addEventListener('click', () => openDetail(route));
-    container.appendChild(card);
+  const here = location.last;
+  const groups = groupRoutes(routes, here, lang);
+
+  if (!here) {
+    const hint = document.createElement('p');
+    hint.className = 'footnote';
+    hint.textContent = t('region.noLocation', lang);
+    container.appendChild(hint);
   }
+
+  groups.forEach((country, countryIndex) => {
+    const block = document.createElement('div');
+    block.className = 'country-group' + (here && countryIndex === 0 ? ' nearest' : '');
+
+    const head = document.createElement('div');
+    head.className = 'country-head';
+    head.innerHTML =
+      `<span class="country-name">${escapeHTML(country.name)}</span>` +
+      (here && countryIndex === 0 ? `<span class="nearby-flag">${t('region.nearby', lang)}</span>` : '') +
+      (here ? `<span class="country-distance">${proximityLabel(country.distance, lang)}</span>` : '');
+    block.appendChild(head);
+
+    for (const region of country.regions) {
+      const regionBlock = document.createElement('div');
+      regionBlock.className = 'region-group';
+      regionBlock.innerHTML =
+        `<div class="region-head">` +
+        `<span class="region-name">${escapeHTML(region.name)}</span>` +
+        `<span class="region-count">${region.routes.length}</span>` +
+        `</div>`;
+
+      for (const route of region.routes) {
+        regionBlock.appendChild(routeCard(route, lang, here));
+      }
+      block.appendChild(regionBlock);
+    }
+    container.appendChild(block);
+  });
+}
+
+function routeCard(route, lang, here) {
+  const card = document.createElement('button');
+  card.className = 'panel route-card';
+  const mode = modeOf(route);
+  const badge = route.custom
+    ? `<span class="custom-badge">${t('import.custom', lang)}</span>` : '';
+  const distance = here && isFinite(route._distance)
+    ? `<span class="route-distance">${proximityLabel(route._distance, lang)}</span>` : '';
+
+  card.innerHTML = `
+    <div class="eyebrow">${escapeHTML(route.region[lang])}${badge}
+      <span class="mode-chip">${mode.icon} ${mode.label[lang]}</span>${distance}
+    </div>
+    <h2>${escapeHTML(route.name[lang])}</h2>
+    <p class="summary">${escapeHTML(route.summary[lang])}</p>
+    <div class="route-stats">
+      <div class="stat">${route.distanceKm}<span>km</span></div>
+      <div class="stat">${route.durationMinutes}<span>min</span></div>
+      <div class="stat">${route.highlights.length}<span>${lang === 'nl' ? 'verhalen' : 'stories'}</span></div>
+      <div class="chev">›</div>
+    </div>`;
+  card.addEventListener('click', () => openDetail(route));
+  return card;
 }
 
 /** All eight routes on one map, so you can see where each one actually is
@@ -149,6 +210,7 @@ function openDetail(route) {
   renderDining(route);
   renderCustomRouteControls(route);
   renderStoryBlock(route);
+  renderFactsBlock(route);
   renderReverseButton(route);
   renderWeather(route);
   loadHighlightPhotos(route);
@@ -488,6 +550,11 @@ location.addEventListener('position', (e) => {
   tourEngine.setSpeedKmh(pos.speedKmh);
   theme.setCoords(pos.lat, pos.lon);
   if (!settings.locationGranted) { settings.locationGranted = true; persist(); }
+  // The list is ordered by distance, so the first fix changes it.
+  if (!appState.listSortedByLocation) {
+    appState.listSortedByLocation = true;
+    renderRouteList();
+  }
   if (currentRoute && document.getElementById('detail-screen').classList.contains('active')) {
     updateMapsButton(currentRoute);
   }
@@ -994,6 +1061,109 @@ function updateAIStatus() {
     storyteller.hasKey ? t('ai.ready', lang) : t('ai.noKey', lang);
 }
 
+// ─────────────────────────── Regional facts ───────────────────────────
+
+async function renderFactsBlock(route) {
+  const lang = settings.language;
+  const block = document.getElementById('facts-block');
+  if (!block) return;
+
+  const place = FactSource.placeOf(route);
+  const key = FactSource.keyFor(place);
+  const region = place.region || place.country || '—';
+
+  // Sardinia already ships with forty hand-written facts; offering to
+  // fetch more there would be noise.
+  const bundled = await factSource.bundledFor(key);
+  if (bundled?.length && key === 'it--sardegna') {
+    block.style.display = 'none';
+    return;
+  }
+  block.style.display = 'block';
+
+  document.getElementById('facts-eyebrow').textContent = t('facts.title', lang);
+
+  const stored = factSource.countFor(key, lang);
+  const status = document.getElementById('facts-status');
+  if (bundled?.length) {
+    status.textContent = t('facts.bundled', lang, { region });
+  } else if (stored) {
+    status.textContent = t('facts.have', lang, { n: stored, region });
+  } else {
+    status.textContent =
+      t('facts.none', lang, { region }) +
+      (storyteller.hasKey ? '' : ' ' + t('facts.noKey', lang));
+  }
+
+  const button = document.getElementById('facts-generate');
+  button.textContent = stored ? t('facts.redo', lang) : t('facts.get', lang);
+  button.disabled = false;
+  button.onclick = () => fetchRegionFacts(route, key, region);
+
+  const exportBtn = document.getElementById('facts-export');
+  exportBtn.textContent = t('facts.export', lang);
+  exportBtn.style.display = stored ? 'block' : 'none';
+  exportBtn.onclick = () => exportRegionFacts(key);
+}
+
+async function fetchRegionFacts(route, key, region) {
+  const lang = settings.language;
+  const progress = document.getElementById('facts-progress');
+  const msg = document.getElementById('facts-msg');
+  const errorEl = document.getElementById('facts-error');
+  const button = document.getElementById('facts-generate');
+
+  errorEl.style.display = 'none';
+  progress.style.display = 'block';
+  button.disabled = true;
+  msg.textContent = t('facts.working', lang);
+
+  try {
+    if (factSource.countFor(key, lang)) factSource.clear(key, lang);
+    const result = await factSource.generate(route, lang, {
+      onProgress: ({ message }) => { msg.textContent = message; }
+    });
+    msg.textContent = t('facts.done', lang, { n: result.count, region: result.name });
+    setTimeout(() => { progress.style.display = 'none'; }, 4000);
+
+    // If this is the route you're driving, swap the facts in immediately.
+    if (tourEngine.isRunning && tourEngine.route === route) {
+      tourEngine.facts = await factSource.factsFor(route, lang, tourEngine.baseFacts);
+    }
+  } catch (err) {
+    progress.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.textContent = err.message || String(err);
+  } finally {
+    button.disabled = false;
+    if (currentRoute === route) renderFactsBlock(route);
+  }
+}
+
+/**
+ * Downloads the facts as the exact file the app would ship.
+ *
+ * The app cannot commit this to GitHub itself, and shouldn't be able to:
+ * that would mean a write token sitting in a public web page, usable by
+ * anyone who opened it. Handing you the file to drop in yourself gets the
+ * same result with nothing to leak.
+ */
+function exportRegionFacts(key) {
+  const lang = settings.language;
+  const file = factSource.exportFile(key, lang);
+  if (!file) return;
+
+  const blob = new Blob([file.contents], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = file.filename;
+  link.click();
+  URL.revokeObjectURL(url);
+
+  showToast(t('facts.exported', lang));
+}
+
 // ─────────────────────────── Send a place to the car ───────────────────
 
 /**
@@ -1387,6 +1557,7 @@ function wireImport() {
   const lang = settings.language;
   document.getElementById('import-label').textContent = t('import.label', lang);
   document.getElementById('import-hint').textContent = t('import.hint', lang);
+  renderModePicker();
 
   const input = document.getElementById('gpx-input');
   document.getElementById('import-gpx').addEventListener('click', () => input.click());
@@ -1395,6 +1566,27 @@ function wireImport() {
     if (file) await handleGPXFile(file);
     input.value = ''; // so picking the same file again still fires
   });
+}
+
+/** Car, bike or walking. The choice changes far more than the routing
+ *  profile — every distance in the guide is derived from it. */
+function renderModePicker() {
+  const lang = settings.language;
+  const picker = document.getElementById('mode-picker');
+  if (!picker) return;
+  picker.innerHTML = '';
+
+  for (const mode of Object.values(MODES)) {
+    const btn = document.createElement('button');
+    btn.innerHTML = `<span class="mp-icon">${mode.icon}</span><span>${mode.label[lang]}</span>`;
+    btn.classList.toggle('active', (settings.importMode || DEFAULT_MODE) === mode.id);
+    btn.addEventListener('click', () => {
+      settings.importMode = mode.id;
+      persist();
+      renderModePicker();
+    });
+    picker.appendChild(btn);
+  }
 }
 
 async function handleGPXFile(file) {
@@ -1418,6 +1610,7 @@ async function handleGPXFile(file) {
     const route = await buildRouteFromGPX(text, {
       language: lang,
       fallbackName: suggestedName,
+      travelMode: settings.importMode || DEFAULT_MODE,
       onProgress: ({ phase, done, total, message }) => {
         msg.textContent = message;
         if (total) {

@@ -13,12 +13,17 @@
 // routes already use for their online extras.
 
 import { distanceMetres, distanceToPolyline } from './data.js';
+import { getMode } from './travelModes.js';
+import { lookupRegion, routeMidpoint } from './regions.js';
 
-const SAMPLE_SPACING_M = 4000;    // how often along the track we ask
-const SEARCH_RADIUS_M = 6000;     // geosearch radius per sample (max 10000)
-const MAX_DISTANCE_FROM_ROUTE_M = 2500;
-const MAX_HIGHLIGHTS = 14;
-const MIN_SPACING_BETWEEN_HIGHLIGHTS_M = 1500;
+// Search density scales with the mode. Striding four kilometres along a
+// twelve-kilometre walking route would sample it three times and miss
+// almost everything worth saying.
+const SEARCH_PROFILE = {
+  car:  { spacing: 4000, radius: 6000, maxFromRoute: 2500, minSpacing: 1500, max: 14 },
+  bike: { spacing: 1500, radius: 3000, maxFromRoute: 700,  minSpacing: 500,  max: 20 },
+  walk: { spacing: 600,  radius: 1200, maxFromRoute: 300,  minSpacing: 200,  max: 24 }
+};
 const SUMMARY_CONCURRENCY = 4;
 
 /** Parses GPX text into an ordered list of {lat, lon} points. */
@@ -88,12 +93,12 @@ function thin(points, max) {
 }
 
 /** Asks Wikipedia what it knows near a coordinate. */
-async function geosearch(point, lang) {
+async function geosearch(point, lang, radius) {
   const url =
     `https://${lang}.wikipedia.org/w/api.php` +
     `?action=query&list=geosearch` +
     `&gscoord=${point.lat}%7C${point.lon}` +
-    `&gsradius=${SEARCH_RADIUS_M}&gslimit=20&format=json&origin=*`;
+    `&gsradius=${radius}&gslimit=20&format=json&origin=*`;
 
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(9000) });
@@ -161,7 +166,15 @@ function guessKind(title) {
  * a long track means a lot of polite requests to Wikipedia.
  */
 export async function buildRouteFromGPX(fileText, options) {
-  const { language, fallbackName, onProgress = () => {} } = options;
+  const {
+    language,
+    fallbackName,
+    travelMode = 'car',
+    onProgress = () => {}
+  } = options;
+
+  const mode = getMode(travelMode);
+  const profile = SEARCH_PROFILE[mode.id] || SEARCH_PROFILE.car;
 
   onProgress({ phase: 'parsing', message: 'Bestand lezen…' });
   const { points, name } = parseGPX(fileText);
@@ -170,7 +183,7 @@ export async function buildRouteFromGPX(fileText, options) {
   const geometry = thin(points, 600);
   const waypoints = thin(points, 24).map((p) => ({ lat: p.lat, lon: p.lon }));
 
-  const samples = samplePoints(points, SAMPLE_SPACING_M);
+  const samples = samplePoints(points, profile.spacing);
   onProgress({
     phase: 'searching',
     done: 0,
@@ -181,12 +194,12 @@ export async function buildRouteFromGPX(fileText, options) {
   // Collect candidates, deduplicated by page id.
   const candidates = new Map();
   for (let i = 0; i < samples.length; i++) {
-    const found = await geosearch(samples[i], language);
+    const found = await geosearch(samples[i], language, profile.radius);
     for (const hit of found) {
       if (candidates.has(hit.pageid)) continue;
       const point = { lat: hit.lat, lon: hit.lon };
       const offRoute = distanceToPolyline(point, geometry);
-      if (offRoute > MAX_DISTANCE_FROM_ROUTE_M) continue;
+      if (offRoute > profile.maxFromRoute) continue;
       candidates.set(hit.pageid, { ...hit, offRoute, point });
     }
     onProgress({
@@ -204,9 +217,9 @@ export async function buildRouteFromGPX(fileText, options) {
   const ordered = [...candidates.values()].sort((a, b) => a.offRoute - b.offRoute);
   const chosen = [];
   for (const candidate of ordered) {
-    if (chosen.length >= MAX_HIGHLIGHTS) break;
+    if (chosen.length >= profile.max) break;
     const tooClose = chosen.some(
-      (c) => distanceMetres(c.point, candidate.point) < MIN_SPACING_BETWEEN_HIGHLIGHTS_M
+      (c) => distanceMetres(c.point, candidate.point) < profile.minSpacing
     );
     if (!tooClose) chosen.push(candidate);
   }
@@ -252,7 +265,7 @@ export async function buildRouteFromGPX(fileText, options) {
         kind: guessKind(candidate.title),
         lat: candidate.lat,
         lon: candidate.lon,
-        radius: 900,
+        radius: mode.highlightRadius,
         name: { nl: candidate.title, en: candidate.title },
         script: both,
         wikipedia: { nl: candidate.title, en: candidate.title }
@@ -265,23 +278,43 @@ export async function buildRouteFromGPX(fileText, options) {
 
   const summaryText =
     language === 'nl'
-      ? `Geïmporteerde route van ${km} kilometer met ${highlights.length} plekken die de gids onderweg herkent.`
-      : `Imported route of ${km} kilometres with ${highlights.length} places the guide recognises along the way.`;
+      ? `Geïmporteerde ${mode.label.nl.toLowerCase()}route van ${km} kilometer met ${highlights.length} plekken die de gids onderweg herkent.`
+      : `Imported ${mode.label.en.toLowerCase()} route of ${km} kilometres with ${highlights.length} places the guide recognises along the way.`;
 
-  return {
+  const route = {
     id: `custom-${Date.now()}`,
     custom: true,
+    travelMode: mode.id,
     sourceLanguage: language,
     name: { nl: routeName, en: routeName },
     region: { nl: 'Eigen import', en: 'Your import' },
     summary: { nl: summaryText, en: summaryText },
     distanceKm: km,
-    durationMinutes: Math.round((km / 55) * 60),
-    character: { nl: 'Uit GPX-bestand', en: 'From a GPX file' },
+    durationMinutes: Math.round((km / mode.typicalSpeedKmh) * 60),
+    character: {
+      nl: `Uit GPX-bestand · ${mode.label.nl}`,
+      en: `From a GPX file · ${mode.label.en}`
+    },
     bestTime: { nl: '—', en: '—' },
     waypoints,
     geometry: geometry.map((p) => ({ lat: p.lat, lon: p.lon })),
     highlights,
     dining: []
   };
+
+  // Where is this? Looked up once, stored with the route, so the home
+  // screen can group it and never has to ask again.
+  onProgress({ phase: 'locating', message: language === 'nl' ? 'Regio bepalen…' : 'Locating…' });
+  const mid = routeMidpoint(route);
+  if (mid) {
+    const place = await lookupRegion(mid.lat, mid.lon, language);
+    if (place) {
+      route.place = place;
+      if (place.region) {
+        route.region = { nl: place.region, en: place.region };
+      }
+    }
+  }
+
+  return route;
 }

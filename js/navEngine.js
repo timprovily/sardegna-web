@@ -14,6 +14,7 @@
 
 import { distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 import { loadCachedGeometry, saveCachedGeometry } from './storage.js';
+import { modeOf, osrmBaseFor } from './travelModes.js';
 
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving/';
 
@@ -138,6 +139,7 @@ export class NavEngine extends EventTarget {
   /** Loads the best geometry available: cache, then a live OSRM call. */
   async load(route) {
     this.route = route;
+    this.mode = modeOf(route);
     this.destination = route.waypoints[route.waypoints.length - 1];
     this.currentStepIndex = 0;
     this.announcedThisStep.clear();
@@ -170,7 +172,7 @@ export class NavEngine extends EventTarget {
     this._notifyGeometry();
 
     try {
-      const routed = await fetchOSRM(route.waypoints);
+      const routed = await fetchOSRM(route.waypoints, this.mode?.id);
       this.geometry = routed.geometry;
       this.steps = routed.steps;
       this.quality = 'routed';
@@ -243,7 +245,7 @@ export class NavEngine extends EventTarget {
       : points;
 
     try {
-      const routed = await fetchOSRM(trimmed);
+      const routed = await fetchOSRM(trimmed, this.mode?.id);
       this.geometry = routed.geometry;
       this.steps = routed.steps;
       this.quality = 'routed';
@@ -304,7 +306,7 @@ export class NavEngine extends EventTarget {
       : points;
 
     try {
-      const routed = await fetchOSRM(trimmed);
+      const routed = await fetchOSRM(trimmed, this.mode?.id);
       this.geometry = routed.geometry;
       this.steps = routed.steps;
       this.currentStepIndex = 0;
@@ -326,7 +328,7 @@ export class NavEngine extends EventTarget {
   async _approachStart(from) {
     const start = this.route.waypoints[0];
     try {
-      const routed = await fetchOSRM([{ lat: from.lat, lon: from.lon }, start]);
+      const routed = await fetchOSRM([{ lat: from.lat, lon: from.lon }, start], this.mode?.id);
       if (!this.approaching) this._stashRouteLine();
       this.approaching = true;
       this.geometry = routed.geometry;
@@ -405,22 +407,23 @@ export class NavEngine extends EventTarget {
 
     const distanceToStep = distanceMetres(pos, step.location);
 
-    for (const threshold of ANNOUNCE_THRESHOLDS_M) {
+    const thresholds = this.mode?.announceThresholds || ANNOUNCE_THRESHOLDS_M;
+    for (const threshold of thresholds) {
       const key = `${this.currentStepIndex}:${threshold}`;
       if (distanceToStep > threshold || this.announcedThisStep.has(key)) continue;
 
-      const isImmediate = threshold === ANNOUNCE_THRESHOLDS_M[ANNOUNCE_THRESHOLDS_M.length - 1];
+      const isImmediate = threshold === thresholds[thresholds.length - 1];
 
       if (!isImmediate) {
         // Bends coming thick and fast: skip the heads-up entirely rather
         // than talking over the previous one.
-        if ((this.stepGap[this.currentStepIndex] ?? Infinity) < MIN_GAP_FOR_ADVANCE_M) {
+        if ((this.stepGap[this.currentStepIndex] ?? Infinity) < (this.mode?.minGapForAdvance ?? MIN_GAP_FOR_ADVANCE_M)) {
           this.announcedThisStep.add(key);
           continue;
         }
         // Still inside the quiet window — leave the key unmarked so it
         // can be reconsidered on the next fix.
-        if (Date.now() - this.lastNavAt < NAV_COOLDOWN_MS) continue;
+        if (Date.now() - this.lastNavAt < (this.mode?.cooldownMs ?? NAV_COOLDOWN_MS)) continue;
       }
 
       this.announcedThisStep.add(key);
@@ -448,7 +451,7 @@ export class NavEngine extends EventTarget {
     }
     this.dispatchEvent(new CustomEvent('offroute', { detail: distance }));
 
-    if (distance > OFF_ROUTE_THRESHOLD_M) {
+    if (distance > (this.mode?.offRouteThreshold ?? OFF_ROUTE_THRESHOLD_M)) {
       if (this.offRouteSince == null) this.offRouteSince = Date.now();
       if (Date.now() - this.offRouteSince > OFF_ROUTE_PERSIST_MS) {
         this.offRouteSince = null;
@@ -482,7 +485,8 @@ export class NavEngine extends EventTarget {
     // priority immediately — you need that one before the junction, not
     // after it.
     this.lastNavAt = Date.now();
-    const canWait = thresholdOrNull != null && thresholdOrNull >= 300;
+    const advance = (this.mode?.announceThresholds || ANNOUNCE_THRESHOLDS_M)[0];
+    const canWait = thresholdOrNull != null && thresholdOrNull >= advance;
     if (canWait && this.speech.isSpeaking) {
       this.speech.enqueue(item);
     } else {
@@ -520,12 +524,27 @@ function lowerFirst(s) {
 }
 
 /** Calls OSRM and flattens the response into our simpler geometry/steps shape. */
-async function fetchOSRM(waypoints) {
+async function fetchOSRM(waypoints, modeId = 'car') {
   const coords = waypoints.map((w) => `${w.lon},${w.lat}`).join(';');
-  const url = `${OSRM_BASE}${coords}?geometries=geojson&overview=full&steps=true`;
+  const query = '?geometries=geojson&overview=full&steps=true';
 
-  const res = await fetch(url, { signal: AbortSignal.timeout(12000) });
-  if (!res.ok) throw new Error(`OSRM HTTP ${res.status}`);
+  let res;
+  try {
+    res = await fetch(`${osrmBaseFor(modeId)}${coords}${query}`, {
+      signal: AbortSignal.timeout(12000)
+    });
+  } catch {
+    res = null;
+  }
+
+  // Bike and foot profiles live on a community server that is usually up
+  // but not always. A driving line is a poor substitute for a cyclist,
+  // but it beats no line at all — and the stories don't depend on it.
+  if ((!res || !res.ok) && modeId !== 'car') {
+    res = await fetch(`${OSRM_BASE}${coords}${query}`, { signal: AbortSignal.timeout(12000) });
+  }
+
+  if (!res || !res.ok) throw new Error(`OSRM HTTP ${res ? res.status : 'network'}`);
   const json = await res.json();
   if (json.code !== 'Ok' || !json.routes || json.routes.length === 0) {
     throw new Error(`OSRM: ${json.code || 'no route'}`);

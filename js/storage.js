@@ -21,7 +21,8 @@ const DEFAULT_SETTINGS = {
   lastStationName: null,
   lastStationUrl: null,
   locationGranted: false,
-  aiModel: 'claude-sonnet-5'
+  aiModel: 'claude-sonnet-5',
+  importMode: 'car'
 };
 
 export function loadSettings() {

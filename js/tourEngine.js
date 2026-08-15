@@ -6,6 +6,7 @@
 
 import { distanceMetres, distanceToPolyline, nearestIndex } from './data.js';
 import { flipDirections } from './reverse.js';
+import { modeOf } from './travelModes.js';
 
 const IDLE_CHECK_MS = 20000;
 // How close to the route you must be for "joining partway" to make sense.
@@ -22,10 +23,13 @@ const STORY_CORRIDOR_M = 3000;
 const MIN_SPEED_FOR_FACTS_KMH = 12;
 
 export class TourEngine extends EventTarget {
-  constructor({ speech, facts, settings, enrichment, storyteller = null }) {
+  constructor({ speech, facts, settings, enrichment, storyteller = null, factSource = null }) {
     super();
     this.speech = speech;
     this.storyteller = storyteller;
+    this.factSource = factSource;
+    // The Sardinian set, kept as the fallback for the bundled routes.
+    this.baseFacts = facts;
     this.facts = facts;
     this.settings = settings;
     this.enrichment = enrichment;
@@ -54,6 +58,20 @@ export class TourEngine extends EventTarget {
 
   start(route, { geometry = null, position = null } = {}) {
     this.route = route;
+    this.mode = modeOf(route);
+
+    // Facts follow the route's region. Sardinian trivia is worse than
+    // useless on a cycle route through Friesland, so if nothing is known
+    // about where you are the guide simply stays quiet about the area.
+    if (this.factSource) {
+      this.factSource
+        .factsFor(route, this.settings.language, this.baseFacts)
+        .then((facts) => {
+          this.facts = facts;
+          this.dispatchEvent(new CustomEvent('factsloaded', { detail: facts.length }));
+        })
+        .catch(() => { this.facts = []; });
+    }
     this.playedHighlightIds = new Set();
     this.skippedHighlightIds = new Set();
     this.usedFactIds = new Set();
@@ -235,7 +253,7 @@ export class TourEngine extends EventTarget {
           //     where you're a few hundred metres off, or took a slightly
           //     different line through a village.
           near: straightLine <= h.radius,
-          passed: this.progressIndex >= at && offRoute <= STORY_CORRIDOR_M
+          passed: this.progressIndex >= at && offRoute <= (this.mode?.storyCorridor ?? STORY_CORRIDOR_M)
         };
       })
       .filter((x) => x.near || x.passed)
@@ -330,11 +348,12 @@ export class TourEngine extends EventTarget {
   _considerFact() {
     if (!this.isRunning || !this.settings.factsEnabled) return;
     if (this.speech.isSpeaking) return;
-    const speedOk = this._lastSpeedKmh >= MIN_SPEED_FOR_FACTS_KMH;
+    const speedOk = this._lastSpeedKmh >= (this.mode?.movingThresholdKmh ?? MIN_SPEED_FOR_FACTS_KMH);
     if (!speedOk) return;
 
     const silenceMs = Date.now() - this.lastSpeechEndedAt;
-    if (silenceMs < this.settings.factInterval * 60 * 1000) return;
+    const minutes = Math.min(this.settings.factInterval, this.mode?.factInterval ?? this.settings.factInterval);
+    if (silenceMs < minutes * 60 * 1000) return;
 
     if (this.nextHighlight && this.distanceToNext != null && this.distanceToNext < this.nextHighlight.radius * 1.6) {
       return;
@@ -348,6 +367,7 @@ export class TourEngine extends EventTarget {
   }
 
   _pickFact() {
+    if (!this.facts || this.facts.length === 0) return null;
     const unused = this.facts.filter((f) => !this.usedFactIds.has(f.id));
     if (unused.length === 0) {
       this.usedFactIds.clear();
